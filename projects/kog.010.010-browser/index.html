@@ -50,7 +50,7 @@
 <html>
 <head>
   <title>AIT Graphics</title>
-  <meta name="viewport" <span>content="width=device-width, initial-scale=1"</span> />
+  <meta name="viewport" <span comment="fill the screen">content="width=device-width, initial-scale=1"</span> />
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <link rel="stylesheet" type="text/css" href="css/style.css" />
 </head>
@@ -58,7 +58,7 @@
 <html>
 <head>
   <title>AIT Graphics</title>
-  <meta name="viewport" <span>content="width=device-width, initial-scale=1"</span> />
+  <meta name="viewport" <span comment="first line is this\nsecodn line is this\nthirs line is this">content="width=device-width, initial-scale=1"</span> />
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <link rel="stylesheet" type="text/css" href="css/style.css" />
 </head>
@@ -66,7 +66,7 @@
 <html>
 <head>
   <title>AIT Graphics</title>
-  <meta name="viewport" <span>content="width=device-width, initial-scale=1"</span> />
+  <meta name="viewport" <span comment="fjshfjkd  fidksjf ksdk  fkdsklf d sf i3e493ur rit rhhgfdk">content="width=device-width, initial-scale=1"</span> />
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <link rel="stylesheet" type="text/css" href="css/style.css" />
 </head>
@@ -315,7 +315,13 @@
               draw.css('pointer-events', 'none');              
               console.log(draw);
               if(crect.y > codeRect.y && crect.y + crect.height < codeRect.y + codeRect.height) {
-                  draw.rect(crect.width, crect.height).move(crect.x-slideRect.x, crect.y-slideRect.y).stroke('#f06').fill({ color: '#f06', opacity: 0.05 });
+                  draw.rect(crect.width, crect.height).move(crect.x-slideRect.x, crect.y-slideRect.y).stroke('#f60').fill({ color: '#f60', opacity: 0.05 });
+                  var comment = marks[iMark].getAttribute("comment");
+                  var lineCount = 1;
+                  comment = comment.replaceAll("\\n", () => {lineCount++; return "\n";});
+                  console.log(comment);
+                  var text = draw.text(comment).fill('#f60').font('size', '30');
+                  text.move(slideRect.width - 300, crect.y-slideRect.y - text.leading() * 30 * lineCount);
               }
             }
           }, 200);
