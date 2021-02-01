@@ -1,0 +1,326 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <title>Computer Graphics AIT</title>
+
+    <link rel="stylesheet" href="../../dependencies/reveal.js/dist/reveal.css">
+    <link rel="stylesheet" href="../../dependencies/reveal.js/dist/theme/blood.css" id="theme">
+
+    <!-- Theme used for syntax highlighted code -->
+    <link rel="stylesheet" href="../../dependencies/reveal.js/plugin/highlight/monokai.css" id="highlight-theme">
+    <style> .reveal h1, .reveal h2, .reveal h3, .reveal h4, .reveal h5 {
+                  text-transform: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides">
+        <section>
+          <h3>Computer Graphics<h3>
+          <h1>Browser events</h1>
+          <p>László Szécsi szecsi@iit.bme.hu</p>
+        </section>
+        <section data-markdown>
+          <textarea data-template>
+### Editing code
+- we need
+ - an index.html file creating a webpage with a canvas element
+ - a CSS file for element positioning
+ - JavaScript files for program logic
+- this is generated from
+ - Kotlin source files
+- I edit them in
+ - Sublime Text Editor
+          </textarea>
+        </section>       
+        <section>
+          <h3>HTML head</h3>
+          <svg style="position: absolute; top: 100; z-index: 10" xmlns="http://www.w3.org/2000/svg">
+            <g>
+              <rect x="0" y="100" width="100" height="100" fill="red"></rect>
+              <text x="0" y="150" font-family="Verdana" font-size="35" fill="blue">Hello</text>
+            </g>
+          </svg>
+          <pre><code class="floating-annotiations" data-trim> <script type="text/template">
+<!DOCTYPE html>
+<html>
+<head>
+  <title>AIT Graphics</title>
+  <meta name="viewport" <span>content="width=device-width, initial-scale=1"</span> />
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <link rel="stylesheet" type="text/css" href="css/style.css" />
+</head>
+<!DOCTYPE html>
+<html>
+<head>
+  <title>AIT Graphics</title>
+  <meta name="viewport" <span>content="width=device-width, initial-scale=1"</span> />
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <link rel="stylesheet" type="text/css" href="css/style.css" />
+</head>
+<!DOCTYPE html>
+<html>
+<head>
+  <title>AIT Graphics</title>
+  <meta name="viewport" <span>content="width=device-width, initial-scale=1"</span> />
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <link rel="stylesheet" type="text/css" href="css/style.css" />
+</head>
+<!DOCTYPE html>
+<html>
+<head>
+  <title>AIT Graphics</title>
+  <meta name="viewport" <span>content="width=device-width, initial-scale=1"</span> />
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <link rel="stylesheet" type="text/css" href="css/style.css" />
+</head>
+<!DOCTYPE html>
+<html>
+<head>
+  <title>AIT Graphics</title>
+  <meta name="viewport" <span>content="width=device-width, initial-scale=1"</span> />
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <link rel="stylesheet" type="text/css" href="css/style.css" />
+</head>
+<!DOCTYPE html>
+<html>
+<head>
+  <title>AIT Graphics</title>
+  <meta name="viewport" <span>content="width=device-width, initial-scale=1"</span> />
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <link rel="stylesheet" type="text/css" href="css/style.css" />
+</head>
+<!DOCTYPE html>
+<html>
+<head>
+  <title>AIT Graphics</title>
+  <meta name="viewport" <span>content="width=device-width, initial-scale=1"</span> />
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <link rel="stylesheet" type="text/css" href="css/style.css" />
+</head>
+         </script> </code></pre>
+         <p> continued on next slide ... </p>
+        </section>       
+      </div>
+    </div>
+
+    <script src="../../dependencies/reveal.js/dist/reveal.js"></script>
+    <script src="../../dependencies/reveal.js/plugin/math/math.js"></script>
+    <script src="../../dependencies/reveal.js/plugin/notes/notes.js"></script>
+    <script src="../../dependencies/reveal.js/plugin/markdown/markdown.js"></script>
+    <script src="../../dependencies/reveal.js/plugin/highlight/highlight.js"></script>
+    <script src="../../dependencies/reveal.js/plugin/animate/plugin.js"></script>
+    <script src="../../dependencies/reveal.js/plugin/animate/svg.min.js"></script>
+    <script>
+      // More info about initialization & config:
+      // - https://revealjs.com/initialization/
+      // - https://revealjs.com/config/
+      Reveal.initialize({
+        history: true,
+        width: 1280,
+        height: 720,
+        hash: true,
+        math: {
+          //mathjax: 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg-full.js',
+          //mathjax: 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg-full.js',
+          //config: 'TeX-AMS_HTML-full',
+          config: 'TeX-AMS_SVG-full',
+          loader: {
+            load: ['input/TeX', 'output/svg']
+          },          
+          TeX: {
+            Packages: {['+']: ['ams', 'boldsymbol', 'accents', 'color', 'svg']},
+            Macros: {
+              ii: ['\\imath', 1],
+              jj: ['\\jmath', 1],             
+              rvec: ['\\boldsymbol{#1}', 1],
+              uvec: ['\\boldsymbol{{\hat{#1}}}', 1],
+              cuvec: ['\\mathbf{{\\hat{#1}}}', 1],
+              rgbs: ['\\dot{\\ddot{#1}}', 1],
+              rgb: ['\\boldsymbol{{\\overset{\\color{darkred}.\\color{green}.\\color{blue}.}{#1}}}', 1],
+              idx: ['\\mathrm{#1}', 1]
+            }
+          },
+          svg: {
+            addMMLclasses: false
+          }
+        },
+                anything: [ 
+                    {className: "rand",  defaults: {min: 0, max: 9}, initialize: (function(container, options){ container.innerHTML = Math.trunc( options.min + Math.random()*(options.max-options.min + 1) ); }) },
+                    {className: "plot",  defaults: {width:500, height: 500, grid:true,  disableZoom: true}, initialize: (function(container, options){
+                            options.target = "#"+container.id; 
+                            var instance = functionPlot(options);
+                            instance.on('mousemove', function (coordinates) {
+                                // update scale factor to match scale of plot
+                                if ( document.querySelector(".slides").style.zoom ) {
+                                    document.scaleX = document.querySelector(".slides").style.zoom;
+                                }
+                                else if ( document.querySelector(".slides").style.transform ) {
+                                    var s = document.querySelector(".slides").style.transform;
+                                    s = s.substr( s.indexOf("scale"), s.length );
+                                    s = s.substr( s.indexOf("(") + 1, s.indexOf(")") - s.indexOf("(") - 1);
+                                    document.scaleX = s;
+                                }
+                                else {
+                                    document.scaleX = 1;
+                                }
+                            });
+
+                        }) 
+                    },
+                    {className: "decisiontree", defaults: {width:500, height: 500, margin: { left: 50, right: 50}, font: "normal 20px Arial"}, initialize: (function(container, options){
+
+                        var tree = d3.layout.tree().size([options.height, options.width - options.margin.right]);
+                        var diagonal = d3.svg.diagonal().projection(function(d) { return [d.y, d.x];});
+                        var svg = d3.select(container).attr("width", options.width)
+                              .attr("height", options.height)
+                              .append("g")
+                              .attr("transform", "translate(" + options.margin.left + ",0)");
+
+                        var root = options.data, nodes = tree.nodes(root), links = tree.links(nodes);
+
+                        var link = svg.selectAll(".link")
+                          .data(links)
+                          .enter()
+                          .append("g")
+                          .attr("class", "link");
+
+                        link.append("path")
+                          .attr("fill", "none")
+                          .attr("stroke", "steelblue")
+                          .attr("stroke-width", "2.5px")
+                          .attr("d", diagonal);
+
+                        link.append("text")
+                          .attr("fill", "white")
+                          .style("font", options.font)
+                          .attr("transform", function(d) {
+                            return "translate(" +
+                             ((d.source.y + d.target.y) / 2) + "," +
+                             ((d.source.x + d.target.x) / 2) + ")";
+                            })
+                          .attr("dy", ".35em")
+                          .attr("text-anchor", "middle")
+                          .attr("fill", "white")
+                          .attr("stroke", "white")
+                          .text(function(d) {
+                            return d.target.rule;
+                          });
+
+                        var node = svg.selectAll(".node")
+                          .data(nodes)
+                          .enter()
+                          .append("g")
+                          .attr("class", "node")
+                          .attr("transform", function(d) {
+                            return "translate(" + d.y + "," + d.x + ")";
+                          });
+
+                        node.append("circle")
+                          .attr("fill", "white")
+                          .attr("stroke", "steelblue")
+                          .attr("r", 6);
+
+                        node.append("text")
+                          .attr("stroke", "white")
+                          .attr("fill", "white")
+                          .style("font", options.font)
+                          .attr("dx", function(d) {
+                            return d.children ? -18 : 18;
+                          })
+                          .attr("dy", 3)
+                          .style("text-anchor", function(d) {
+                            return d.children ? "end" : "start";
+                          })
+                          .text(function(d) {
+                            return d.name;
+                          });
+                        }) 
+                    },
+                    {className: "chart",  initialize: (function(container, options){ container.chart = new Chart(container.getContext("2d"), options);  }) },
+                    {className: "animate",  initialize: (function(container, options){ 
+                        Reveal.addEventListener( 'fragmentshown', function( event ) {
+                            if (typeof event.fragment.beginElement === "function" ) { 
+                                event.fragment.beginElement();  
+                            }
+                        });
+                        Reveal.addEventListener( 'fragmenthidden', function( event ) {
+                            if (event.fragment.hasAttribute('data-reverse') ) { 
+                                var reverse = event.fragment.parentElement.querySelector('[id=\"' + event.fragment.getAttribute('data-reverse') + '\"]');
+                                if ( reverse && typeof reverse.beginElement === "function" ) { 
+                                    reverse.beginElement();     
+                                }                                           
+                            }
+                        });
+                        if ( container.getAttribute("data-svg-src") ) { 
+                            var xhr = new XMLHttpRequest(); 
+                            xhr.onload = function() { 
+                                if (xhr.readyState === 4) { 
+                                    var svg = container.querySelector('svg');
+                                        container.removeChild( svg );
+                                    container.innerHTML = xhr.responseText + container.innerHTML;
+                                    if ( svg ) {
+                                        container.querySelector('svg').innerHTML = container.querySelector('svg').innerHTML + svg.innerHTML;
+                                    }
+                                } 
+                                else { 
+                                    console.warn( "Failed to get file. ReadyState: " + xhr.readyState + ", Status: " + xhr.status); 
+                                }
+                            }; 
+                            xhr.open( 'GET', container.getAttribute("data-svg-src"), true ); 
+                            xhr.send();
+                        }
+                    }) },
+                    {className: "anything",  initialize: (function(container, options){ if (options && options.initialize) { options.initialize(container)} }) }
+                ],
+        // Learn about plugins: https://revealjs.com/plugins/
+        plugins: [ RevealMath, RevealMarkdown, RevealHighlight, RevealNotes, RevealAnimate ]
+      });
+    </script>
+    <script>
+      var codeboxes = document.querySelectorAll("code.floating-annotiations");
+      for(var i=0; i<codeboxes.length; i++){
+        var scrolledbox = codeboxes[i];
+        var timeoutId = undefined;
+        scrolledbox.addEventListener("scroll", function(){
+          if(timeoutId) {
+            var slide = scrolledbox.closest("section");
+            var svgs = slide.querySelectorAll("svg");
+            for(var iSvg=0; iSvg<svgs.length; iSvg++){
+              svgs[iSvg].style.display = "none";
+            }            
+            window.clearTimeout(timeoutId);
+          }
+          timeoutId = window.setTimeout(function(){
+            var slide = scrolledbox.closest("section");
+            var slideRect = slide.getBoundingClientRect();
+            var codeRect = scrolledbox.getBoundingClientRect();            
+            var svgs = slide.querySelectorAll("svg");
+            for(var iSvg=0; iSvg<svgs.length; iSvg++){
+              svgs[iSvg].remove();
+            }
+            var marks = scrolledbox.querySelectorAll("span.floating-annotation");
+            for(var iMark=0; iMark<marks.length; iMark++){
+              var crect = marks[iMark].getBoundingClientRect();
+              //console.log(crect);              
+              var draw = SVG().addTo(slide);
+              draw.size('100%', '100%');
+              draw.css('position', 'absolute');
+              draw.css('left', '0');
+              draw.css('top', '0');
+              draw.css('pointer-events', 'none');              
+              console.log(draw);
+              if(crect.y > codeRect.y && crect.y + crect.height < codeRect.y + codeRect.height) {
+                  draw.rect(crect.width, crect.height).move(crect.x-slideRect.x, crect.y-slideRect.y).stroke('#f06').fill({ color: '#f06', opacity: 0.05 });
+              }
+            }
+          }, 200);
+        });
+      }
+    </script>
+  </body>
+</html>
