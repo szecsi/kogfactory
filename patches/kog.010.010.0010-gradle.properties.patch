@@ -1,0 +1,21 @@
+From 99e8ad76ca44d158b94c53a163338085f1e59ce4 Mon Sep 17 00:00:00 2001
+From: szecsi <szecsi.laszlo@gmail.com>
+Date: Tue, 2 Feb 2021 11:32:09 +0100
+Subject: [PATCH] create gradle.properties
+
+---
+ gradle.properties | 1 +
+ 1 file changed, 1 insertion(+)
+ create mode 100644 gradle.properties
+
+diff --git a/gradle.properties b/gradle.properties
+new file mode 100644
+index 0000000..29e08e8
+--- /dev/null
++++ b/gradle.properties
+@@ -0,0 +1 @@
++kotlin.code.style=official
+\ No newline at end of file
+-- 
+2.28.0.windows.1
+

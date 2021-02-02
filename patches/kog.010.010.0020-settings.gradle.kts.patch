@@ -1,0 +1,22 @@
+From 2496ec9639ec65e79418aad9ad91600b27dc98cb Mon Sep 17 00:00:00 2001
+From: szecsi <szecsi.laszlo@gmail.com>
+Date: Tue, 2 Feb 2021 11:55:33 +0100
+Subject: [PATCH] create settings.gradle.kts
+
+---
+ settings.gradle.kts | 2 ++
+ 1 file changed, 2 insertions(+)
+ create mode 100644 settings.gradle.kts
+
+diff --git a/settings.gradle.kts b/settings.gradle.kts
+new file mode 100644
+index 0000000..21acbf7
+--- /dev/null
++++ b/settings.gradle.kts
+@@ -0,0 +1,2 @@
++include("client")//$ multi-project build template; a single included subproject
++rootProject.name = "kog"
+\ No newline at end of file
+-- 
+2.28.0.windows.1
+

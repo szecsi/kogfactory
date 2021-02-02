@@ -21,97 +21,242 @@
       <div class="slides">
         <section>
           <h3>Computer Graphics<h3>
-          <h1>Browser events</h1>
+          <h1>Kotlin</h1>
           <p>László Szécsi szecsi@iit.bme.hu</p>
         </section>
         <section data-markdown>
           <textarea data-template>
-### Editing code
-- we need
- - an index.html file creating a webpage with a canvas element
- - a CSS file for element positioning
- - JavaScript files for program logic
-- this is generated from
- - Kotlin source files
-- I edit them in
- - Sublime Text Editor
+### Kotlin and WebGL
+- replaces Java
+ - mobile programming
+- compiles to Javascript
+ - works for WebGL development
+ - statically typed
+ - fewer runtime errors to debug
           </textarea>
-        </section>       
-        <section>
-          <h3>HTML head</h3>
-          <div code-from-patch>kog.010.010.0010-gradle.properties.patch</div>
+        </section>
+        <section data-markdown>
+          <textarea data-template>
+### Basic types
+- Byte, Short, Int, Long, Float, Double, Char, Boolean
+ - all behave as classes
+ - no access to underlying primitives
+          </textarea>
         </section>
         <section>
-          <h3>HTML head</h3>
-          <svg style="position: absolute; top: 100; z-index: 10" xmlns="http://www.w3.org/2000/svg">
-            <g>
-              <rect x="0" y="100" width="100" height="100" fill="red"></rect>
-              <text x="0" y="150" font-family="Verdana" font-size="35" fill="blue">Hello</text>
-            </g>
-          </svg>
+          <h3>Variables</h3>
           <pre><code class="floating-annotiations" data-trim> <script type="text/template">
-<!DOCTYPE html>
-<html>
-<head>
-  <title>AIT Graphics</title>
-  <meta name="viewport" <span comment="fill the screen">content="width=device-width, initial-scale=1"</span> />
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-  <link rel="stylesheet" type="text/css" href="css/style.css" />
-</head>
-<!DOCTYPE html>
-<html>
-<head>
-  <title>AIT Graphics</title>
-  <meta name="viewport" <span comment="first line is this\nsecodn line is this\nthirs line is this">content="width=device-width, initial-scale=1"</span> />
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-  <link rel="stylesheet" type="text/css" href="css/style.css" />
-</head>
-<!DOCTYPE html>
-<html>
-<head>
-  <title>AIT Graphics</title>
-  <meta name="viewport" <span comment="fjshfjkd  fidksjf ksdk  fkdsklf d sf i3e493ur rit rhhgfdk">content="width=device-width, initial-scale=1"</span> />
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-  <link rel="stylesheet" type="text/css" href="css/style.css" />
-</head>
-<!DOCTYPE html>
-<html>
-<head>
-  <title>AIT Graphics</title>
-  <meta name="viewport" <span>content="width=device-width, initial-scale=1"</span> />
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-  <link rel="stylesheet" type="text/css" href="css/style.css" />
-</head>
-<!DOCTYPE html>
-<html>
-<head>
-  <title>AIT Graphics</title>
-  <meta name="viewport" <span>content="width=device-width, initial-scale=1"</span> />
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-  <link rel="stylesheet" type="text/css" href="css/style.css" />
-</head>
-<!DOCTYPE html>
-<html>
-<head>
-  <title>AIT Graphics</title>
-  <meta name="viewport" <span>content="width=device-width, initial-scale=1"</span> />
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-  <link rel="stylesheet" type="text/css" href="css/style.css" />
-</head>
-<!DOCTYPE html>
-<html>
-<head>
-  <title>AIT Graphics</title>
-  <meta name="viewport" <span>content="width=device-width, initial-scale=1"</span> />
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-  <link rel="stylesheet" type="text/css" href="css/style.css" />
-</head>
-         </script> </code></pre>
-         <p> continued on next slide ... </p>
-        </section>       
+var yaw : Float
+<span comment="type inference">val myPi = 3.14f</span>
+          </script> </code></pre>
+        </section>        
+        <section>
+          <h3>String</h3>
+          <pre><code class="floating-annotiations" data-trim> <script type="text/template">
+canvas.getContext("webgl2<span comment="quotes">"</span>)
+overlay.innerHTML = 
+ """<font color="red">WebGL</font><span comment="raw string\ncan be multiple lines\nno escape">"""</span>
+          </script> </code></pre>
+        </section>
+        <section>
+          <h3>String template</h3>
+          <pre><code class="floating-annotiations" data-trim> <script type="text/template">
+var fontSize = 1
+overlay.innerHTML = 
+"""<div style=
+"position:absolute;left:${mouseX}px;bottom:-${mouseY}px">
+<font color="red" size="${fontSize}px"> ${<span comment="evaluated expression">keysPressed.toString()</span>}
+</font></div>""";
+          </script> </code></pre>
+        </section>
+        <section>
+          <h3>Math</h3>
+          <pre><code class="floating-annotiations" data-trim> <script type="text/template">
+import kotlin.math.sqrt
+ 
+fun length() : Float {
+  return sqrt(lengthSquared());
+}
+          </script> </code></pre>
+        </section>
+        <section>
+          <h3>Random</h3>
+          <pre><code class="floating-annotiations" data-trim> <script type="text/template">
+import kotlin.random.Random
+ 
+fun makeRandom(minVal: Vec4 = Vec4.zeros, maxVal: Vec4 = Vec4.ones) : Vec4 {
+  return Vec4(
+    Random.nextFloat() * 
+        (maxVal.storage[0] - minVal.storage[0]) + minVal.storage[0],
+    Random.nextFloat() * (maxVal.storage[1] - minVal.storage[1]) + minVal.storage[1],
+    Random.nextFloat() * (maxVal.storage[2] - minVal.storage[2]) + minVal.storage[2],
+    Random.nextFloat() * (maxVal.storage[3] - minVal.storage[3]) + minVal.storage[3]
+  )  
+}
+          </script> </code></pre>
+        </section>
+        <section>
+          <h3>Functions</h3>
+          <pre><code class="floating-annotiations" data-trim> <script type="text/template">
+fun sum(a : Float, b : Float) : Float {
+  return a+b
+}
+          </script> </code></pre>
+        </section>
+        <section>
+          <h3>Classes</h3>
+          <pre><code class="floating-annotiations" data-trim> <script type="text/template">
+class Hello {
+  <span comment="property">val greeting : String = "Hello world!"</span>
+ 
+  <span comment="method">fun greet()</span> {
+    print(greeting)
+  }
+}
+          </script> </code></pre>
+        </section>
+        <section>
+          <h3>Primary constructor and properties</h3>
+          <pre><code class="floating-annotiations" data-trim> <script type="text/template">
+class Hello( <span comment="constructor parameter\nAND property"> val greeting </span> : String <span comment="default"> = "Hello world!" </span> ) {
+ 
+  fun greet() {
+    print(greeting)
+  }
+}
+          </script> </code></pre>
+        </section>
+        <section>
+          <h3>Base class</h3>
+          <pre><code class="floating-annotiations" data-trim> <script type="text/template">
+class Material(<span comment="primary constructor parameter">program : Program</span>)
+  : <span comment="base class">UniformProvider</span>(<span comment="passed to base constructor">"material"</span>) {
+  
+  <span comment="init block\nno actual constructor body needed">init {
+  addComponentsAndGatherUniforms(program);
+  }</span>
+}
+          </script> </code></pre>
+        </section>
+        <section>
+          <h3>var vs val</h3>
+          <pre><code class="floating-annotiations" data-trim> <script type="text/template">
+val pos = Vec3()
+pos += Vec3(1f, 2f, 3f)
+          </script> </code></pre>
+          This is actually fine. pos what it was, the reference to the same object. Only its properties changed.
+        </section>      
+        <section>
+          <h3>Lambda</h3>
+          <pre><code class="floating-annotiations" data-trim> <script type="text/template">
+class App(
+  val keysPressed = HashSet<String>()
+  fun registerEventHandlers() {
+    document.onkeydown = <span comment="starts a function"> { </span> 
+      <span comment="parameter list"> event : KeyboardEvent </span> ->
+      <span comment="last expression is returned"> keysPressed </span> .add( <span comment="enclosing scope is accessible"> keyNames </span> [event.keyCode] )
+    }
+  }
+}
+          </script> </code></pre>
+        </section>
+        <section>
+          <h3>Regex</h3>
+          <pre><code class="floating-annotiations" data-trim> <script type="text/template">
+val text = "Te tudsz így beszélni?"
+val secret = Regex( <span comment="pattern matching\nHungarian vowels"> "[aáeéiíoóöőuú]" </span> ).replace(text) <span comment="the last parameter of replace\ncan be placed outside the ()"> { </span>
+    <span comment="auto parameter for one-param lambda\nno param list needed"> it </span> .value + 'v' + it.value  }
+          </script> </code></pre>
+          <p>.</p>
+          <p>.</p>
+        </section>
+        <section>
+          <h3>Exception handling, Error</h3>
+          <pre><code class="floating-annotiations" data-trim> <script type="text/template">
+throw Error("Could not link shaders [vertex shader: ${vertexShader.sourceUrl}]:[fragment shader: ${fragmentShader.sourceUrl}\n${gl.getProgramInfoLog(this.glProgram)}")
+//-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+try{
+  val app = App(canvas, overlay)
+} catch(e : Error) {
+  console.error(e.message)
+}
+          </script> </code></pre>
+          <img src="media/error_on_console.png"/>
+        </section>
+        <section>
+          <h3>null safety</h3>
+          <pre><code class="floating-annotiations" data-trim> <script type="text/template">
+val b: <span comment="nullable type"> String? </span> = "Kotlin"
+if (b != null && b.length > 0) {
+    print("String of length ${ <span comment="known to be not null"> b </span> .length}")
+} else {
+    print("Empty string")
+}
+          </script> </code></pre>
+        </section>
+        <section>
+          <h3>Safe call</h3>
+          <pre><code class="floating-annotiations" data-trim> <script type="text/template">
+<span comment="type is Mat4?"> avatar["modelMatrix"] </span>
+ <span comment="if null, does nothing,\nevaluates to nothing"> .?scale(scale) </span>
+  .?rotate(yaw)
+  .?translate(position)
+          </script> </code></pre>
+        </section>
+        <section>
+          <h3>Elvis</h3>
+          <pre><code class="floating-annotiations" data-trim> <script type="text/template">
+fun set( <span comment="parameter array"> vararg values </span> : Float) {
+  for(i in 0 until storage.length) {
+    storage[i] = values.getOrNull(i) <span comment="if null is on the left,\nuse value on the right"> ?: </span> 0.0f
+  }
+}
+ 
+val gl = canvas.getContext("webgl2")
+   <span comment="if null is on the left,\nuse value on the right"> ?: </span> throw Error("Browser does not support WebGL2")
+          </script> </code></pre>
+        </section>
+        <section>
+          <h3>Containers</h3>
+          <pre><code class="floating-annotiations" data-trim> <script type="text/template">
+val keysPressed = HashSet<String>()
+val uniforms = HashMap<String, Uniform>()
+val uniformDescriptors = 
+  HashMap<String,
+  ArrayList<UniformDescriptor> >()
+          </script> </code></pre>
+        </section>        
+        <section>
+          <h3>forEach, vararg, spread</h3>
+          <pre><code class="floating-annotiations" data-trim> <script type="text/template">
+val components = ArrayList<Drawable>()
+  
+fun draw(
+        vararg uniformProviders : UniformProvider){
+  components.forEach <span comment="this is the only parameter\nof forEach\nno actual paranthesised\nparamter list needed"> { </span>
+    it.draw(this, <span comment="spread operator\nexpands array to parameters"> * </span> uniformProviders)
+  }
+}
+          </script> </code></pre>
+        </section>
+        <section>
+          <h3>A complex Kotlin example</h3>
+          <pre><code class="floating-annotiations" data-trim> <script type="text/template">
+fun drawWithOverrides(
+    <span comment="incoming associative array"> overrides : Map<String, UniformProvider>, </span>
+    vararg uniformProviders : UniformProvider){
+  val allOverrides : MutableMap<String, UniformProvider> 
+          <span comment="mutable copy"> = overrideMap.toMutableMap() </span>
+  overrides.forEach { 
+    <span comment="destructuring"> (key : String, value : Drawable) </span> -> 
+    allOverrides[key] = value } 
+  <span comment="in a lambda,\nkeyword this may be ambigous,\nneeds to be labeled"> this@UniformProvider </span> .drawWithOverrides(
+                    allOverrides, *uniformProviders)
+}
+          </script> </code></pre>
+        </section>                  
       </div>
     </div>
-
     <script src="../../dependencies/reveal.js/dist/reveal.js"></script>
     <script src="../../dependencies/reveal.js/plugin/math/math.js"></script>
     <script src="../../dependencies/reveal.js/plugin/notes/notes.js"></script>
@@ -290,16 +435,7 @@
       for(var i=0; i<codeboxes.length; i++){
         var scrolledbox = codeboxes[i];
         var timeoutId = undefined;
-        scrolledbox.addEventListener("scroll", function(){
-          if(timeoutId) {
-            var slide = scrolledbox.closest("section");
-            var svgs = slide.querySelectorAll("svg");
-            for(var iSvg=0; iSvg<svgs.length; iSvg++){
-              svgs[iSvg].style.display = "none";
-            }            
-            window.clearTimeout(timeoutId);
-          }
-          timeoutId = window.setTimeout(function(){
+        var updateAnno = function(){
             var slide = scrolledbox.closest("section");
             var slideRect = slide.getBoundingClientRect();
             var codeRect = scrolledbox.getBoundingClientRect();            
@@ -308,6 +444,7 @@
               svgs[iSvg].remove();
             }
             var marks = scrolledbox.querySelectorAll("span.floating-annotation");
+            var miny = 0;
             for(var iMark=0; iMark<marks.length; iMark++){
               var crect = marks[iMark].getBoundingClientRect();
               //console.log(crect);              
@@ -323,12 +460,34 @@
                   var comment = marks[iMark].getAttribute("comment");
                   var lineCount = 1;
                   comment = comment.replaceAll("\\n", () => {lineCount++; return "\n";});
-                  console.log(comment);
-                  var text = draw.text(comment).fill('#f60').font('size', '30');
-                  text.move(slideRect.width - 300, crect.y-slideRect.y - text.leading() * 30 * lineCount);
+                  var text = draw.text(comment).fill('#f60').font('size', '15');
+                  var textheight = text.leading() * 15 * lineCount;
+                  var texty = crect.y-slideRect.y;
+                  if(texty < miny + textheight){
+                    texty = miny + textheight;
+                  }
+                  text.move(slideRect.width - 300, texty - textheight);
+                  miny = texty + 20;
+                  draw.line(
+                    crect.x-slideRect.x + crect.width,
+                    crect.y-slideRect.y + crect.height / 2,
+                    slideRect.width - 300,
+                    texty - textheight / 2,                    
+                    ).stroke('#f60');
               }
             }
-          }, 200);
+          };
+        updateAnno();
+        scrolledbox.addEventListener("scroll", function(){
+          if(timeoutId) {
+            var slide = scrolledbox.closest("section");
+            var svgs = slide.querySelectorAll("svg");
+            for(var iSvg=0; iSvg<svgs.length; iSvg++){
+              svgs[iSvg].style.display = "none";
+            }            
+            window.clearTimeout(timeoutId);
+          }
+          timeoutId = window.setTimeout(updateAnno, 200);
         });
       }
     </script>
