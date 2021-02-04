@@ -1,0 +1,29 @@
+{
+  "name": "quilt",
+  "version": "1.0.0",
+  "description": "kogfactory make slides from git patches",
+  "main": "quilt.js",
+  "scripts": {
+    "start": "node --inspect quilt.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/szecsi/kogfactory.git"
+  },
+  "keywords": [
+    "multiplayer",
+    "sockets",
+    "nodejs"
+  ],
+  "author": "Laszlo Szecsi",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/szecsi/kogfactory/issues"
+  },
+  "homepage": "https://github.com/szecsi/kogfactory#readme",
+  "dependencies": {
+    "command-line-args": "^5.1.1",
+    "fs-extra": "^9.1.0"
+  }
+}

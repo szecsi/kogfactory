@@ -39,7 +39,7 @@
         </section>       
         <section>
           <h3>Folder tree</h3>
-          <pre><code class="floating-annotiations" data-trim> <script type="text/template">
+          <pre><code class="floating-annotations" data-trim> <script type="text/template">
 kog
 ├── gradle.properties
 ├── settings.gradle.kts
@@ -60,46 +60,25 @@ kog
           </script> </code></pre>
         </section>
         <section>
-          <h3>client/src/main/content/index.html</h3>
-          <pre><code class="floating-annotiations" data-trim> <script type="text/template">
-<!DOCTYPE html>
-<html>  
-<head>
-  <title>Computer Graphics 2021</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-  <link rel="stylesheet" type="text/css" href="css/style.css" />
-  <link rel="icon" type="image/png" href="favicon.ico"> 
-</head>
-<body>
-  <div id="container">
-    <canvas id="canvas"></canvas>
-    <div id="overlay"></div>
-  </div>
-  <script type="application/javascript" src="client.js"></script>
-</body>
-</html>
-          </script> </code></pre>
-        </section>
-        <section>
           <h3>gradle.properties</h3>
-          <pre><code class="floating-annotiations" data-trim> <script type="text/template">
+          <pre><code class="floating-annotations" data-trim> <script type="text/template">
 kotlin.code.style=official
           </script> </code></pre>
         </section>
         <section>
           <h3>settings.gradle.kts</h3>
-          <pre><code class="floating-annotiations" data-trim> <script type="text/template">
+          <pre><code class="floating-annotations" data-trim> <script type="text/template">
 include("client")
 rootProject.name = "kog"
           </script> </code></pre>
           multi-project build template; a single included subproject
         </section>
+        <!-- patch="kog.010.010.0030-build.gradle.kts.patch" -->
         <section>
           <h3>build.gradle.kts</h3>
-          <pre><code class="floating-annotiations" data-trim> <script type="text/template">
+          <pre><code class="floating-annotations" data-trim> <script type="text/template">
 plugins {
-  id("org.jetbrains.kotlin.js") version "1.4.10" apply false
+  id("org.jetbrains.kotlin.js") version "1.4.10" <span comment="only fetched here\napplied in subproject(s)"> apply false </span>
   kotlin("plugin.serialization") version "1.4.10" apply false
 }
 
@@ -116,7 +95,7 @@ allprojects {
         </section>
         <section>
           <h3>client/build.gradle.kts</h3>
-          <pre><code class="floating-annotiations" data-trim> <script type="text/template">
+          <pre><code class="floating-annotations" data-trim> <script type="text/template">
 plugins {
   id("org.jetbrains.kotlin.js")
   kotlin("plugin.serialization")
@@ -168,7 +147,7 @@ val assemble by tasks.existing {
         </section>
         <section>
           <h3>client/src/main/content/index.html</h3>
-          <pre><code class="floating-annotiations" data-trim> <script type="text/template">
+          <pre><code class="floating-annotations" data-trim> <script type="text/template">
 <!DOCTYPE html>
 <html>  
 <head>
@@ -190,7 +169,7 @@ val assemble by tasks.existing {
         </section>
         <section>
           <h3>client/src/main/content/css/style.css</h3>
-          <pre><code class="floating-annotiations" data-trim> <script type="text/template">
+          <pre><code class="floating-annotations" data-trim> <script type="text/template">
 * {
   margin: 0;
   padding: 0;
@@ -230,7 +209,7 @@ val assemble by tasks.existing {
         </section>
         <section>
           <h3>client/src/main/kotlin/KeyNames.kt</h3>
-          <pre><code class="floating-annotiations" data-trim> <script type="text/template">
+          <pre><code class="floating-annotations" data-trim> <script type="text/template">
 object keyNames {
   private val lookup = arrayOf (
     "", // [0]
@@ -510,7 +489,7 @@ document.defaultView.document == document
         </section>   
         <section>
           <h3>client/src/main/kotlin/App.kt</h3>
-          <pre><code class="floating-annotiations" data-trim> <script type="text/template">
+          <pre><code class="floating-annotations" data-trim> <script type="text/template">
 import kotlin.browser.document
 import kotlin.browser.window
 import org.w3c.dom.HTMLDivElement
@@ -555,7 +534,7 @@ class App(val canvas : HTMLCanvasElement, val overlay : HTMLDivElement) {
       event // This line is a placeholder for event handling code. It has no effect, but avoids the "unused parameter" warning.
     }
 
-    window.requestAnimationFrame {// trigger rendering
+    window.requestAnimationFrame <span comment="trigger rendering"> { </span> 
       update()// this method is responsible for drawing a frame
     }
   }  
@@ -827,66 +806,6 @@ this.overlay.innerHTML =
         plugins: [ RevealMath, RevealMarkdown, RevealHighlight, RevealNotes, RevealAnimate ]
       });
     </script>
-    <script>
-      var codeboxes = document.querySelectorAll("code.floating-annotiations");
-      for(var i=0; i<codeboxes.length; i++){
-        var scrolledbox = codeboxes[i];
-        var timeoutId = undefined;
-        var updateAnno = function(){
-            var slide = scrolledbox.closest("section");
-            var slideRect = slide.getBoundingClientRect();
-            var codeRect = scrolledbox.getBoundingClientRect();            
-            var svgs = slide.querySelectorAll("svg");
-            for(var iSvg=0; iSvg<svgs.length; iSvg++){
-              svgs[iSvg].remove();
-            }
-            var marks = scrolledbox.querySelectorAll("span.floating-annotation");
-            var miny = 0;
-            for(var iMark=0; iMark<marks.length; iMark++){
-              var crect = marks[iMark].getBoundingClientRect();
-              //console.log(crect);              
-              var draw = SVG().addTo(slide);
-              draw.size('100%', '100%');
-              draw.css('position', 'absolute');
-              draw.css('left', '0');
-              draw.css('top', '0');
-              draw.css('pointer-events', 'none');              
-              console.log(draw);
-              if(crect.y > codeRect.y && crect.y + crect.height < codeRect.y + codeRect.height) {
-                  draw.rect(crect.width, crect.height).move(crect.x-slideRect.x, crect.y-slideRect.y).stroke('#f60').fill({ color: '#f60', opacity: 0.05 });
-                  var comment = marks[iMark].getAttribute("comment");
-                  var lineCount = 1;
-                  comment = comment.replaceAll("\\n", () => {lineCount++; return "\n";});
-                  var text = draw.text(comment).fill('#f60').font('size', '15');
-                  var textheight = text.leading() * 15 * lineCount;
-                  var texty = crect.y-slideRect.y;
-                  if(texty < miny + textheight){
-                    texty = miny + textheight;
-                  }
-                  text.move(slideRect.width - 300, texty - textheight);
-                  miny = texty + 20;
-                  draw.line(
-                    crect.x-slideRect.x + crect.width,
-                    crect.y-slideRect.y + crect.height / 2,
-                    slideRect.width - 300,
-                    texty - textheight / 2,                    
-                    ).stroke('#f60');
-              }
-            }
-          };
-        updateAnno();
-        scrolledbox.addEventListener("scroll", function(){
-          if(timeoutId) {
-            var slide = scrolledbox.closest("section");
-            var svgs = slide.querySelectorAll("svg");
-            for(var iSvg=0; iSvg<svgs.length; iSvg++){
-              svgs[iSvg].style.display = "none";
-            }            
-            window.clearTimeout(timeoutId);
-          }
-          timeoutId = window.setTimeout(updateAnno, 200);
-        });
-      }
-    </script>
+    <script src="../../dependencies/reveal.js/plugin/floating/floating.js"></script>
   </body>
 </html>

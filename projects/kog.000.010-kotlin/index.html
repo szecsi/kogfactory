@@ -45,14 +45,14 @@
         </section>
         <section>
           <h3>Variables</h3>
-          <pre><code class="floating-annotiations" data-trim> <script type="text/template">
+          <pre><code class="floating-annotations" data-trim> <script type="text/template">
 var yaw : Float
 <span comment="type inference">val myPi = 3.14f</span>
           </script> </code></pre>
         </section>        
         <section>
           <h3>String</h3>
-          <pre><code class="floating-annotiations" data-trim> <script type="text/template">
+          <pre><code class="floating-annotations" data-trim> <script type="text/template">
 canvas.getContext("webgl2<span comment="quotes">"</span>)
 overlay.innerHTML = 
  """<font color="red">WebGL</font><span comment="raw string\ncan be multiple lines\nno escape">"""</span>
@@ -60,7 +60,7 @@ overlay.innerHTML =
         </section>
         <section>
           <h3>String template</h3>
-          <pre><code class="floating-annotiations" data-trim> <script type="text/template">
+          <pre><code class="floating-annotations" data-trim> <script type="text/template">
 var fontSize = 1
 overlay.innerHTML = 
 """<div style=
@@ -71,7 +71,7 @@ overlay.innerHTML =
         </section>
         <section>
           <h3>Math</h3>
-          <pre><code class="floating-annotiations" data-trim> <script type="text/template">
+          <pre><code class="floating-annotations" data-trim> <script type="text/template">
 import kotlin.math.sqrt
  
 fun length() : Float {
@@ -81,7 +81,7 @@ fun length() : Float {
         </section>
         <section>
           <h3>Random</h3>
-          <pre><code class="floating-annotiations" data-trim> <script type="text/template">
+          <pre><code class="floating-annotations" data-trim> <script type="text/template">
 import kotlin.random.Random
  
 fun makeRandom(minVal: Vec4 = Vec4.zeros, maxVal: Vec4 = Vec4.ones) : Vec4 {
@@ -97,7 +97,7 @@ fun makeRandom(minVal: Vec4 = Vec4.zeros, maxVal: Vec4 = Vec4.ones) : Vec4 {
         </section>
         <section>
           <h3>Functions</h3>
-          <pre><code class="floating-annotiations" data-trim> <script type="text/template">
+          <pre><code class="floating-annotations" data-trim> <script type="text/template">
 fun sum(a : Float, b : Float) : Float {
   return a+b
 }
@@ -105,7 +105,7 @@ fun sum(a : Float, b : Float) : Float {
         </section>
         <section>
           <h3>Classes</h3>
-          <pre><code class="floating-annotiations" data-trim> <script type="text/template">
+          <pre><code class="floating-annotations" data-trim> <script type="text/template">
 class Hello {
   <span comment="property">val greeting : String = "Hello world!"</span>
  
@@ -117,7 +117,7 @@ class Hello {
         </section>
         <section>
           <h3>Primary constructor and properties</h3>
-          <pre><code class="floating-annotiations" data-trim> <script type="text/template">
+          <pre><code class="floating-annotations" data-trim> <script type="text/template">
 class Hello( <span comment="constructor parameter\nAND property"> val greeting </span> : String <span comment="default"> = "Hello world!" </span> ) {
  
   fun greet() {
@@ -128,7 +128,7 @@ class Hello( <span comment="constructor parameter\nAND property"> val greeting <
         </section>
         <section>
           <h3>Base class</h3>
-          <pre><code class="floating-annotiations" data-trim> <script type="text/template">
+          <pre><code class="floating-annotations" data-trim> <script type="text/template">
 class Material(<span comment="primary constructor parameter">program : Program</span>)
   : <span comment="base class">UniformProvider</span>(<span comment="passed to base constructor">"material"</span>) {
   
@@ -140,7 +140,7 @@ class Material(<span comment="primary constructor parameter">program : Program</
         </section>
         <section>
           <h3>var vs val</h3>
-          <pre><code class="floating-annotiations" data-trim> <script type="text/template">
+          <pre><code class="floating-annotations" data-trim> <script type="text/template">
 val pos = Vec3()
 pos += Vec3(1f, 2f, 3f)
           </script> </code></pre>
@@ -148,7 +148,7 @@ pos += Vec3(1f, 2f, 3f)
         </section>      
         <section>
           <h3>Lambda</h3>
-          <pre><code class="floating-annotiations" data-trim> <script type="text/template">
+          <pre><code class="floating-annotations" data-trim> <script type="text/template">
 class App(
   val keysPressed = HashSet<String>()
   fun registerEventHandlers() {
@@ -162,7 +162,7 @@ class App(
         </section>
         <section>
           <h3>Regex</h3>
-          <pre><code class="floating-annotiations" data-trim> <script type="text/template">
+          <pre><code class="floating-annotations" data-trim> <script type="text/template">
 val text = "Te tudsz így beszélni?"
 val secret = Regex( <span comment="pattern matching\nHungarian vowels"> "[aáeéiíoóöőuú]" </span> ).replace(text) <span comment="the last parameter of replace\ncan be placed outside the ()"> { </span>
     <span comment="auto parameter for one-param lambda\nno param list needed"> it </span> .value + 'v' + it.value  }
@@ -172,7 +172,7 @@ val secret = Regex( <span comment="pattern matching\nHungarian vowels"> "[aáeé
         </section>
         <section>
           <h3>Exception handling, Error</h3>
-          <pre><code class="floating-annotiations" data-trim> <script type="text/template">
+          <pre><code class="floating-annotations" data-trim> <script type="text/template">
 throw Error("Could not link shaders [vertex shader: ${vertexShader.sourceUrl}]:[fragment shader: ${fragmentShader.sourceUrl}\n${gl.getProgramInfoLog(this.glProgram)}")
 //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 try{
@@ -185,7 +185,7 @@ try{
         </section>
         <section>
           <h3>null safety</h3>
-          <pre><code class="floating-annotiations" data-trim> <script type="text/template">
+          <pre><code class="floating-annotations" data-trim> <script type="text/template">
 val b: <span comment="nullable type"> String? </span> = "Kotlin"
 if (b != null && b.length > 0) {
     print("String of length ${ <span comment="known to be not null"> b </span> .length}")
@@ -196,7 +196,7 @@ if (b != null && b.length > 0) {
         </section>
         <section>
           <h3>Safe call</h3>
-          <pre><code class="floating-annotiations" data-trim> <script type="text/template">
+          <pre><code class="floating-annotations" data-trim> <script type="text/template">
 <span comment="type is Mat4?"> avatar["modelMatrix"] </span>
  <span comment="if null, does nothing,\nevaluates to nothing"> .?scale(scale) </span>
   .?rotate(yaw)
@@ -205,7 +205,7 @@ if (b != null && b.length > 0) {
         </section>
         <section>
           <h3>Elvis</h3>
-          <pre><code class="floating-annotiations" data-trim> <script type="text/template">
+          <pre><code class="floating-annotations" data-trim> <script type="text/template">
 fun set( <span comment="parameter array"> vararg values </span> : Float) {
   for(i in 0 until storage.length) {
     storage[i] = values.getOrNull(i) <span comment="if null is on the left,\nuse value on the right"> ?: </span> 0.0f
@@ -218,7 +218,7 @@ val gl = canvas.getContext("webgl2")
         </section>
         <section>
           <h3>Containers</h3>
-          <pre><code class="floating-annotiations" data-trim> <script type="text/template">
+          <pre><code class="floating-annotations" data-trim> <script type="text/template">
 val keysPressed = HashSet<String>()
 val uniforms = HashMap<String, Uniform>()
 val uniformDescriptors = 
@@ -228,7 +228,7 @@ val uniformDescriptors =
         </section>        
         <section>
           <h3>forEach, vararg, spread</h3>
-          <pre><code class="floating-annotiations" data-trim> <script type="text/template">
+          <pre><code class="floating-annotations" data-trim> <script type="text/template">
 val components = ArrayList<Drawable>()
   
 fun draw(
@@ -241,7 +241,7 @@ fun draw(
         </section>
         <section>
           <h3>A complex Kotlin example</h3>
-          <pre><code class="floating-annotiations" data-trim> <script type="text/template">
+          <pre><code class="floating-annotations" data-trim> <script type="text/template">
 fun drawWithOverrides(
     <span comment="incoming associative array"> overrides : Map<String, UniformProvider>, </span>
     vararg uniformProviders : UniformProvider){
@@ -264,6 +264,7 @@ fun drawWithOverrides(
     <script src="../../dependencies/reveal.js/plugin/highlight/highlight.js"></script>
     <script src="../../dependencies/reveal.js/plugin/animate/plugin.js"></script>
     <script src="../../dependencies/reveal.js/plugin/animate/svg.min.js"></script>
+    <script src="../../dependencies/reveal.js/plugin/floating/floating.js"></script>
     <script>
       // More info about initialization & config:
       // - https://revealjs.com/initialization/
@@ -429,67 +430,6 @@ fun drawWithOverrides(
         // Learn about plugins: https://revealjs.com/plugins/
         plugins: [ RevealMath, RevealMarkdown, RevealHighlight, RevealNotes, RevealAnimate ]
       });
-    </script>
-    <script>
-      var codeboxes = document.querySelectorAll("code.floating-annotiations");
-      for(var i=0; i<codeboxes.length; i++){
-        var scrolledbox = codeboxes[i];
-        var timeoutId = undefined;
-        var updateAnno = function(){
-            var slide = scrolledbox.closest("section");
-            var slideRect = slide.getBoundingClientRect();
-            var codeRect = scrolledbox.getBoundingClientRect();            
-            var svgs = slide.querySelectorAll("svg");
-            for(var iSvg=0; iSvg<svgs.length; iSvg++){
-              svgs[iSvg].remove();
-            }
-            var marks = scrolledbox.querySelectorAll("span.floating-annotation");
-            var miny = 0;
-            for(var iMark=0; iMark<marks.length; iMark++){
-              var crect = marks[iMark].getBoundingClientRect();
-              //console.log(crect);              
-              var draw = SVG().addTo(slide);
-              draw.size('100%', '100%');
-              draw.css('position', 'absolute');
-              draw.css('left', '0');
-              draw.css('top', '0');
-              draw.css('pointer-events', 'none');              
-              console.log(draw);
-              if(crect.y > codeRect.y && crect.y + crect.height < codeRect.y + codeRect.height) {
-                  draw.rect(crect.width, crect.height).move(crect.x-slideRect.x, crect.y-slideRect.y).stroke('#f60').fill({ color: '#f60', opacity: 0.05 });
-                  var comment = marks[iMark].getAttribute("comment");
-                  var lineCount = 1;
-                  comment = comment.replaceAll("\\n", () => {lineCount++; return "\n";});
-                  var text = draw.text(comment).fill('#f60').font('size', '15');
-                  var textheight = text.leading() * 15 * lineCount;
-                  var texty = crect.y-slideRect.y;
-                  if(texty < miny + textheight){
-                    texty = miny + textheight;
-                  }
-                  text.move(slideRect.width - 300, texty - textheight);
-                  miny = texty + 20;
-                  draw.line(
-                    crect.x-slideRect.x + crect.width,
-                    crect.y-slideRect.y + crect.height / 2,
-                    slideRect.width - 300,
-                    texty - textheight / 2,                    
-                    ).stroke('#f60');
-              }
-            }
-          };
-        updateAnno();
-        scrolledbox.addEventListener("scroll", function(){
-          if(timeoutId) {
-            var slide = scrolledbox.closest("section");
-            var svgs = slide.querySelectorAll("svg");
-            for(var iSvg=0; iSvg<svgs.length; iSvg++){
-              svgs[iSvg].style.display = "none";
-            }            
-            window.clearTimeout(timeoutId);
-          }
-          timeoutId = window.setTimeout(updateAnno, 200);
-        });
-      }
     </script>
   </body>
 </html>
