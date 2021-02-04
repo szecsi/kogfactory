@@ -38,77 +38,619 @@
           </textarea>
         </section>       
         <section>
-          <h3>HTML head</h3>
-          <div code-from-patch>kog.010.010.0010-gradle.properties.patch</div>
+          <h3>Folder tree</h3>
+          <pre><code class="floating-annotiations" data-trim> <script type="text/template">
+kog
+├── gradle.properties
+├── settings.gradle.kts
+├── build.gradle.kts
+└── client 
+    ├── build.gradle.kts
+    └── src
+        └── main
+            ├── content
+            │   ├── index.html
+            │   ├── favicon.ico
+            │   └── css
+            │       ├── style.css
+            │       └── bg.png
+            └── kotlin
+                ├── KeyNames.kt
+                └── App.kt
+          </script> </code></pre>
         </section>
         <section>
-          <h3>HTML head</h3>
-          <svg style="position: absolute; top: 100; z-index: 10" xmlns="http://www.w3.org/2000/svg">
-            <g>
-              <rect x="0" y="100" width="100" height="100" fill="red"></rect>
-              <text x="0" y="150" font-family="Verdana" font-size="35" fill="blue">Hello</text>
-            </g>
-          </svg>
+          <h3>client/src/main/content/index.html</h3>
           <pre><code class="floating-annotiations" data-trim> <script type="text/template">
 <!DOCTYPE html>
-<html>
+<html>  
 <head>
-  <title>AIT Graphics</title>
-  <meta name="viewport" <span comment="fill the screen">content="width=device-width, initial-scale=1"</span> />
+  <title>Computer Graphics 2021</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <link rel="stylesheet" type="text/css" href="css/style.css" />
+  <link rel="icon" type="image/png" href="favicon.ico"> 
 </head>
+<body>
+  <div id="container">
+    <canvas id="canvas"></canvas>
+    <div id="overlay"></div>
+  </div>
+  <script type="application/javascript" src="client.js"></script>
+</body>
+</html>
+          </script> </code></pre>
+        </section>
+        <section>
+          <h3>gradle.properties</h3>
+          <pre><code class="floating-annotiations" data-trim> <script type="text/template">
+kotlin.code.style=official
+          </script> </code></pre>
+        </section>
+        <section>
+          <h3>settings.gradle.kts</h3>
+          <pre><code class="floating-annotiations" data-trim> <script type="text/template">
+include("client")
+rootProject.name = "kog"
+          </script> </code></pre>
+          multi-project build template; a single included subproject
+        </section>
+        <section>
+          <h3>build.gradle.kts</h3>
+          <pre><code class="floating-annotiations" data-trim> <script type="text/template">
+plugins {
+  id("org.jetbrains.kotlin.js") version "1.4.10" apply false
+  kotlin("plugin.serialization") version "1.4.10" apply false
+}
+
+allprojects {
+  group = "vision.gears"
+  version = "1.0"
+
+  repositories {
+    mavenCentral()
+    jcenter()
+  }
+}
+          </script> </code></pre>
+        </section>
+        <section>
+          <h3>client/build.gradle.kts</h3>
+          <pre><code class="floating-annotiations" data-trim> <script type="text/template">
+plugins {
+  id("org.jetbrains.kotlin.js")
+  kotlin("plugin.serialization")
+}
+
+dependencies {
+  implementation(kotlin("stdlib-js")) 
+  implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.0.0")
+}
+
+val buildDir = File(project.parent?.projectDir ?: project.projectDir, "build")
+if(!buildDir.exists())
+  buildDir.mkdir()
+project.buildDir = File(buildDir, "client")
+val webDir = File(buildDir, "web")
+if(!webDir.exists())
+  webDir.mkdir()
+
+kotlin {
+  sourceSets.main {
+    kotlin.srcDirs("src/main/kotlin", "../webglmath/src/main/kotlin", "../common/src/main/kotlin")
+  }  
+  js {
+    browser {
+      distribution {
+        directory = webDir
+      }
+    }
+  }
+}
+
+val deployContent by tasks.registering(Copy::class) {
+  from("src/main/content")
+  destinationDir = webDir
+  include("**/*.*")    
+}
+
+val deployShaders by tasks.registering(Copy::class) {
+  from("src/main/glsl")
+  destinationDir = webDir
+  include("**/*.*")    
+}
+
+val assemble by tasks.existing {
+  dependsOn(deployContent)
+  dependsOn(deployShaders)
+} 
+          </script> </code></pre>
+        </section>
+        <section>
+          <h3>client/src/main/content/index.html</h3>
+          <pre><code class="floating-annotiations" data-trim> <script type="text/template">
 <!DOCTYPE html>
-<html>
+<html>  
 <head>
-  <title>AIT Graphics</title>
-  <meta name="viewport" <span comment="first line is this\nsecodn line is this\nthirs line is this">content="width=device-width, initial-scale=1"</span> />
+  <title>Computer Graphics 2021</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <link rel="stylesheet" type="text/css" href="css/style.css" />
+  <link rel="icon" type="image/png" href="favicon.ico"> 
 </head>
-<!DOCTYPE html>
-<html>
-<head>
-  <title>AIT Graphics</title>
-  <meta name="viewport" <span comment="fjshfjkd  fidksjf ksdk  fkdsklf d sf i3e493ur rit rhhgfdk">content="width=device-width, initial-scale=1"</span> />
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-  <link rel="stylesheet" type="text/css" href="css/style.css" />
-</head>
-<!DOCTYPE html>
-<html>
-<head>
-  <title>AIT Graphics</title>
-  <meta name="viewport" <span>content="width=device-width, initial-scale=1"</span> />
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-  <link rel="stylesheet" type="text/css" href="css/style.css" />
-</head>
-<!DOCTYPE html>
-<html>
-<head>
-  <title>AIT Graphics</title>
-  <meta name="viewport" <span>content="width=device-width, initial-scale=1"</span> />
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-  <link rel="stylesheet" type="text/css" href="css/style.css" />
-</head>
-<!DOCTYPE html>
-<html>
-<head>
-  <title>AIT Graphics</title>
-  <meta name="viewport" <span>content="width=device-width, initial-scale=1"</span> />
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-  <link rel="stylesheet" type="text/css" href="css/style.css" />
-</head>
-<!DOCTYPE html>
-<html>
-<head>
-  <title>AIT Graphics</title>
-  <meta name="viewport" <span>content="width=device-width, initial-scale=1"</span> />
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-  <link rel="stylesheet" type="text/css" href="css/style.css" />
-</head>
-         </script> </code></pre>
-         <p> continued on next slide ... </p>
-        </section>       
+<body>
+  <div id="container">
+    <canvas id="canvas"></canvas>
+    <div id="overlay"></div>
+  </div>
+  <script type="application/javascript" src="client.js"></script>
+</body>
+</html>
+          </script> </code></pre>
+        </section>
+        <section>
+          <h3>client/src/main/content/css/style.css</h3>
+          <pre><code class="floating-annotiations" data-trim> <script type="text/template">
+* {
+  margin: 0;
+  padding: 0;
+}
+
+#container {
+    position: absolute;
+  width: 100%;/* fill page*/
+  height: 100%;/* fill page*/
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+    overflow: hidden;/* no scrollbars*/
+}
+
+#overlay {
+    position: absolute;/* in the same place; overlaid*/
+    left: 10px;
+    top: 10px;
+    z-index: 20;/* text is over canvas*/
+}
+
+#canvas {
+  background-image: url("bg.png");
+    position: absolute;/* in the same place; overlaid*/
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+    z-index: 10;/* text is over canvas*/
+    overflow: hidden;/* no scrollbars*/
+}
+          </script> </code></pre>
+        </section>
+        <section>
+          <h3>client/src/main/kotlin/KeyNames.kt</h3>
+          <pre><code class="floating-annotiations" data-trim> <script type="text/template">
+object keyNames {
+  private val lookup = arrayOf (
+    "", // [0]
+    "", // [1]
+    "", // [2]
+    "CANCEL", // [3]
+    "", // [4]
+    "", // [5]
+    "HELP", // [6]
+    "", // [7]
+    "BACK_SPACE", // [8]
+    "TAB", // [9]
+    "", // [10]
+    "", // [11]
+    "CLEAR", // [12]
+    "ENTER", // [13]
+    "ENTER_SPECIAL", // [14]
+    "", // [15]
+    "SHIFT", // [16]
+    "CONTROL", // [17]
+    "ALT", // [18]
+    "PAUSE", // [19]
+    "CAPS_LOCK", // [20]
+    "KANA", // [21]
+    "EISU", // [22]
+    "JUNJA", // [23]
+    "FINAL", // [24]
+    "HANJA", // [25]
+    "", // [26]
+    "ESCAPE", // [27]
+    "CONVERT", // [28]
+    "NONCONVERT", // [29]
+    "ACCEPT", // [30]
+    "MODECHANGE", // [31]
+    "SPACE", // [32]
+    "PAGE_UP", // [33]
+    "PAGE_DOWN", // [34]
+    "END", // [35]
+    "HOME", // [36]
+    "LEFT", // [37]
+    "UP", // [38]
+    "RIGHT", // [39]
+    "DOWN", // [40]
+    "SELECT", // [41]
+    "PRINT", // [42]
+    "EXECUTE", // [43]
+    "PRINTSCREEN", // [44]
+    "INSERT", // [45]
+    "DELETE", // [46]
+    "", // [47]
+    "0", // [48]
+    "1", // [49]
+    "2", // [50]
+    "3", // [51]
+    "4", // [52]
+    "5", // [53]
+    "6", // [54]
+    "7", // [55]
+    "8", // [56]
+    "9", // [57]
+    "COLON", // [58]
+    "SEMICOLON", // [59]
+    "LESS_THAN", // [60]
+    "EQUALS", // [61]
+    "GREATER_THAN", // [62]
+    "QUESTION_MARK", // [63]
+    "AT", // [64]
+    "A", // [65]
+    "B", // [66]
+    "C", // [67]
+    "D", // [68]
+    "E", // [69]
+    "F", // [70]
+    "G", // [71]
+    "H", // [72]
+    "I", // [73]
+    "J", // [74]
+    "K", // [75]
+    "L", // [76]
+    "M", // [77]
+    "N", // [78]
+    "O", // [79]
+    "P", // [80]
+    "Q", // [81]
+    "R", // [82]
+    "S", // [83]
+    "T", // [84]
+    "U", // [85]
+    "V", // [86]
+    "W", // [87]
+    "X", // [88]
+    "Y", // [89]
+    "Z", // [90]
+    "OS_KEY", // [91] Windows Key (Windows) or Command Key (Mac)
+    "", // [92]
+    "CONTEXT_MENU", // [93]
+    "", // [94]
+    "SLEEP", // [95]
+    "NUMPAD0", // [96]
+    "NUMPAD1", // [97]
+    "NUMPAD2", // [98]
+    "NUMPAD3", // [99]
+    "NUMPAD4", // [100]
+    "NUMPAD5", // [101]
+    "NUMPAD6", // [102]
+    "NUMPAD7", // [103]
+    "NUMPAD8", // [104]
+    "NUMPAD9", // [105]
+    "MULTIPLY", // [106]
+    "ADD", // [107]
+    "SEPARATOR", // [108]
+    "SUBTRACT", // [109]
+    "DECIMAL", // [110]
+    "DIVIDE", // [111]
+    "F1", // [112]
+    "F2", // [113]
+    "F3", // [114]
+    "F4", // [115]
+    "F5", // [116]
+    "F6", // [117]
+    "F7", // [118]
+    "F8", // [119]
+    "F9", // [120]
+    "F10", // [121]
+    "F11", // [122]
+    "F12", // [123]
+    "F13", // [124]
+    "F14", // [125]
+    "F15", // [126]
+    "F16", // [127]
+    "F17", // [128]
+    "F18", // [129]
+    "F19", // [130]
+    "F20", // [131]
+    "F21", // [132]
+    "F22", // [133]
+    "F23", // [134]
+    "F24", // [135]
+    "", // [136]
+    "", // [137]
+    "", // [138]
+    "", // [139]
+    "", // [140]
+    "", // [141]
+    "", // [142]
+    "", // [143]
+    "NUM_LOCK", // [144]
+    "SCROLL_LOCK", // [145]
+    "WIN_OEM_FJ_JISHO", // [146]
+    "WIN_OEM_FJ_MASSHOU", // [147]
+    "WIN_OEM_FJ_TOUROKU", // [148]
+    "WIN_OEM_FJ_LOYA", // [149]
+    "WIN_OEM_FJ_ROYA", // [150]
+    "", // [151]
+    "", // [152]
+    "", // [153]
+    "", // [154]
+    "", // [155]
+    "", // [156]
+    "", // [157]
+    "", // [158]
+    "", // [159]
+    "CIRCUMFLEX", // [160]
+    "EXCLAMATION", // [161]
+    "DOUBLE_QUOTE", // [162]
+    "HASH", // [163]
+    "DOLLAR", // [164]
+    "PERCENT", // [165]
+    "AMPERSAND", // [166]
+    "UNDERSCORE", // [167]
+    "OPEN_PAREN", // [168]
+    "CLOSE_PAREN", // [169]
+    "ASTERISK", // [170]
+    "PLUS", // [171]
+    "PIPE", // [172]
+    "HYPHEN_MINUS", // [173]
+    "OPEN_CURLY_BRACKET", // [174]
+    "CLOSE_CURLY_BRACKET", // [175]
+    "TILDE", // [176]
+    "", // [177]
+    "", // [178]
+    "", // [179]
+    "", // [180]
+    "VOLUME_MUTE", // [181]
+    "VOLUME_DOWN", // [182]
+    "VOLUME_UP", // [183]
+    "", // [184]
+    "", // [185]
+    "SEMICOLON", // [186]
+    "EQUALS", // [187]
+    "COMMA", // [188]
+    "MINUS", // [189]
+    "PERIOD", // [190]
+    "SLASH", // [191]
+    "BACK_QUOTE", // [192]
+    "", // [193]
+    "", // [194]
+    "", // [195]
+    "", // [196]
+    "", // [197]
+    "", // [198]
+    "", // [199]
+    "", // [200]
+    "", // [201]
+    "", // [202]
+    "", // [203]
+    "", // [204]
+    "", // [205]
+    "", // [206]
+    "", // [207]
+    "", // [208]
+    "", // [209]
+    "", // [210]
+    "", // [211]
+    "", // [212]
+    "", // [213]
+    "", // [214]
+    "", // [215]
+    "", // [216]
+    "", // [217]
+    "", // [218]
+    "OPEN_BRACKET", // [219]
+    "BACK_SLASH", // [220]
+    "CLOSE_BRACKET", // [221]
+    "QUOTE", // [222]
+    "", // [223]
+    "META", // [224]
+    "ALTGR", // [225]
+    "", // [226]
+    "WIN_ICO_HELP", // [227]
+    "WIN_ICO_00", // [228]
+    "", // [229]
+    "WIN_ICO_CLEAR", // [230]
+    "", // [231]
+    "", // [232]
+    "WIN_OEM_RESET", // [233]
+    "WIN_OEM_JUMP", // [234]
+    "WIN_OEM_PA1", // [235]
+    "WIN_OEM_PA2", // [236]
+    "WIN_OEM_PA3", // [237]
+    "WIN_OEM_WSCTRL", // [238]
+    "WIN_OEM_CUSEL", // [239]
+    "WIN_OEM_ATTN", // [240]
+    "WIN_OEM_FINISH", // [241]
+    "WIN_OEM_COPY", // [242]
+    "WIN_OEM_AUTO", // [243]
+    "WIN_OEM_ENLW", // [244]
+    "WIN_OEM_BACKTAB", // [245]
+    "ATTN", // [246]
+    "CRSEL", // [247]
+    "EXSEL", // [248]
+    "EREOF", // [249]
+    "PLAY", // [250]
+    "ZOOM", // [251]
+    "", // [252]
+    "PA1", // [253]
+    "WIN_OEM_CLEAR", // [254]
+    "" // [255]
+  )
+
+  operator fun get(index : Int) : String {
+    return lookup[index]
+  }
+}
+          </script> </code></pre>
+        </section>        
+        <section data-markdown>
+          <textarea data-template>
+### Access browser entities: window and document
+- window
+ - global object in JS
+  - all global variables are properties of window
+ - represents the view that displays the HTML document
+
+document.defaultView.document == document
+          </textarea>
+        </section>   
+        <section>
+          <h3>client/src/main/kotlin/App.kt</h3>
+          <pre><code class="floating-annotiations" data-trim> <script type="text/template">
+import kotlin.browser.document
+import kotlin.browser.window
+import org.w3c.dom.HTMLDivElement
+import org.w3c.dom.HTMLCanvasElement
+import org.w3c.dom.events.*
+import org.w3c.dom.Window
+
+class App(val canvas : HTMLCanvasElement, val overlay : HTMLDivElement) {
+  
+
+  @Suppress("UNUSED_PARAMETER")
+  fun registerEventHandlers() {
+    document.onkeydown =  { // locally defined function
+      event : KeyboardEvent ->
+      event // implement own logic here
+    }
+
+    document.onkeyup = { 
+      event : KeyboardEvent ->
+      event
+    }
+
+    canvas.onmousedown = { 
+      event : MouseEvent ->
+      // event.x.toInt()
+      // event.y.toInt()
+      event
+    }
+
+    canvas.onmousemove = { 
+      event : Event ->
+      event.stopPropagation()
+    }
+
+    canvas.onmouseup = { 
+      event : Event ->
+      event // This line is a placeholder for event handling code. It has no effect, but avoids the "unused parameter" warning.
+    }
+
+    canvas.onmouseout = { 
+      event : Event ->
+      event // This line is a placeholder for event handling code. It has no effect, but avoids the "unused parameter" warning.
+    }
+
+    window.requestAnimationFrame {// trigger rendering
+      update()// this method is responsible for drawing a frame
+    }
+  }  
+
+  fun update() {
+    window.requestAnimationFrame { update() }
+  }
+}
+
+fun main() {
+  val canvas = document.getElementById("canvas") as HTMLCanvasElement
+  val overlay = document.getElementById("overlay") as HTMLDivElement
+  overlay.innerHTML = """<font color="red">WebGL</font>"""
+
+  try{
+    val app = App(canvas, overlay)// from this point on, this object is responsible for handling everything
+    app.registerEventHandlers()// we implement this to make sure the app known when there is something to do
+  } catch(e : Error) {
+    console.error(e.message)
+  }
+}
+          </script> </code></pre>
+        </section>        
+        <section data-markdown>
+          <textarea data-template>
+### Debugging in the browser
+- open the Sources tab of Debug Tools
+- find App.kt
+- click a line number, in e.g. the resize method, placing a breakpoint
+- reload the webpage
+- execution should stop at the breakpoint
+- may continue or move line-by-line using buttons
+- hover mouse over variables to see their values, or check out Local
+- evaluate anything in the current context using the Console
+- see the chain of function calls and calling contexts with Call Stack
+          </textarea>
+        </section>
+        <section data-markdown>
+          <textarea data-template>
+### TASK: Move text to mouse click position
+- add properties to App
+ - mouseX, mouseY, initially zero
+- in the mouse down event handler, set the above properties according to the mouse click position
+ - parameter event has properties x and y
+- in the update method, set the HTML content of the overlay to be some text positioned according to the properties
+          </textarea>
+                  </section>   
+        <section>
+          <h3>innerHTML</h3>
+<pre><code data-trim> <script type="text/template">
+this.overlay.innerHTML = 
+"""&lt<div style=
+"position:absolute;left:${mouseX}px;bottom:-${mouseY}px"> Hello AIT! </div>"""
+</script></code></pre>
+        </section>
+        <section data-markdown>
+          <textarea data-template>
+### Why defer to update?
+- innerHTML could be changed in the event handler directly
+- yet the previous slide advised to do it in update, setting it repeatedly
+- this does not provide any benefit now, other than confining HTML manipulation to the update method
+- this is analogous to how a new image will be rendered in every frame of an animation
+- changing the virtual world is not done by tampering with the image
+- instead, we change the description of the virtual world (now: textLeft, textBottom)
+- when an image needs to be rendered, we use the current virtual world data
+          </textarea>
+        </section>        
+        <section data-markdown>
+          <textarea data-template>
+### TASK: Keep track of pressed keys
+- add property to App
+ - keysPressed, a HashSet<String>, initially empty
+- in the key down/up event handler
+ - parameter event has property keyCode
+ - look up human-friendly key for keyCode name in global array keyNames
+ - add()/remove() the above name to/from keysPressed
+ - in the update method, display the contents of keysPressed
+           </textarea>
+                   </section>   
+        <section>
+          <h3>innerHTML</h3>
+ <pre><code data-trim> <script type="text/template">
+this.overlay.innerHTML = 
+"""<div style=
+"position:absolute;left:${this.textLeft}px;bottom:-${this.textBottom}px"> ${keysPressed.toString()} </div>"""
+</script></code></pre>
+        </section>
+        <section data-markdown>
+          <textarea data-template>
+### TASK: Increase and decrease font size on keys 'T' and 'G'
+- introduce new property for font size
+- increase or decrease value in every frame, depending on keysPressed.T and keysPressed.G
+- use a font tag in the innerHTML, with the size parameter set from the property value
+          </textarea>
+        </section>                
       </div>
     </div>
 
@@ -290,16 +832,7 @@
       for(var i=0; i<codeboxes.length; i++){
         var scrolledbox = codeboxes[i];
         var timeoutId = undefined;
-        scrolledbox.addEventListener("scroll", function(){
-          if(timeoutId) {
-            var slide = scrolledbox.closest("section");
-            var svgs = slide.querySelectorAll("svg");
-            for(var iSvg=0; iSvg<svgs.length; iSvg++){
-              svgs[iSvg].style.display = "none";
-            }            
-            window.clearTimeout(timeoutId);
-          }
-          timeoutId = window.setTimeout(function(){
+        var updateAnno = function(){
             var slide = scrolledbox.closest("section");
             var slideRect = slide.getBoundingClientRect();
             var codeRect = scrolledbox.getBoundingClientRect();            
@@ -308,6 +841,7 @@
               svgs[iSvg].remove();
             }
             var marks = scrolledbox.querySelectorAll("span.floating-annotation");
+            var miny = 0;
             for(var iMark=0; iMark<marks.length; iMark++){
               var crect = marks[iMark].getBoundingClientRect();
               //console.log(crect);              
@@ -323,12 +857,34 @@
                   var comment = marks[iMark].getAttribute("comment");
                   var lineCount = 1;
                   comment = comment.replaceAll("\\n", () => {lineCount++; return "\n";});
-                  console.log(comment);
-                  var text = draw.text(comment).fill('#f60').font('size', '30');
-                  text.move(slideRect.width - 300, crect.y-slideRect.y - text.leading() * 30 * lineCount);
+                  var text = draw.text(comment).fill('#f60').font('size', '15');
+                  var textheight = text.leading() * 15 * lineCount;
+                  var texty = crect.y-slideRect.y;
+                  if(texty < miny + textheight){
+                    texty = miny + textheight;
+                  }
+                  text.move(slideRect.width - 300, texty - textheight);
+                  miny = texty + 20;
+                  draw.line(
+                    crect.x-slideRect.x + crect.width,
+                    crect.y-slideRect.y + crect.height / 2,
+                    slideRect.width - 300,
+                    texty - textheight / 2,                    
+                    ).stroke('#f60');
               }
             }
-          }, 200);
+          };
+        updateAnno();
+        scrolledbox.addEventListener("scroll", function(){
+          if(timeoutId) {
+            var slide = scrolledbox.closest("section");
+            var svgs = slide.querySelectorAll("svg");
+            for(var iSvg=0; iSvg<svgs.length; iSvg++){
+              svgs[iSvg].style.display = "none";
+            }            
+            window.clearTimeout(timeoutId);
+          }
+          timeoutId = window.setTimeout(updateAnno, 200);
         });
       }
     </script>
