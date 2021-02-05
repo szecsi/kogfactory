@@ -16,6 +16,19 @@ fs.readFile(options.project[0], 'utf8', function (err,source) {
         var slide = "";
         var inSection = false;
         var patch = fs.readFileSync("patches/" + p1, 'utf8');
+        var language="autodetect";
+        if(p1.includes(".html.")) {
+          language = "html";
+        }
+        if(p1.includes(".kt.") || p1.includes(".kts.")) {
+          language = "kotlin";
+        }
+        if(p1.includes("css")) {
+          language = "css";
+        }
+        if(p1.includes("glsl")) {
+          language = "glsl";
+        }
         patch.replaceAll(/^\+(.+)$/mg, (match, l1) => {
           if(l1.startsWith("++")){
             if(inSection){
@@ -26,14 +39,18 @@ fs.readFile(options.project[0], 'utf8', function (err,source) {
             slide += `<section>
         <h3>`;
             slide += l1.substring(5);
-        //slide += p1;
-        slide += `</h3>            
-                  <pre class="kotlin"><code class="floating-annotations" data-trim> <script type="text/template">
+          //slide += p1;
+          slide += `</h3>
+                  <pre class="${language}"><code class="floating-annotations" data-trim> <script type="text/template">
 `;
-        } else {
-          slide += l1;
+          } else {
+//            slide += l1.replace(/^(\s*)([^\s]+)\/\/\$(.+)$/, (match, lead, code, comment) =>
+            slide += l1.replace(/^(.+)\/\/\$(.+)$/, (match, /*lead,*/ code, comment) =>
+              { return /*lead +*/ ` <span comment="${comment}"> ` + code + ` </span> `}
+            );
+          }
           slide += "\n";
-        }});
+        });
         slide += `
          </script> </code></pre>
       </section>`;
