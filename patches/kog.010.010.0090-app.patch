@@ -26,9 +26,9 @@ index 0000000..3578187
 +
 +  @Suppress("UNUSED_PARAMETER")
 +  fun registerEventHandlers() {
-+    document.onkeydown =  { //$ locally defined function
++    document.onkeydown =  { //#{# locally defined function
 +      event : KeyboardEvent ->
-+      event //$ implement own logic here
++      event //## implement own logic here
 +    }
 +
 +    document.onkeyup = { 
@@ -58,8 +58,8 @@ index 0000000..3578187
 +      event // This line is a placeholder for event handling code. It has no effect, but avoids the "unused parameter" warning.
 +    }
 +
-+    window.requestAnimationFrame {//$ trigger rendering
-+      update()//$ this method is responsible; for drawing a frame
++    window.requestAnimationFrame {//#requestAnimationFrame# trigger rendering
++      update()//#update# this method is responsible; for drawing a frame
 +    }
 +  }  
 +
@@ -74,8 +74,8 @@ index 0000000..3578187
 +  overlay.innerHTML = """<font color="red">WebGL</font>"""
 +
 +  try{
-+    val app = App(canvas, overlay)//$ from this point on,; this object is responsible; for handling everything
-+    app.registerEventHandlers()//$ we implement this; to make sure the app; known when there is; something to do
++    val app = App(canvas, overlay)//#app# from this point on,; this object is responsible; for handling everything
++    app.registerEventHandlers()//#registerEventHandlers# we implement this; to make sure the app; knows when there is; something to do
 +  } catch(e : Error) {
 +    console.error(e.message)
 +  }

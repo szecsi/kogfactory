@@ -14,16 +14,16 @@ index 0000000..4400944
 --- /dev/null
 +++ b/build.gradle.kts
 @@ -0,0 +1,14 @@
-+plugins {//$ specify plugins here; load in specific subprojects
-+  id("org.jetbrains.kotlin.js") version "1.4.10" apply false//$ handles Kotlin to JS transpiling
-+  kotlin("plugin.serialization") version "1.4.10" apply false//$ handles serialization
++plugins {//#plugins# specify plugin versions here
++  id("org.jetbrains.kotlin.js") version "1.4.10" apply false//#kotlin# handles Kotlin to JS transpiling #apply false# just load, apply in subprojects
++  kotlin("plugin.serialization") version "1.4.10" apply false//#serialization# handles serialization
 +}
 +
-+allprojects {//$ setting for all subprojects
++allprojects {//#allprojects# setting for all subprojects
 +  group = "vision.gears"
 +  version = "1.0"
 +
-+  repositories {//$ fetch dependencies from here
++  repositories {//#repositories# fetch dependencies from here
 +    mavenCentral()
 +    jcenter()
 +  }

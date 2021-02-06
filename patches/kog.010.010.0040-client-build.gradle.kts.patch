@@ -14,7 +14,7 @@ index 0000000..3a21c77
 --- /dev/null
 +++ b/client/build.gradle.kts
 @@ -0,0 +1,47 @@
-+plugins {//$ apply plugins; already loaded in master project
++plugins {//#plugins# apply plugins; already loaded in master project
 +  id("org.jetbrains.kotlin.js")
 +  kotlin("plugin.serialization")
 +}

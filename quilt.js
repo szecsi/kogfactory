@@ -17,14 +17,17 @@ fs.readFile(options.project[0], 'utf8', function (err,source) {
         var inSection = false;
         var patch = fs.readFileSync("patches/" + p1, 'utf8');
         var language="autodetect";
+        var format = /^(\s*)(.+)\/\/(#.+)$/;
         if(p1.includes(".html.")) {
           language = "html";
+          format = /^(\s*)(.+)<!--(#.+)-->$/;
         }
         if(p1.includes(".kt.") || p1.includes(".kts.")) {
           language = "kotlin";
         }
         if(p1.includes("css")) {
           language = "css";
+          format = /^(\s*)(.+)\/\*(#.+)\*\/$/;
         }
         if(p1.includes("glsl")) {
           language = "glsl";
@@ -45,9 +48,23 @@ fs.readFile(options.project[0], 'utf8', function (err,source) {
 `;
           } else {
 //            slide += l1.replace(/^(\s*)([^\s]+)\/\/\$(.+)$/, (match, lead, code, comment) =>
-            slide += l1.replace(/^(.+)\/\/\$(.+)$/, (match, /*lead,*/ code, comment) =>
-              { return /*lead +*/ ` <span comment="${comment}"> ` + code + ` </span> `}
-            );
+            slide += l1.replace(format, (match, lead, code, comment) =>
+              { 
+                comment.replaceAll(/#([^#]*)#([^#]+)/g, (match, pattern, anno) => {
+                  if(pattern == ""){
+                    pattern = code;
+                  }
+                  console.log(code + " ee " + pattern + " the same: " + (code == pattern));
+                  var m = code.match(new RegExp(pattern.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+                  code = code.slice(0, m.index) + 
+                    `<span comment="${anno.replaceAll(/; /g,"\n")}">` + 
+                    code.slice(m.index, m.index+m[0].length) + 
+                    `</span>` + 
+                    code.slice(m.index+m[0].length);
+                });
+              return lead + code;
+//                return lead + `<span comment="${comment.replace("; ","\n")}">` + code + `</span>`}
+            });
           }
           slide += "\n";
         });

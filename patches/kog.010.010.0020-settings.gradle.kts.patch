@@ -14,7 +14,7 @@ index 0000000..21acbf7
 --- /dev/null
 +++ b/settings.gradle.kts
 @@ -0,0 +1,2 @@
-+include("client")//$ multi-project build template; a single included subproject
++include("client")//## multi-project build template; a single included subproject
 +rootProject.name = "kog"
 \ No newline at end of file
 -- 

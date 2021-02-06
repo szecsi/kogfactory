@@ -1,7 +1,10 @@
 .gradle
 build/
 web/
+junk/
+node_modules/
 
 *.sublime-workspace
 Thumbs.db
+package-lock.json
 *.zip
