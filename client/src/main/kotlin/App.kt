@@ -6,18 +6,20 @@ import org.w3c.dom.events.*
 import org.w3c.dom.Window
 
 class App(val canvas : HTMLCanvasElement, val overlay : HTMLDivElement) {
+
+  val keysPressed = HashSet<String>()
   
 
   @Suppress("UNUSED_PARAMETER")
   fun registerEventHandlers() {
     document.onkeydown =  { //#{# locally defined function
       event : KeyboardEvent ->
-      event //## implement own logic here
+      keysPressed.add( keyNames[event.keyCode] )
     }
 
     document.onkeyup = { 
       event : KeyboardEvent ->
-      event
+      keysPressed.remove( keyNames[event.keyCode] )
     }
 
     canvas.onmousedown = { 
