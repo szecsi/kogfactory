@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-    <title>Computer Graphics AIT</title>
+    <title>3d grafikus rendszerek</title>
 
     <link rel="stylesheet" href="../../dependencies/reveal.js/dist/reveal.css">
     <link rel="stylesheet" href="../../dependencies/reveal.js/dist/theme/blood.css" id="theme">
@@ -20,31 +20,31 @@
     <div class="reveal">
       <div class="slides">
         <section>
-          <h3>Computer Graphics<h3>
+          <h3>3d grafikus rendszerek<h3>
           <h1>Kotlin</h1>
-          <p>László Szécsi szecsi@iit.bme.hu</p>
+          <p>Szécsi László szecsi@iit.bme.hu</p>
         </section>
         <section data-markdown>
           <textarea data-template>
-### Kotlin and WebGL
-- replaces Java
- - mobile programming
-- compiles to Javascript
- - works for WebGL development
- - statically typed
- - fewer runtime errors to debug
+### Kotlin és WebGL
+- Java helyett
+ - mobilprogramozás
+- JavaScriptre is fordul
+ - WebGL fejlesztésre alkalmas
+ - erősen típusos
+ - nem runtime hibákat kell bogarászni
           </textarea>
         </section>
         <section data-markdown>
           <textarea data-template>
-### Basic types
+### Alaptípusok
 - Byte, Short, Int, Long, Float, Double, Char, Boolean
- - all behave as classes
- - no access to underlying primitives
+ - mind osztályként viselkedik
+ - nem elérhető a belső primitív
           </textarea>
         </section>
         <section>
-          <h3>Variables</h3>
+          <h3>Változók</h3>
           <pre><code class="floating-annotations" data-trim> <script type="text/template">
 var yaw : Float
 <span comment="type inference">val myPi = 3.14f</span>
@@ -53,11 +53,11 @@ var yaw : Float
         <section>
           <h3>String</h3>
           <pre><code class="floating-annotations" data-trim> <script type="text/template">
-canvas.getContext("webgl2<span comment="quotes">"</span>)
+canvas.getContext("webgl2<span comment="idézőjelek">"</span>)
 overlay.innerHTML = 
- """<font color="red">WebGL</font><span comment="raw string
-can be multiple lines
-no escape">"""</span>
+ """<font color="red">WebGL</font><span comment="nyers String
+lehet többsoros
+nincs benne escape">"""</span>
           </script> </code></pre>
         </section>
         <section>
@@ -67,12 +67,14 @@ var fontSize = 1
 overlay.innerHTML = 
 """<div style=
 "position:absolute;left:${mouseX}px;bottom:-${mouseY}px">
-<font color="red" size="${fontSize}px"> ${<span comment="evaluated expression">keysPressed.toString()</span>}
+<font color="red" size="${fontSize}px"> ${<span comment="kiértékelt
+kifejezés
+">keysPressed.toString()</span>}
 </font></div>""";
           </script> </code></pre>
         </section>
         <section>
-          <h3>Math</h3>
+          <h3>Matematika</h3>
           <pre><code class="floating-annotations" data-trim> <script type="text/template">
 import kotlin.math.sqrt
  
@@ -98,7 +100,7 @@ fun makeRandom(minVal: Vec4 = Vec4.zeros, maxVal: Vec4 = Vec4.ones) : Vec4 {
           </script> </code></pre>
         </section>
         <section>
-          <h3>Functions</h3>
+          <h3>Függvények</h3>
           <pre><code class="floating-annotations" data-trim> <script type="text/template">
 fun sum(a : Float, b : Float) : Float {
   return a+b
@@ -106,7 +108,7 @@ fun sum(a : Float, b : Float) : Float {
           </script> </code></pre>
         </section>
         <section>
-          <h3>Classes</h3>
+          <h3>Osztályok</h3>
           <pre><code class="floating-annotations" data-trim> <script type="text/template">
 class Hello {
   <span comment="property">val greeting : String = "Hello world!"</span>
@@ -118,10 +120,13 @@ class Hello {
           </script> </code></pre>
         </section>
         <section>
-          <h3>Primary constructor and properties</h3>
+          <h3>Elsődleges konstruktor és tulajdonságok</h3>
+          <p>.</p>
+          <p>.</p>          
           <pre><code class="floating-annotations" data-trim> <script type="text/template">
-class Hello( <span comment="constructor parameter
-AND property"> val greeting </span> : String <span comment="default"> = "Hello world!" </span> ) {
+class Hello( <span comment="konstruktorparaméter
+ÉS property
+"> val greeting </span> : String <span comment="default"> = "Hello world!" </span> ) {
  
   fun greet() {
     print(greeting)
@@ -132,11 +137,17 @@ AND property"> val greeting </span> : String <span comment="default"> = "Hello w
         <section>
           <h3>Base class</h3>
           <pre><code class="floating-annotations" data-trim> <script type="text/template">
-class Material(<span comment="primary constructor parameter">program : Program</span>)
-  : <span comment="base class">UniformProvider</span>(<span comment="passed to base constructor">"material"</span>) {
+class Material(<span comment="elsődleges
+konstruktor
+paramétere">program : Program</span>)
+  : <span comment="ösosztály">UniformProvider</span>(<span comment="ős
+konstruktorparamétere
+">"material"</span>) {
   
-  <span comment="init block
-no actual constructor body needed">init {
+  <span comment="inicializáló blokk
+konstruáláshoz
+(nem is kell konstruktortörzs)
+">init {
   addComponentsAndGatherUniforms(program);
   }</span>
 }
@@ -148,7 +159,10 @@ no actual constructor body needed">init {
 val pos = Vec3()
 pos += Vec3(1f, 2f, 3f)
           </script> </code></pre>
-          This is actually fine. pos is what it was, the reference to the same object. Only its properties changed.
+Ez rendben van.
+pos maradt, ami volt,
+vagyis referencia ugyanarra az objektumra,
+csak a tulajdonságai változtak.
         </section>      
         <section>
           <h3>Lambda</h3>
@@ -156,9 +170,13 @@ pos += Vec3(1f, 2f, 3f)
 class App(
   val keysPressed = HashSet<String>()
   fun registerEventHandlers() {
-    document.onkeydown = <span comment="starts a function"> { </span> 
-      <span comment="parameter list"> event : KeyboardEvent </span> ->
-      <span comment="last expression is returned"> keysPressed </span> .add( <span comment="enclosing scope is accessible"> keyNames </span> [event.keyCode] )
+    document.onkeydown = <span comment="ez egy függvény"> { </span> 
+      <span comment="paraméterlista"> event : KeyboardEvent </span> ->
+      <span comment="az utolsó kifejezés
+a visszatérési érték
+"> keysPressed </span> .add( <span comment="a tartalmazó scope simán
+elérhető (zárvány)
+"> keyNames </span> [event.keyCode] )
     }
   }
 }
@@ -168,11 +186,18 @@ class App(
           <h3>Regex</h3>
           <pre><code class="floating-annotations" data-trim> <script type="text/template">
 val text = "Te tudsz így beszélni?"
-val secret = Regex( <span comment="pattern matching
-Hungarian vowels"> "[aáeéiíoóöőuú]" </span> ).replace(text) <span comment="the last parameter of replace
-can be placed outside the ()"> { </span>
-    <span comment="auto parameter for one-param lambda
-no param list needed"> it </span> .value + 'v' + it.value  }
+val secret = Regex( <span comment="magánhangzóra
+illeszkedő minta
+"> "[aáeéiíoóöőuú]" </span> ).replace(text) <span comment="ez itt a replace
+utolsó paramétere,
+a zárójelen kívülre
+lehet rakni
+"> { </span>
+    <span comment="egyparaméteres lambda
+automatikus paramétere
+(még paraméterlista
+sem kell)
+"> it </span> .value + 'v' + it.value  }
           </script> </code></pre>
           <p>.</p>
           <p>.</p>
@@ -196,7 +221,8 @@ try{
           <pre><code class="floating-annotations" data-trim> <script type="text/template">
 val b: <span comment="nullable type"> String? </span> = "Kotlin"
 if (b != null && b.length > 0) {
-    print("String of length ${ <span comment="known to be not null"> b </span> .length}")
+    print("String of length ${ <span comment="itt már
+nem lehet null"> b </span> .length}")
 } else {
     print("Empty string")
 }
@@ -205,9 +231,10 @@ if (b != null && b.length > 0) {
         <section>
           <h3>Safe call</h3>
           <pre><code class="floating-annotations" data-trim> <script type="text/template">
-<span comment="type is Mat4?"> avatar["modelMatrix"] </span>
- <span comment="if null, does nothing,
- evaluates to nothing"> .?scale(scale) </span>
+<span comment="a típus Mat4?"> avatar["modelMatrix"] </span>
+ <span comment="ha null volt,
+semmit nem csinál,
+és az értéke null"> .?scale(scale) </span>
   .?rotate(yaw)
   .?translate(position)
           </script> </code></pre>
@@ -215,20 +242,20 @@ if (b != null && b.length > 0) {
         <section>
           <h3>Elvis</h3>
           <pre><code class="floating-annotations" data-trim> <script type="text/template">
-fun set( <span comment="parameter array"> vararg values </span> : Float) {
+fun set( <span comment="paramétertömb"> vararg values </span> : Float) {
   for(i in 0 until storage.length) {
-    storage[i] = values.getOrNull(i) <span comment="if null is on the left,
-use value on the right"> ?: </span> 0.0f
+    storage[i] = values.getOrNull(i) <span comment="ha null van balra,
+akkor legyen ami jobbra van"> ?: </span> 0.0f
   }
 }
  
 val gl = canvas.getContext("webgl2")
-   <span comment="if null is on the left,
-use value on the right"> ?: </span> throw Error("Browser does not support WebGL2")
+   <span comment="ha null van balra,
+akkor legyen ami jobbra van"> ?: </span> throw Error("Browser does not support WebGL2")
           </script> </code></pre>
         </section>
         <section>
-          <h3>Containers</h3>
+          <h3>Konténerek</h3>
           <pre><code class="floating-annotations" data-trim> <script type="text/template">
 val keysPressed = HashSet<String>()
 val uniforms = HashMap<String, Uniform>()
@@ -244,30 +271,30 @@ val components = ArrayList<Drawable>()
   
 fun draw(
         vararg uniformProviders : UniformProvider){
-  components.forEach <span comment="this is the only parameter
-of forEach
-no actual paranthesised
-parameter list needed"> { </span>
+  components.forEach <span comment="ez itt a forEach
+egyetlen paramétere,
+nem is kell
+zárójeles paraméterlista"> { </span>
     it.draw(this, <span comment="spread operator
-expands array to parameters"> * </span> uniformProviders)
+tömbböl paraméterek"> * </span> uniformProviders)
   }
 }
           </script> </code></pre>
         </section>
         <section>
-          <h3>A complex Kotlin example</h3>
+          <h3>Összetett Kotlin példa</h3>
           <pre><code class="floating-annotations" data-trim> <script type="text/template">
 fun drawWithOverrides(
-    <span comment="incoming associative array"> overrides : Map<String, UniformProvider>, </span>
+    <span comment="bejövő asszociatív tömb"> overrides : Map<String, UniformProvider>, </span>
     vararg uniformProviders : UniformProvider){
   val allOverrides : MutableMap<String, UniformProvider> 
-          <span comment="mutable copy"> = overrideMap.toMutableMap() </span>
+          <span comment="mutable másolat"> = overrideMap.toMutableMap() </span>
   overrides.forEach { 
     <span comment="destructuring"> (key : String, value : Drawable) </span> -> 
     allOverrides[key] = value } 
-  <span comment="in a lambda,
-keyword this may be ambigous,
-needs to be labeled"> this@UniformProvider </span> .drawWithOverrides(
+  <span comment="lambdában
+a this-t meg
+kell cimkézni"> this@UniformProvider </span> .drawWithOverrides(
                     allOverrides, *uniformProviders)
 }
           </script> </code></pre>

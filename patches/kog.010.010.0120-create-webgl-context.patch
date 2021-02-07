@@ -1,0 +1,26 @@
+From 3e2f87c732d06057442c6940d490125763c7223e Mon Sep 17 00:00:00 2001
+From: szecsi <szecsi.laszlo@gmail.com>
+Date: Sun, 7 Feb 2021 23:20:42 +0100
+Subject: [PATCH] create webgl context
+
+---
+ client/src/main/kotlin/App.kt | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/client/src/main/kotlin/App.kt b/client/src/main/kotlin/App.kt
+index dac8c11..92853b6 100644
+--- a/client/src/main/kotlin/App.kt
++++ b/client/src/main/kotlin/App.kt
+@@ -8,7 +8,8 @@ import org.w3c.dom.Window
+ class App(val canvas : HTMLCanvasElement, val overlay : HTMLDivElement) {
+ 
+   val keysPressed = HashSet<String>()
+-  
++
++  val gl = (canvas.getContext("webgl2", object{val alpha = false}) ?: throw Error("Browser does not support WebGL2")) as WebGL2RenderingContext //#alpha# never make canvas transparent ˙HUN˙ ne legyen áttetsző a vászon
+ 
+   @Suppress("UNUSED_PARAMETER")
+   fun registerEventHandlers() {
+-- 
+2.16.1.windows.1
+

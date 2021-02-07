@@ -1,0 +1,24 @@
+From 54b38e0062b9b2d7ecd5721ebe1ac50edfff9734 Mon Sep 17 00:00:00 2001
+From: szecsi <szecsi.laszlo@gmail.com>
+Date: Sun, 7 Feb 2021 23:52:26 +0100
+Subject: [PATCH] call scene update
+
+---
+ client/src/main/kotlin/App.kt | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/client/src/main/kotlin/App.kt b/client/src/main/kotlin/App.kt
+index 8993964..23e87b9 100644
+--- a/client/src/main/kotlin/App.kt
++++ b/client/src/main/kotlin/App.kt
+@@ -62,6 +62,7 @@ class App(val canvas : HTMLCanvasElement, val overlay : HTMLDivElement) {
+   }  
+ 
+   fun update() {
++    scene.update(gl, keysPressed)    
+     window.requestAnimationFrame { update() }
+   }
+ }
+-- 
+2.16.1.windows.1
+

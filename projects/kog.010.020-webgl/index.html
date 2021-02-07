@@ -21,259 +21,17 @@
       <div class="slides">
         <section>
           <h3>Computer Graphics<h3>
-          <h1>Kotlin</h1>
+          <h1>WebGL</h1>
           <p>László Szécsi szecsi@iit.bme.hu</p>
         </section>
-        <section data-markdown>
-          <textarea data-template>
-### Kotlin and WebGL
-- replaces Java
- - mobile programming
-- compiles to Javascript
- - works for WebGL development
- - statically typed
- - fewer runtime errors to debug
-          </textarea>
-        </section>
-        <section data-markdown>
-          <textarea data-template>
-### Basic types
-- Byte, Short, Int, Long, Float, Double, Char, Boolean
- - all behave as classes
- - no access to underlying primitives
-          </textarea>
-        </section>
-        <section>
-          <h3>Variables</h3>
-          <pre><code class="floating-annotations" data-trim> <script type="text/template">
-var yaw : Float
-<span comment="type inference">val myPi = 3.14f</span>
-          </script> </code></pre>
-        </section>        
-        <section>
-          <h3>String</h3>
-          <pre><code class="floating-annotations" data-trim> <script type="text/template">
-canvas.getContext("webgl2<span comment="quotes">"</span>)
-overlay.innerHTML = 
- """<font color="red">WebGL</font><span comment="raw string
-can be multiple lines
-no escape">"""</span>
-          </script> </code></pre>
-        </section>
-        <section>
-          <h3>String template</h3>
-          <pre><code class="floating-annotations" data-trim> <script type="text/template">
-var fontSize = 1
-overlay.innerHTML = 
-"""<div style=
-"position:absolute;left:${mouseX}px;bottom:-${mouseY}px">
-<font color="red" size="${fontSize}px"> ${<span comment="evaluated expression">keysPressed.toString()</span>}
-</font></div>""";
-          </script> </code></pre>
-        </section>
-        <section>
-          <h3>Math</h3>
-          <pre><code class="floating-annotations" data-trim> <script type="text/template">
-import kotlin.math.sqrt
- 
-fun length() : Float {
-  return sqrt(lengthSquared());
-}
-          </script> </code></pre>
-        </section>
-        <section>
-          <h3>Random</h3>
-          <pre><code class="floating-annotations" data-trim> <script type="text/template">
-import kotlin.random.Random
- 
-fun makeRandom(minVal: Vec4 = Vec4.zeros, maxVal: Vec4 = Vec4.ones) : Vec4 {
-  return Vec4(
-    Random.nextFloat() * 
-        (maxVal.storage[0] - minVal.storage[0]) + minVal.storage[0],
-    Random.nextFloat() * (maxVal.storage[1] - minVal.storage[1]) + minVal.storage[1],
-    Random.nextFloat() * (maxVal.storage[2] - minVal.storage[2]) + minVal.storage[2],
-    Random.nextFloat() * (maxVal.storage[3] - minVal.storage[3]) + minVal.storage[3]
-  )  
-}
-          </script> </code></pre>
-        </section>
-        <section>
-          <h3>Functions</h3>
-          <pre><code class="floating-annotations" data-trim> <script type="text/template">
-fun sum(a : Float, b : Float) : Float {
-  return a+b
-}
-          </script> </code></pre>
-        </section>
-        <section>
-          <h3>Classes</h3>
-          <pre><code class="floating-annotations" data-trim> <script type="text/template">
-class Hello {
-  <span comment="property">val greeting : String = "Hello world!"</span>
- 
-  <span comment="method">fun greet()</span> {
-    print(greeting)
-  }
-}
-          </script> </code></pre>
-        </section>
-        <section>
-          <h3>Primary constructor and properties</h3>
-          <pre><code class="floating-annotations" data-trim> <script type="text/template">
-class Hello( <span comment="constructor parameter
-AND property"> val greeting </span> : String <span comment="default"> = "Hello world!" </span> ) {
- 
-  fun greet() {
-    print(greeting)
-  }
-}
-          </script> </code></pre>
-        </section>
-        <section>
-          <h3>Base class</h3>
-          <pre><code class="floating-annotations" data-trim> <script type="text/template">
-class Material(<span comment="primary constructor parameter">program : Program</span>)
-  : <span comment="base class">UniformProvider</span>(<span comment="passed to base constructor">"material"</span>) {
-  
-  <span comment="init block
-no actual constructor body needed">init {
-  addComponentsAndGatherUniforms(program);
-  }</span>
-}
-          </script> </code></pre>
-        </section>
-        <section>
-          <h3>var vs val</h3>
-          <pre><code class="floating-annotations" data-trim> <script type="text/template">
-val pos = Vec3()
-pos += Vec3(1f, 2f, 3f)
-          </script> </code></pre>
-          This is actually fine. pos is what it was, the reference to the same object. Only its properties changed.
-        </section>      
-        <section>
-          <h3>Lambda</h3>
-          <pre><code class="floating-annotations" data-trim> <script type="text/template">
-class App(
-  val keysPressed = HashSet<String>()
-  fun registerEventHandlers() {
-    document.onkeydown = <span comment="starts a function"> { </span> 
-      <span comment="parameter list"> event : KeyboardEvent </span> ->
-      <span comment="last expression is returned"> keysPressed </span> .add( <span comment="enclosing scope is accessible"> keyNames </span> [event.keyCode] )
-    }
-  }
-}
-          </script> </code></pre>
-        </section>
-        <section>
-          <h3>Regex</h3>
-          <pre><code class="floating-annotations" data-trim> <script type="text/template">
-val text = "Te tudsz így beszélni?"
-val secret = Regex( <span comment="pattern matching
-Hungarian vowels"> "[aáeéiíoóöőuú]" </span> ).replace(text) <span comment="the last parameter of replace
-can be placed outside the ()"> { </span>
-    <span comment="auto parameter for one-param lambda
-no param list needed"> it </span> .value + 'v' + it.value  }
-          </script> </code></pre>
-          <p>.</p>
-          <p>.</p>
-        </section>
-        <section>
-          <h3>Exception handling, Error</h3>
-          <pre><code class="floating-annotations" data-trim> <script type="text/template">
-throw Error("Could not link shaders [vertex shader: ${vertexShader.sourceUrl}]:[fragment shader: ${fragmentShader.sourceUrl}
-${gl.getProgramInfoLog(this.glProgram)}")
-//-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-try{
-  val app = App(canvas, overlay)
-} catch(e : Error) {
-  console.error(e.message)
-}
-          </script> </code></pre>
-          <img src="media/error_on_console.png"/>
-        </section>
-        <section>
-          <h3>null safety</h3>
-          <pre><code class="floating-annotations" data-trim> <script type="text/template">
-val b: <span comment="nullable type"> String? </span> = "Kotlin"
-if (b != null && b.length > 0) {
-    print("String of length ${ <span comment="known to be not null"> b </span> .length}")
-} else {
-    print("Empty string")
-}
-          </script> </code></pre>
-        </section>
-        <section>
-          <h3>Safe call</h3>
-          <pre><code class="floating-annotations" data-trim> <script type="text/template">
-<span comment="type is Mat4?"> avatar["modelMatrix"] </span>
- <span comment="if null, does nothing,
- evaluates to nothing"> .?scale(scale) </span>
-  .?rotate(yaw)
-  .?translate(position)
-          </script> </code></pre>
-        </section>
-        <section>
-          <h3>Elvis</h3>
-          <pre><code class="floating-annotations" data-trim> <script type="text/template">
-fun set( <span comment="parameter array"> vararg values </span> : Float) {
-  for(i in 0 until storage.length) {
-    storage[i] = values.getOrNull(i) <span comment="if null is on the left,
-use value on the right"> ?: </span> 0.0f
-  }
-}
- 
-val gl = canvas.getContext("webgl2")
-   <span comment="if null is on the left,
-use value on the right"> ?: </span> throw Error("Browser does not support WebGL2")
-          </script> </code></pre>
-        </section>
-        <section>
-          <h3>Containers</h3>
-          <pre><code class="floating-annotations" data-trim> <script type="text/template">
-val keysPressed = HashSet<String>()
-val uniforms = HashMap<String, Uniform>()
-val uniformDescriptors = 
-  HashMap<String,
-  ArrayList<UniformDescriptor> >()
-          </script> </code></pre>
-        </section>        
-        <section>
-          <h3>forEach, vararg, spread</h3>
-          <pre><code class="floating-annotations" data-trim> <script type="text/template">
-val components = ArrayList<Drawable>()
-  
-fun draw(
-        vararg uniformProviders : UniformProvider){
-  components.forEach <span comment="this is the only parameter
-of forEach
-no actual paranthesised
-parameter list needed"> { </span>
-    it.draw(this, <span comment="spread operator
-expands array to parameters"> * </span> uniformProviders)
-  }
-}
-          </script> </code></pre>
-        </section>
-        <section>
-          <h3>A complex Kotlin example</h3>
-          <pre><code class="floating-annotations" data-trim> <script type="text/template">
-fun drawWithOverrides(
-    <span comment="incoming associative array"> overrides : Map<String, UniformProvider>, </span>
-    vararg uniformProviders : UniformProvider){
-  val allOverrides : MutableMap<String, UniformProvider> 
-          <span comment="mutable copy"> = overrideMap.toMutableMap() </span>
-  overrides.forEach { 
-    <span comment="destructuring"> (key : String, value : Drawable) </span> -> 
-    allOverrides[key] = value } 
-  <span comment="in a lambda,
-keyword this may be ambigous,
-needs to be labeled"> this@UniformProvider </span> .drawWithOverrides(
-                    allOverrides, *uniformProviders)
-}
-          </script> </code></pre>
-        </section>                  
+        <!-- patch="kog.010.010.0110-WebGL2-rendering-context.patch" -->        
+        <!-- patch="kog.010.010.0120-create-webgl-context.patch" -->
+        <!-- patch="kog.010.010.0130-scene-instance-and-app-resize.patch" -->
+        <!-- patch="kog.010.010.0140-call-scene-update.patch" -->
+        <!-- patch="kog.010.010.0150-scene.patch" -->
       </div>
     </div>
+
     <script src="../../dependencies/reveal.js/dist/reveal.js"></script>
     <script src="../../dependencies/reveal.js/plugin/math/math.js"></script>
     <script src="../../dependencies/reveal.js/plugin/notes/notes.js"></script>
@@ -281,7 +39,6 @@ needs to be labeled"> this@UniformProvider </span> .drawWithOverrides(
     <script src="../../dependencies/reveal.js/plugin/highlight/highlight.js"></script>
     <script src="../../dependencies/reveal.js/plugin/animate/plugin.js"></script>
     <script src="../../dependencies/reveal.js/plugin/animate/svg.min.js"></script>
-    <script src="../../dependencies/reveal.js/plugin/floating/floating.js"></script>
     <script>
       // More info about initialization & config:
       // - https://revealjs.com/initialization/
@@ -448,5 +205,6 @@ needs to be labeled"> this@UniformProvider </span> .drawWithOverrides(
         plugins: [ RevealMath, RevealMarkdown, RevealHighlight, RevealNotes, RevealAnimate ]
       });
     </script>
+    <script src="../../dependencies/reveal.js/plugin/floating/floating.js"></script>
   </body>
 </html>

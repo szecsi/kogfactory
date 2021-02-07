@@ -4,15 +4,15 @@ Date: Tue, 2 Feb 2021 15:27:23 +0100
 Subject: [PATCH] key names
 
 ---
- client/src/main/content/kotlin/KeyNames.kt | 266 +++++++++++++++++++++
+ client/src/main/kotlin/KeyNames.kt | 266 +++++++++++++++++++++
  1 file changed, 266 insertions(+)
- create mode 100644 client/src/main/content/kotlin/KeyNames.kt
+ create mode 100644 client/src/main/kotlin/KeyNames.kt
 
-diff --git a/client/src/main/content/kotlin/KeyNames.kt b/client/src/main/content/kotlin/KeyNames.kt
+diff --git a/client/src/main/kotlin/KeyNames.kt b/client/src/main/kotlin/KeyNames.kt
 new file mode 100644
 index 0000000..c3a105a
 --- /dev/null
-+++ b/client/src/main/content/kotlin/KeyNames.kt
++++ b/client/src/main/kotlin/KeyNames.kt
 @@ -0,0 +1,266 @@
 +
 +object keyNames {

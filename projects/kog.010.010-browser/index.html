@@ -59,27 +59,12 @@ kog
                 └── App.kt
           </script> </code></pre>
         </section>
-        <section>
-          <h3>gradle.properties</h3>
-          <pre><code class="floating-annotations" data-trim> <script type="text/template">
-kotlin.code.style=official
-          </script> </code></pre>
-        </section>
-        <section>
-          <h3>settings.gradle.kts</h3>
-          <pre><code class="floating-annotations" data-trim> <script type="text/template">
-include("client")
-rootProject.name = "kog"
-          </script> </code></pre>
-          multi-project build template; a single included subproject
-        </section>
         <!-- patch="kog.010.010.0010-gradle.properties.patch" -->
         <!-- patch="kog.010.010.0020-settings.gradle.kts.patch" -->
         <!-- patch="kog.010.010.0030-build.gradle.kts.patch" -->
         <!-- patch="kog.010.010.0040-client-build.gradle.kts.patch" -->
         <!-- patch="kog.010.010.0060-index.html.patch" -->
         <!-- patch="kog.010.010.0070-style.css.patch" -->
-        <!-- patch="kog.010.010.0080-key-names.patch" -->
         <section data-markdown>
           <textarea data-template>
 ### Access browser entities: window and document
@@ -91,7 +76,7 @@ rootProject.name = "kog"
 document.defaultView.document == document
           </textarea>
         </section>   
-        <!-- patch="kog.010.010.0090-app.patch" -->
+        <!-- patch="kog.010.010.0080-app.patch" -->
         <section data-markdown>
           <textarea data-template>
 ### Debugging in the browser
@@ -136,6 +121,7 @@ this.overlay.innerHTML =
 - when an image needs to be rendered, we use the current virtual world data
           </textarea>
         </section>        
+        <!-- patch="kog.010.010.0090-key-names.patch" -->
         <section data-markdown>
           <textarea data-template>
 ### TASK: Keep track of pressed keys
