@@ -5,6 +5,7 @@ const optionDefinitions = [
   { name: 'project', type: String, multiple: true, defaultOption: true },
 ]
 const options = commandLineArgs(optionDefinitions);
+const languageId = options.languageId || 0;
 
 fs.readFile(options.project[0], 'utf8', function (err,source) {
   if (err) {
@@ -48,13 +49,17 @@ fs.readFile(options.project[0], 'utf8', function (err,source) {
 `;
           } else {
 //            slide += l1.replace(/^(\s*)([^\s]+)\/\/\$(.+)$/, (match, lead, code, comment) =>
-            slide += l1.replace(format, (match, lead, code, comment) =>
-              { 
+            slide += l1.replace(format, (match, lead, code, comment) => { 
+                const langComments = comment.split("˙HUN˙");
+                if(langComments.length < languageId) {
+                  comment = langComments[languageId];
+                } else {
+                  comment = langComments[0];
+                }
                 comment.replaceAll(/#([^#]*)#([^#]+)/g, (match, pattern, anno) => {
                   if(pattern == ""){
                     pattern = code;
                   }
-                  console.log(code + " ee " + pattern + " the same: " + (code == pattern));
                   var m = code.match(new RegExp(pattern.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
                   code = code.slice(0, m.index) + 
                     `<span comment="${anno.replaceAll(/; /g,"\n")}">` + 
