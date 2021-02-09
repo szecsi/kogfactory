@@ -15,7 +15,7 @@ index 0000000..39875c0
 +++ b/client/src/main/kotlin/Scene.kt
 @@ -0,0 +1,17 @@
 +import org.w3c.dom.HTMLCanvasElement
-+import org.khronos.webgl.WebGLRenderingContext as GL //#GL# we need this for the constants declared ˙HUN˙ a constansok miatt kell
++import org.khronos.webgl.WebGLRenderingContext as GL //# GL# we need this for the constants declared ˙HUN˙ a constansok miatt kell
 +
 +class Scene (
 +  val gl : WebGL2RenderingContext){

@@ -1,19 +1,19 @@
-From 99574ff39de4c965bc62d92a998a8013b7c57fbe Mon Sep 17 00:00:00 2001
+From c4b533f106c46fe7a6c431e08f97f0ec6c04bdfc Mon Sep 17 00:00:00 2001
 From: szecsi <szecsi.laszlo@gmail.com>
-Date: Sun, 7 Feb 2021 23:50:37 +0100
-Subject: [PATCH] scene instance and app resize
+Date: Tue, 9 Feb 2021 19:04:05 +0100
+Subject: [PATCH] dgds
 
 ---
  client/src/main/kotlin/App.kt | 11 +++++++++++
  1 file changed, 11 insertions(+)
 
 diff --git a/client/src/main/kotlin/App.kt b/client/src/main/kotlin/App.kt
-index 92853b6..8993964 100644
+index e7261e3..3f6ba39 100644
 --- a/client/src/main/kotlin/App.kt
 +++ b/client/src/main/kotlin/App.kt
 @@ -11,6 +11,17 @@ class App(val canvas : HTMLCanvasElement, val overlay : HTMLDivElement) {
  
-   val gl = (canvas.getContext("webgl2", object{val alpha = false}) ?: throw Error("Browser does not support WebGL2")) as WebGL2RenderingContext //#alpha# never make canvas transparent ˙HUN˙ ne legyen áttetsző a vászon
+   val gl = (canvas.getContext("webgl2", object{val alpha = false}) ?: throw Error("Browser does not support WebGL2")) as WebGL2RenderingContext //#alpha# never make canvas transparent ˙HUN˙ ne legyen áttetsző a vászon  
  
 +  val scene = Scene(gl)//#scene# this object is responsible for resource allocation and drawing ˙HUN˙ ez az objektum felel az erőforrások kezeléséért és kirajzolásáért
 +  init {
@@ -31,4 +31,3 @@ index 92853b6..8993964 100644
      document.onkeydown =  { //#{# locally defined function
 -- 
 2.16.1.windows.1
-

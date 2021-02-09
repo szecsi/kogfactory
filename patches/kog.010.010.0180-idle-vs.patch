@@ -1,0 +1,27 @@
+From 8d01c9d27da62daba2da371530e3a3c1e393e67b Mon Sep 17 00:00:00 2001
+From: szecsi <szecsi.laszlo@gmail.com>
+Date: Tue, 9 Feb 2021 06:42:56 +0100
+Subject: [PATCH] idle vs
+
+---
+ client/src/main/glsl/idle-vs.glsl | 7 +++++++
+ 1 file changed, 7 insertions(+)
+ create mode 100644 client/src/main/glsl/idle-vs.glsl
+
+diff --git a/client/src/main/glsl/idle-vs.glsl b/client/src/main/glsl/idle-vs.glsl
+new file mode 100644
+index 0000000..520eb68
+--- /dev/null
++++ b/client/src/main/glsl/idle-vs.glsl
+@@ -0,0 +1,7 @@
++#version 300 es
++
++in vec4 vertexPosition; //#vec4# A four-element vector [x,y,z,w].; We leave z and w alone.; They will be useful later for 3D graphics and transformations. #vertexPosition# attribute fetched from vertex buffer according to input layout spec
++
++void main(void) {
++  gl_Position = vertexPosition; //#gl_Position# built-in output, required
++}
+\ No newline at end of file
+-- 
+2.16.1.windows.1
+

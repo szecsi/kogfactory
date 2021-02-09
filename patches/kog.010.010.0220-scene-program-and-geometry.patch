@@ -1,0 +1,36 @@
+From 1ca0ddb70b4a91b49c3ac22edb63e34e1351e0c7 Mon Sep 17 00:00:00 2001
+From: szecsi <szecsi.laszlo@gmail.com>
+Date: Tue, 9 Feb 2021 06:39:15 +0100
+Subject: [PATCH] scene program and geometry
+
+---
+ client/src/main/kotlin/Scene.kt | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/client/src/main/kotlin/Scene.kt b/client/src/main/kotlin/Scene.kt
+index 39875c0..b62a2a5 100644
+--- a/client/src/main/kotlin/Scene.kt
++++ b/client/src/main/kotlin/Scene.kt
+@@ -4,6 +4,11 @@ import org.khronos.webgl.WebGLRenderingContext as GL //#GL# we need this for the
+ class Scene (
+   val gl : WebGL2RenderingContext){
+ 
++  val vsIdle = Shader(gl, GL.VERTEX_SHADER, "idle-vs.glsl")
++  val fsSolid = Shader(gl, GL.FRAGMENT_SHADER, "solid-fs.glsl")
++  val solidProgram = Program(gl, vsIdle, fsSolid)
++  val triangleGeometry = TriangleGeometry(gl)
++
+   fun resize(gl : WebGL2RenderingContext, canvas : HTMLCanvasElement) {
+     gl.viewport(0, 0, canvas.width, canvas.height)//#viewport# tell the rasterizer which part of the canvas to draw to ˙HUN˙ a raszterizáló ide rajzoljon
+   }
+@@ -13,5 +18,7 @@ class Scene (
+     gl.clearColor(0.3f, 0.0f, 0.3f, 1.0f)//## red, green, blue, alpha in [0, 1]
+     gl.clearDepth(1.0f)//## will be useful in 3D ˙HUN˙ 3D-ben lesz hasznos
+     gl.clear(GL.COLOR_BUFFER_BIT or GL.DEPTH_BUFFER_BIT)//#or# bitwise OR of flags
++    gl.useProgram(solidProgram.glProgram)
++    triangleGeometry.draw()
+   }
+ }
+-- 
+2.16.1.windows.1
+

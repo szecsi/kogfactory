@@ -1,0 +1,28 @@
+From 27f1ffb068ae436fe16c4d80b37f3dbbe11369a0 Mon Sep 17 00:00:00 2001
+From: szecsi <szecsi.laszlo@gmail.com>
+Date: Tue, 9 Feb 2021 06:43:45 +0100
+Subject: [PATCH] solid fs
+
+---
+ client/src/main/glsl/solid-fs.glsl | 9 +++++++++
+ 1 file changed, 9 insertions(+)
+ create mode 100644 client/src/main/glsl/solid-fs.glsl
+
+diff --git a/client/src/main/glsl/solid-fs.glsl b/client/src/main/glsl/solid-fs.glsl
+new file mode 100644
+index 0000000..eb4ba82
+--- /dev/null
++++ b/client/src/main/glsl/solid-fs.glsl
+@@ -0,0 +1,9 @@
++#version 300 es
++
++precision highp float;
++
++out vec4 fragmentColor; //#vec4# A four-element vector [r,g,b,a].; Alpha is opacity, we set it to 1 for opaque.; It will be useful later for transparency.
++
++void main(void) {
++  fragmentColor = vec4(1, 1, 0, 1); //#1, 1, 0, 1# solid yellow
++}
+-- 
+2.16.1.windows.1
+

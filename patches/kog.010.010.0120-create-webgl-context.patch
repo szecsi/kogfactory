@@ -1,6 +1,6 @@
-From 3e2f87c732d06057442c6940d490125763c7223e Mon Sep 17 00:00:00 2001
+From e993564cb7ccb128c1be2120ed432fb287118e98 Mon Sep 17 00:00:00 2001
 From: szecsi <szecsi.laszlo@gmail.com>
-Date: Sun, 7 Feb 2021 23:20:42 +0100
+Date: Tue, 9 Feb 2021 19:00:08 +0100
 Subject: [PATCH] create webgl context
 
 ---
@@ -8,7 +8,7 @@ Subject: [PATCH] create webgl context
  1 file changed, 2 insertions(+), 1 deletion(-)
 
 diff --git a/client/src/main/kotlin/App.kt b/client/src/main/kotlin/App.kt
-index dac8c11..92853b6 100644
+index dac8c11..7140e36 100644
 --- a/client/src/main/kotlin/App.kt
 +++ b/client/src/main/kotlin/App.kt
 @@ -8,7 +8,8 @@ import org.w3c.dom.Window
@@ -17,7 +17,7 @@ index dac8c11..92853b6 100644
    val keysPressed = HashSet<String>()
 -  
 +
-+  val gl = (canvas.getContext("webgl2", object{val alpha = false}) ?: throw Error("Browser does not support WebGL2")) as WebGL2RenderingContext //#alpha# never make canvas transparent ˙HUN˙ ne legyen áttetsző a vászon
++  val gl = (canvas.getContext("webgl2", object{val alpha = false}) ?: throw Error("Browser does not support WebGL2")) as WebGL2RenderingContext //#alpha# never make canvas transparent ˙HUN˙ ne legyen áttetsző a vászon  
  
    @Suppress("UNUSED_PARAMETER")
    fun registerEventHandlers() {

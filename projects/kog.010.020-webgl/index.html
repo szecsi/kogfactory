@@ -24,6 +24,12 @@
         color: dimgrey;
         text-decoration-line: none;
       }      
+      .flex-container{
+        display: flex;
+      }
+      .flex-col{
+        flex: 1;
+      }      
     </style>
   </head>
   <body>
@@ -34,11 +40,163 @@
           <h1>WebGL</h1>
           <p>László Szécsi szecsi@iit.bme.hu</p>
         </section>
+        <section data-markdown>
+          <textarea data-template>
+### WebGL2
+- OpenGL ES 3.0 standard
+- JavaScript implementation
+- draws on a HTML5 Canvas
+
+| Dynamic loops          | Integer math | Vertex Array Object      | Texture         |
+| ---------------------- | --------------- | ------------------ | --------------- |
+| Floating-point texture | Render state    | 3D texture         | Fragment shader    |
+| Vertex buffer    | Vertex shader   | Compressed texture | FS depth write  |
+| Multiple render target | Framebuffer     |  <del>geometry shader</del> | <del>tessellation</del> |
+          </textarea>
+        </section> 
+        <section>
+          <h3>WebGL is like OpenGL</h3>
+          <pre><code class="kotlin" data-trim> <script type="text/template">
+gl.bindBuffer(/* ... */)
+gl.vertexAttribPointer(/* ... */)
+gl.useProgram(/* ... */)
+gl.drawArrays(/* ... */)
+          </script> </code></pre>
+        </section>               
         <!-- patch="kog.010.010.0110-WebGL2-rendering-context.patch" -->        
         <!-- patch="kog.010.010.0120-create-webgl-context.patch" -->
         <!-- patch="kog.010.010.0130-call-scene-update.patch" -->
         <!-- patch="kog.010.010.0140-scene-instance-and-app-resize.patch" -->       
         <!-- patch="kog.010.010.0150-scene.patch" -->
+        <section data-auto-animate>
+<h3>How to draw a triangle?</h3>
+<ul> <li>create and fill with data (at Scene init)</li>
+<ul><li>vertex buffer</li>
+ <li>input layout (explain vertex buffer contents)</li>
+ <li>index buffer</li>
+ <li>vertex shader + fragment shader = program</li></ul>
+<li> when drawing (in Scene's method update)</li><ul>
+ <li> set buffers, layout</li>
+ <li> set program</li>
+ <li> launch pipeline to draw</li>
+</ul>
+</ul>
+          </textarea>
+        </section>
+        <section data-auto-animate>
+<h3>How to draw a triangle?</h3>
+<ul> <li>create and fill with data (at Scene init)</li>
+<ul><li>class TriangleGeometry</li>
+ <li>vertex shader + fragment shader = program</li></ul>
+<li> when drawing (in Scene's method update)</li><ul>
+ <li> set buffers, layout</li>
+ <li> set program</li>
+ <li> launch pipeline to draw</li>
+</ul>
+</ul>
+          </textarea>
+        </section>        
+        <section data-auto-animate>
+<h3>How to draw a triangle?</h3>
+<ul> <li>create and fill with data (at Scene init)</li>
+<ul><li>class TriangleGeometry</li>
+ <li>class Shader, class Program</li></ul>
+<li> when drawing (in Scene's method update)</li><ul>
+ <li> set buffers, layout</li>
+ <li> set program</li>
+ <li> launch pipeline to draw</li>
+</ul>
+</ul>
+        </section>           
+        <section data-markdown>
+          <textarea data-template>
+### New Kotlin files/classes
+- Scene.kt – representation, animation, and rendering of the virtual world
+- TriangleGeometry.kt – creation of vertex, index buffer, and input layouts
+- Shader.kt – loading and compilation of GLSL shader sources
+- Program.kt – management of shader setups and their inputs
+          </textarea>
+        </section>                
+        <section data-markdown>
+          <textarea data-template>
+### WebGL functions
+- WebGL is not object oriented
+ - some resource must be bound
+ - then operations affect it
+- these lines of code go together
+ - you use WebGL snippets of code, not individual function calls
+          </textarea>
+        </section>
+        <!-- patch="kog.010.010.0170-triangle-geometry.patch" -->
+        <!-- patch="kog.010.010.0180-idle-vs.patch" -->
+        <!-- patch="kog.010.010.0190-solid-fs.patch" -->
+        <section data-markdown>
+          <textarea data-template>
+### Shader source in separate files
+- XMLHttpRequest to load from server
+          </textarea>
+        </section>     
+        <!-- patch="kog.010.010.0200-shader.patch" -->
+        <!-- patch="kog.010.010.0210-program.patch" -->
+        <!-- patch="kog.010.010.0220-scene-program-and-geometry.patch" -->        
+        <!-- patch="kog.010.010.0240-triangle-geometry-draw.patch" -->
+        <section data-markdown>
+          <textarea data-template>
+### Summary of attribute specs chain
+          </textarea>
+        </section>
+        <section data-markdown>
+          <textarea data-template>
+### Input defaults
+          </textarea>
+        </section>
+        <section data-markdown>
+          <textarea data-template>
+### TASK: Figure out how to...
+- change background color
+- change vertex positions
+- change triangle color
+          </textarea>
+        </section> 
+        <section data-markdown>
+          <textarea data-template>
+### TASK: Add new vertex attribute: vertexColor
+- new vertex buffer for color data (TriangleGeometry.kt)
+- three floats per vertex (Red, Green, Blue)
+- binding, enabling, and layout spec (as attrib #1) for new vertex buffer (TriangleGeometry.kt)
+- new input attribute in vertex shader [idle-vs.glsl]
+<pre class="glsl"><code>in vec4 vertexColor;</pre></code>
+- binding input variable as attribute #1 (Program.kt, before linking shaders)
+- this does not show yet, as the attribute is not used in the shaders (see following slide)
+          </textarea>
+        </section>
+        <section data-markdown>
+          <textarea data-template>
+### TASK: New VS out/FS in: color
+- add output to vertex shader
+<pre class="glsl"><code>out vec4 color; // passed to FS</code></pre>
+- add input to fragment shader
+<pre class="glsl"><code>in vec4 color; // received from VS via RS</code></pre>
+- output the value of vertexColor as color in vertex shader (a simple assignment)
+- output the value of color as fragmentColor in fragment shader (another assignment)
+          </textarea>
+        </section>         
+        <section>
+          <h3>Garish triangle</h3>
+          <img src="media/garish.png"/>
+        </section>         
+        <section data-markdown>
+          <textarea data-template>
+### TASK: Create QuadGeometry
+- duplicate and rename the copy of TriangleGeometry.kt
+- change class name
+- change vertex buffer contents to specify 4 vertices
+- change index buffer contents to specify 2 triangles
+- change draw call invocation to process 6 indices
+- create an instance of QuadGeometry in the Scene init
+- draw it in update
+          </textarea>
+        </section>
       </div>
     </div>
 
