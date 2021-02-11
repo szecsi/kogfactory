@@ -109,16 +109,13 @@ document.defaultView.document == document
 - in the mouse down event handler, set the above properties according to the mouse click position
  - parameter event has properties x and y
 - in the update method, set the HTML content of the overlay to be some text positioned according to the properties
-          </textarea>
-                  </section>   
-        <section>
-          <h3>innerHTML</h3>
 <pre><code data-trim> <script type="text/template">
 this.overlay.innerHTML = 
 """&lt<div style=
 "position:absolute;left:${mouseX}px;bottom:-${mouseY}px"> Hello AIT! </div>"""
 </script></code></pre>
-        </section>
+          </textarea>
+        </section>   
         <section data-markdown>
           <textarea data-template>
 ### Why defer to update?
@@ -142,16 +139,13 @@ this.overlay.innerHTML =
  - look up human-friendly key for keyCode name in global array keyNames
  - add()/remove() the above name to/from keysPressed
  - in the update method, display the contents of keysPressed
-           </textarea>
-                   </section>   
-        <section>
-          <h3>innerHTML</h3>
  <pre><code data-trim> <script type="text/template">
 this.overlay.innerHTML = 
 """<div style=
 "position:absolute;left:${this.textLeft}px;bottom:-${this.textBottom}px"> ${keysPressed.toString()} </div>"""
-</script></code></pre>
-        </section>
+</script></code></pre> 
+           </textarea>
+        </section>   
         <section data-markdown>
           <textarea data-template>
 ### TASK: Increase and decrease font size on keys 'T' and 'G'

@@ -1,0 +1,75 @@
+Scene gets gl both as property and parameter to methods
+WebGL2RenderingContext full from websocket to patch 110
+
+ppt:
+vectors - kotlin
+
+
+ait patches
+trafo-vs.glsl-translate only
+use trafo instead of idle
+set-position-uniform-by-location-handle
+t-dt (scene property time in seconds)
+
+scene-set-position-uniform-by-vector-commit
+
+trafo-vs.glsl-by matrix
+set-modelmatrix-uniform-by-mat4-commit
+
+loose manual triangle resources and drawing
+
+program-to-uniformprovider
+material
+mesh
+game-object
+scene-to-uniformprovider (time to uniform delegate)
+
+orthocamera
+othocamera in scene
+trafo-vs.glsl with camera trafo
+
+*3gr-earlier start
+texturedquadgeometry
+texture2d
+textured-fs
+
+alpha-enable
+
+texture-anim-vs
+*3gr-earlier end
+
+gameobject-move
+gameobject-physics
+
+perspective-camera
+perspective-camera-in-scene
+perspective-camera-events
+perspective-camera-ahead-right-up-stride
+
+quad.vs with raydir
+background-fs
+texturecube
+environment bg in scene
+raydir in camera
+
+*ray brach starts here
+
+infinitegroundgeometry
+perspective texture division in fs
+
+gameobject-3d-rot
+gameobject-parent
+
+camera-parent (local vs world)
+
+out worldPosition
+out worldNormal
+
+envmap-fs
+
+shading
+postproc
+
+-------------
+
+ray

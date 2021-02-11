@@ -20,7 +20,7 @@ index 885d2cc..0887b21 100644
 +    gl.bindVertexArray(inputLayout)
 +    gl.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, indexBuffer)  
 +
-+    gl.drawElements(GL.TRIANGLES, 3, GL.UNSIGNED_SHORT, 0) //#3# ppipeline is all set up, draw three indices worth of geometry
++    gl.drawElements(GL.TRIANGLES, 3, GL.UNSIGNED_SHORT, 0) //#3# pipeline is all set up, draw three indices worth of geometry
 +  }
 +
  }

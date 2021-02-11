@@ -14,8 +14,8 @@ index 0000000..3578187
 --- /dev/null
 +++ b/client/src/main/kotlin/App.kt
 @@ -0,0 +1,66 @@
-+import kotlin.browser.document
-+import kotlin.browser.window
++import kotlinx.browser.document
++import kotlinx.browser.window
 +import org.w3c.dom.HTMLDivElement
 +import org.w3c.dom.HTMLCanvasElement
 +import org.w3c.dom.events.*

@@ -44,9 +44,10 @@ fs.readFile(options.project[0], 'utf8', function (err,source) {
           }
           slide += `<section>
       <h3>`;
-          slide += hunks[0];
-        slide += `</h3>
-                <pre class="${language}"><code class="floating-annotations" data-trim> <script type="text/template">
+          slide += p1.slice(17, -6).replaceAll("-", " ");
+        slide += `</h3><p><small>`;
+        slide += hunks[0];
+        slide += `</small></p><pre class="${language}"><code class="floating-annotations" data-trim> <script type="text/template">
 `;
           hunks.shift();
           hunks.forEach( chunk => {
@@ -62,6 +63,9 @@ fs.readFile(options.project[0], 'utf8', function (err,source) {
                 }
               }
               slide += l1.replace(format, (match, lead, code, comment) => { 
+                if(indicator != "+") {
+                  return lead + code;
+                }
                 comment.replaceAll(/#([^#]*)#([^#]+)/g, (match, pattern, anno) => {
                   if(pattern == ""){
                     pattern = code;
@@ -79,7 +83,8 @@ fs.readFile(options.project[0], 'utf8', function (err,source) {
                     `</span>` + 
                     code.slice(m.index+m[0].length);
                 });
-                return lead + `<span comment="${comment.replace("; ","\n")}">` + code + `</span>`;
+                //return lead + `<span comment="${comment.replace("; ","\n")}">` + code + `</span>`;
+                return lead + code;
               });
               if(indicator == "-") {
                 slide += "</del>";
