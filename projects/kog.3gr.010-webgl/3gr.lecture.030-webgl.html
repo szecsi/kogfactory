@@ -4,12 +4,12 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-    <title>3d grafikus rendszerek</title>
+    <title>3D grafikus rendszerek</title>
 
     <link rel="stylesheet" href="../../dependencies/reveal.js/dist/reveal.css">
     <link rel="stylesheet" href="../../dependencies/reveal.js/dist/theme/blood.css" id="theme">
 
-    <!-- Theme used for syntax highlighted code -->
+    <!-- Theme used for syntax highlighted code language="hun" -->
     <link rel="stylesheet" href="../../dependencies/reveal.js/plugin/highlight/monokai.css" id="highlight-theme">
     <style> .reveal h1, .reveal h2, .reveal h3, .reveal h4, .reveal h5 {
                   text-transform: none;
@@ -24,152 +24,131 @@
         color: dimgrey;
         text-decoration-line: none;
       }      
+      .flex-container{
+        display: flex;
+      }
+      .flex-col{
+        flex: 1;
+      }      
     </style>
   </head>
   <body>
     <div class="reveal">
       <div class="slides">
         <section>
-          <h3>3D Grafikus rendszerek<h3>
-          <h1>Gradle</h1>
-          <p>László Szécsi szecsi@iit.bme.hu</p>
+          <h3>3D grafikus rendszerek<h3>
+          <h1>WebGL</h1>
+          <p>Szécsi László szecsi@iit.bme.hu</p>
         </section>
         <section data-markdown>
           <textarea data-template>
-### Gradle telepítés
-- install JDK
-- környezeti változó
-<pre class="batch"><code>set JAVA_HOME="whereever JDK was installed"</code></pre>
-- Gradle letöltése: https://gradle.org/next-steps/?version=6.8.2&format=bin
-- unzip valahova, pl. C:\Tools\Gradle
-- tegyük elérhetővé
-<pre class="batch"><code>path %path%C:\SDK\Gradle\bin;</code></pre>
+### WebGL2
+- OpenGL ES 3.0 standard
+- JavaScript implementáció
+- HTML5 canvasra rajzol
+
+| Dynamic loops          | Integer math | Vertex Array Object      | Texture         |
+| ---------------------- | --------------- | ------------------ | --------------- |
+| Floating-point texture | Render state    | 3D texture         | Fragment shader    |
+| Vertex buffer    | Vertex shader   | Compressed texture | FS depth write  |
+| Multiple render target | Framebuffer     |  <del>geometry shader</del> | <del>tessellation</del> |
           </textarea>
-        </section>
-        <section data-markdown>
-          <textarea data-template>
-### Build Gradle-lel
-- indulási projekt kibontása
- - Ne legyen a pathban space, spec. karakter, ékezetes betű!!!
- - a projektkönyvtárban, ahol a gradle.build file van
-<pre class="batch"><code>gradle build</code></pre>
- - eltarthat egy darabig elsőre
-          </textarea>
-        </section>
-       <section data-markdown>
-          <textarea data-template>
-### Futtatás lokálisan
-- böngészőben megnyitható a build/web/index.html
-- hiba: cross-origin reference
-- chrome indítása az --allow-file-access-from-files kapcsolóval megoldja
- - MINDEN Chrome processt le kell előte állítani
-          </textarea>
-        </section>
-       <section data-markdown>
-          <textarea data-template>
-### Futtatás webszerverrel
-- node.js telepítése
- - hordozható verzió: https://github.com/crazy-max/nodejs-portable/releases/download/2.10.0/nodejs-portable.exe
-- exe futtatása, 1-es opció mindent feltelepít
-- exe futtatása, 2-es opció node-os promptot ad, itt:
-<pre class="batch"><code>npm install http-server --global</code></pre>
-- ezután a projektkönyvtárba váltva:
-<pre class="batch"><code>http-server .</code></pre>
-- böngészőben: localhost:8080/build/web/
-          </textarea>
-        </section>
-        <section data-markdown>
-          <textarea data-template>
-### Kezdő kód
-- kell
- - egy index.html file ami létrehozza a weboldalt, amin van egy canvas
- - egy CSS file az elemek pozícionálásához
- - JavaScript fileok a programlogikához
-- ezt generáljuk
- - Kotlin forrásból
-- amit szerkesztünk 
- - Sublime Text Editor
-          </textarea>
-        </section>       
+        </section> 
         <section>
-          <h3>Könyvtárszerkezet</h3>
-          <pre><code class="floating-annotations" data-trim> <script type="text/template">
-kog
-├── gradle.properties
-├── settings.gradle.kts
-├── build.gradle.kts
-└── client 
-    ├── build.gradle.kts
-    └── src
-        └── main
-            ├── content
-            │   ├── index.html
-            │   ├── favicon.ico
-            │   └── css
-            │       ├── style.css
-            │       └── bg.png
-            └── kotlin
-                ├── KeyNames.kt
-                └── App.kt
+          <h3>Mint a desktop OpenGL</h3>
+          <pre><code class="kotlin" data-trim> <script type="text/template">
+gl.bindBuffer(/* ... */)
+gl.vertexAttribPointer(/* ... */)
+gl.useProgram(/* ... */)
+gl.drawArrays(/* ... */)
           </script> </code></pre>
-        </section>
-        <!-- patch="kog.010.010.0010-gradle.properties.patch" language="hun" -->
-        <!-- patch="kog.010.010.0020-settings.gradle.kts.patch" language="hun" -->
-        <!-- patch="kog.010.010.0030-build.gradle.kts.patch" language="hun" -->
-        <!-- patch="kog.010.010.0040-client-build.gradle.kts.patch" language="hun" -->
-        <section data-markdown>
-          <textarea data-template>
-### DOM
-- Document Object Model
-- HTML címkék hierarchiája mint szülő-gyerek kapcsolatban álló objektumok rendszere
-
-- győkér: document
- - firstChild
- - nextSibling
- - getElementById
-          </textarea>
-        </section>        
-        <!-- patch="kog.010.010.0060-index.html.patch" language="hun" -->
-        <!-- patch="kog.010.010.0070-style.css.patch" language="hun" -->
-        <section data-markdown>
-          <textarea data-template>
-### Window és document
-- window
- - a HTML dokumentumot megjelenítő ablak absztrakciója
-
-document.defaultView.document == document
-          </textarea>
-        </section>   
-        <!-- patch="kog.010.010.0080-app.patch" language="hun" -->
-        <section data-markdown>
-          <textarea data-template>
-### Hibakeresés a böngészőben
-- jobb klikk/Inspect/Sources tab
-- keressük meg az App.kt-t
-- sorszámra klikkelve rakjunk breakpointot
-- töltsük újra a weboldalt
-- meg kell állni a breakpointnál
-- léptethetünk
-- egérrel változó fölött lebegve megnézhetjük az értékét
-- a konzolon bármit kiértékelhetünk
-- a Call Stack-ban látjuk a függvényhívásláncot
+        </section>               
+        <!-- patch="kog.010.020.0010-WebGL2-rendering-context.patch" language="hun" -->        
+        <!-- patch="kog.010.020.0020-Create-WebGL-context.patch" language="hun" -->
+        <!-- patch="kog.010.020.0030-Scene-instance-and-canvas-resize.patch" language="hun" -->
+        <!-- patch="kog.010.020.0040-Call-update.patch" language="hun" -->
+        <!-- patch="kog.010.020.0050-Scene-class.patch" language="hun" -->
+        <section data-auto-animate>
+<h3>Hogyan rajzolunk egy háromszöget?</h3>
+<ul> <li>létre kell hozni és adattal feltölteni (Scene initkor)</li>
+<ul><li>a vertex buffert</li>
+ <li>az input layoutot (VAO)</li>
+ <li>az index buffert</li>
+ <li>vertex shader + fragment shader = program</li></ul>
+<li> rajzoláskor (a Scene update metódusában)</li><ul>
+ <li> bufferek, layout választása</li>
+ <li> program választása</li>
+ <li> rajzolás indítása</li>
+</ul>
+</ul>
           </textarea>
         </section>
-        <section data-markdown>
-          <textarea data-template>
-### Billentyűesemények feldolgozása
-- nem a lenyomásra (typematic rate!) vagy felengedésre akarunk reagálni
-- hanem minden frameben tudni, mi van épp lenyomva
-- keysPressed Set konténer 
-- adott gomb String neve benne, ha az le van nyomva
- - az S billentyű neve "S" legyen, ha lehet...
- - de az onkeydown eventjében keyCode van (S: 83???)
- - keyNames.kt : globális keyNames objektum
- - elemek a string nevek, pl. "S", "DELETE", "SPACE", "F1"
+        <section data-auto-animate>
+<h3>Hogyan rajzolunk egy háromszöget?</h3>
+<ul> <li>létre kell hozni és adattal feltölteni (Scene initkor)</li>
+<ul><li>class TriangleGeometry</li>
+ <li>vertex shader + fragment shader = program</li></ul>
+<li> rajzoláskor (a Scene update metódusában)</li><ul>
+ <li> bufferek, layout választása</li>
+ <li> program választása</li>
+ <li> rajzolás indítása</li>
+</ul>
+</ul>
           </textarea>
         </section>        
-        <!-- patch="kog.010.010.0090-key-names.patch" language="hun" -->
-        <!-- patch="kog.010.010.0100-store-key-events-to-keysPressed-set.patch" language="hun" -->
+        <section data-auto-animate>
+<h3>Hogyan rajzolunk egy háromszöget?</h3>
+<ul> <li>létre kell hozni és adattal feltölteni (Scene initkor)</li>
+<ul><li>class TriangleGeometry</li>
+ <li>class Shader, class Program</li></ul>
+<li> rajzoláskor (a Scene update metódusában)</li><ul>
+ <li> bufferek, layout választása</li>
+ <li> program választása</li>
+ <li> rajzolás indítása</li>
+</ul>
+</ul>
+        </section>           
+        <section data-markdown>
+          <textarea data-template>
+### Új Kotlin fileok/osztályok
+- Scene.kt – a virtuális világ reprezentációja, animációja és rajzolása
+- TriangleGeometry.kt – a vertex, index bufferek és input layoutok létrehozása
+- Shader.kt – GLSL shader források betölése és fordítása
+- Program.kt – shader kombók és bemeneteik összeállítása
+          </textarea>
+        </section>                
+        <section data-markdown>
+          <textarea data-template>
+### WebGL függvények
+- a WebGL nem OO
+ - valami erőforrás kiválasztunk (bind)
+ - az következő műveletek erre hatnak
+- így együtt van értelme a kódsoroknak
+          </textarea>
+        </section>
+        <!-- patch="kog.010.020.0070-Triangle-geometry.patch" language="hun" -->
+        <!-- patch="kog.010.020.0080-Idle-vertex-shader.patch" language="hun" -->
+        <!-- patch="kog.010.020.0090-Solid-color-fragment-shader.patch" language="hun" -->
+        <section data-markdown>
+          <textarea data-template>
+### Shader források külön fileokban
+- XMLHttpRequest a szerver felé
+          </textarea>
+        </section>     
+        <!-- patch="kog.010.020.0100-Shader-class.patch" language="hun" -->
+        <!-- patch="kog.010.020.0110-Program-class.patch" language="hun" -->
+        <!-- patch="kog.010.020.0120-Create-and-draw-geometry-and-program.patch" language="hun" -->        
+        <!-- patch="kog.010.020.0140-Draw-triangle.patch" language="hun" -->
+        <section data-markdown>
+          <textarea data-template>
+### Az attribútum-VS bemenet spec-lánc
+          </textarea>
+        </section>
+        <section data-markdown>
+          <textarea data-template>
+### Alapértelmezett VS bemeneti csatornák
+          </textarea>
+        </section>
       </div>
     </div>
 

@@ -1,7 +1,7 @@
 #!/bin/bash -v
 
 wd=$(pwd)
-cd ../../..
+cd ../..
 var=`date +"%FORMAT_STRING"`
 now=`date +"%F_%R"`
 mv kogedge kogedge$now

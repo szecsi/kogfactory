@@ -1,0 +1,44 @@
+From 376f69ec78479b34633908fec163107f3e353033 Mon Sep 17 00:00:00 2001
+From: szecsi <szecsi.laszlo@gmail.com>
+Date: Fri, 12 Feb 2021 11:00:25 +0100
+Subject: [PATCH] Texture2D class
+
+---
+ client/src/main/kotlin/Texture2D.kt | 24 ++++++++++++++++++++++++
+ 1 file changed, 24 insertions(+)
+ create mode 100644 client/src/main/kotlin/Texture2D.kt
+
+diff --git a/client/src/main/kotlin/Texture2D.kt b/client/src/main/kotlin/Texture2D.kt
+new file mode 100644
+index 0000000..9379b4a
+--- /dev/null
++++ b/client/src/main/kotlin/Texture2D.kt
+@@ -0,0 +1,24 @@
++import org.khronos.webgl.WebGLRenderingContext as GL
++import org.khronos.webgl.WebGLTexture
++import org.w3c.dom.Image
++import org.w3c.dom.events.Event
++import vision.gears.webglmath.Texture
++
++class Texture2D(
++  gl : WebGL2RenderingContext,
++  val mediaFileUrl : String
++  ) : Texture {
++  override val glTexture : WebGLTexture? = gl.createTexture()
++  init {
++    val image = Image()
++    image.onload = {
++      gl.bindTexture(GL.TEXTURE_2D, glTexture)
++      gl.texImage2D(GL.TEXTURE_2D, 0, GL.RGBA, GL.RGBA, GL.UNSIGNED_BYTE, image) 
++      gl.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MAG_FILTER, GL.LINEAR) 
++      gl.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MIN_FILTER, GL.LINEAR_MIPMAP_LINEAR) 
++      gl.generateMipmap(GL.TEXTURE_2D); 
++      gl.bindTexture(GL.TEXTURE_2D, null); 
++    }
++    image.src = mediaFileUrl
++  }
++}
+\ No newline at end of file
+-- 
+2.16.1.windows.1
+

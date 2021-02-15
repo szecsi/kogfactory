@@ -1,0 +1,2579 @@
+From 736dbf61adfbda30ad885ed677b5fa2945867513 Mon Sep 17 00:00:00 2001
+From: szecsi <szecsi.laszlo@gmail.com>
+Date: Fri, 12 Feb 2021 10:54:14 +0100
+Subject: [PATCH] WebGLMath
+
+---
+ webglmath/src/main/kotlin/Drawable.kt          |   9 +
+ webglmath/src/main/kotlin/Geometry.kt          |  16 ++
+ webglmath/src/main/kotlin/Mat4.kt              | 384 +++++++++++++++++++++++++
+ webglmath/src/main/kotlin/Mat4Array.kt         |  49 ++++
+ webglmath/src/main/kotlin/ProgramReflection.kt | 179 ++++++++++++
+ webglmath/src/main/kotlin/Sampler2D.kt         |  41 +++
+ webglmath/src/main/kotlin/Sampler3D.kt         |  43 +++
+ webglmath/src/main/kotlin/SamplerCube.kt       |  41 +++
+ webglmath/src/main/kotlin/Uniform.kt           |  80 ++++++
+ webglmath/src/main/kotlin/UniformProvider.kt   |  64 +++++
+ webglmath/src/main/kotlin/Vec1.kt              | 171 +++++++++++
+ webglmath/src/main/kotlin/Vec1Array.kt         |  98 +++++++
+ webglmath/src/main/kotlin/Vec2.kt              | 241 ++++++++++++++++
+ webglmath/src/main/kotlin/Vec2Array.kt         |  96 +++++++
+ webglmath/src/main/kotlin/Vec3.kt              | 246 ++++++++++++++++
+ webglmath/src/main/kotlin/Vec3Array.kt         | 117 ++++++++
+ webglmath/src/main/kotlin/Vec4.kt              | 281 ++++++++++++++++++
+ webglmath/src/main/kotlin/Vec4Array.kt         | 109 +++++++
+ webglmath/src/main/kotlin/VecArray.kt          | 142 +++++++++
+ 19 files changed, 2407 insertions(+)
+ create mode 100644 webglmath/src/main/kotlin/Drawable.kt
+ create mode 100644 webglmath/src/main/kotlin/Geometry.kt
+ create mode 100644 webglmath/src/main/kotlin/Mat4.kt
+ create mode 100644 webglmath/src/main/kotlin/Mat4Array.kt
+ create mode 100644 webglmath/src/main/kotlin/ProgramReflection.kt
+ create mode 100644 webglmath/src/main/kotlin/Sampler2D.kt
+ create mode 100644 webglmath/src/main/kotlin/Sampler3D.kt
+ create mode 100644 webglmath/src/main/kotlin/SamplerCube.kt
+ create mode 100644 webglmath/src/main/kotlin/Uniform.kt
+ create mode 100644 webglmath/src/main/kotlin/UniformProvider.kt
+ create mode 100644 webglmath/src/main/kotlin/Vec1.kt
+ create mode 100644 webglmath/src/main/kotlin/Vec1Array.kt
+ create mode 100644 webglmath/src/main/kotlin/Vec2.kt
+ create mode 100644 webglmath/src/main/kotlin/Vec2Array.kt
+ create mode 100644 webglmath/src/main/kotlin/Vec3.kt
+ create mode 100644 webglmath/src/main/kotlin/Vec3Array.kt
+ create mode 100644 webglmath/src/main/kotlin/Vec4.kt
+ create mode 100644 webglmath/src/main/kotlin/Vec4Array.kt
+ create mode 100644 webglmath/src/main/kotlin/VecArray.kt
+
+diff --git a/webglmath/src/main/kotlin/Drawable.kt b/webglmath/src/main/kotlin/Drawable.kt
+new file mode 100644
+index 0000000..89b9a62
+--- /dev/null
++++ b/webglmath/src/main/kotlin/Drawable.kt
+@@ -0,0 +1,9 @@
++package vision.gears.webglmath
++
++abstract class Drawable {
++  open fun gatherUniforms(target : UniformProvider){}
++  abstract fun draw(vararg uniformProviders : UniformProvider)
++  open fun drawWithOverrides(overrides : Map<String, UniformProvider>, vararg uniformProviders : UniformProvider){
++    draw(*uniformProviders)
++  }
++}
+diff --git a/webglmath/src/main/kotlin/Geometry.kt b/webglmath/src/main/kotlin/Geometry.kt
+new file mode 100644
+index 0000000..1c976f1
+--- /dev/null
++++ b/webglmath/src/main/kotlin/Geometry.kt
+@@ -0,0 +1,16 @@
++package vision.gears.webglmath
++
++abstract class Geometry : Drawable() {
++	abstract fun draw()
++
++  final override fun draw(vararg uniformProviders : UniformProvider){
++  	draw()
++  }
++
++  // This implementation is identical to Drawable::drawWithOverrides. Is there a way to make the method final withot overriding it?
++  final override fun drawWithOverrides(overrides : Map<String, UniformProvider>, vararg uniformProviders : UniformProvider) {
++  	draw(*uniformProviders)
++	}
++  // This empty implementation is identical to Drawable::drawWithOverrides. Is there a way to make the method final withot overriding it?
++  final override fun gatherUniforms(target : UniformProvider){}
++}
+diff --git a/webglmath/src/main/kotlin/Mat4.kt b/webglmath/src/main/kotlin/Mat4.kt
+new file mode 100644
+index 0000000..6574fb6
+--- /dev/null
++++ b/webglmath/src/main/kotlin/Mat4.kt
+@@ -0,0 +1,384 @@
++package vision.gears.webglmath
++
++import org.khronos.webgl.Float32Array
++import org.khronos.webgl.get
++import org.khronos.webgl.set
++import org.khronos.webgl.WebGLRenderingContext
++import org.khronos.webgl.WebGLUniformLocation
++import kotlin.reflect.KProperty
++import kotlin.math.sqrt
++import kotlin.math.cos
++import kotlin.math.sin
++
++class Mat4 (backingStorage: Float32Array?, offset: Int = 0) : UniformFloat {
++
++  constructor(
++//    m00 : Float = 1.0f, m01: Float = 0.0f, m02: Float = 0.0f, m03: Float = 0.0f,
++//    m10 : Float = 0.0f, m11: Float = 1.0f, m12: Float = 0.0f, m13: Float = 0.0f,
++//    m20 : Float = 0.0f, m21: Float = 0.0f, m22: Float = 1.0f, m23: Float = 0.0f,
++//    m30 : Float = 0.0f, m31: Float = 0.0f, m32: Float = 0.0f, m33: Float = 1.0f) : this(null, 0){
++    vararg elements : Float ) : this(null, 0){
++    val allElements = Array<Float>(16) {
++      i : Int ->
++      elements.getOrNull((i % 4)*4 + i/4)?: if(i%5==0) 1.0f else 0.0f
++    }
++    storage.set(allElements)
++  }
++  constructor(other : Mat4) : this(null, 0)  {
++    storage.set(other.storage)
++  }
++
++  override val storage: Float32Array = backingStorage?.subarray(offset, offset+16)?:Float32Array(16)
++
++  fun clone() : Mat4 {
++    return Mat4(this)
++  }
++
++  override fun set(vararg values : Float ) : Mat4 {
++    val allElements = Array<Float>(16) {
++      i : Int ->
++      values.getOrNull((i % 4)*4 + i/4)?: if(i%5==0) 1.0f else 0.0f
++    }
++    storage.set(allElements)
++    return this
++  }
++
++  override fun set(other : Uniform) : Mat4{
++    if(other is Mat4) {
++      storage.set(other.storage)
++    } else {
++      throw Error("A Mat4 cannot be set from a Uniform of another type.")
++    }
++    return this
++  }  
++
++  fun premul(m : Mat4) : Mat4 {
++    val n00 = storage[0]
++    val n01 = storage[4]
++    val n02 = storage[8]
++    val n03 = storage[12]
++    val n10 = storage[1]
++    val n11 = storage[5]
++    val n12 = storage[9]
++    val n13 = storage[13]
++    val n20 = storage[2]
++    val n21 = storage[6]
++    val n22 = storage[10]
++    val n23 = storage[14]
++    val n30 = storage[3]
++    val n31 = storage[7]
++    val n32 = storage[11]
++    val n33 = storage[15]
++    val m00 = m.storage[0]
++    val m01 = m.storage[4]
++    val m02 = m.storage[8]
++    val m03 = m.storage[12]
++    val m10 = m.storage[1]
++    val m11 = m.storage[5]
++    val m12 = m.storage[9]
++    val m13 = m.storage[13]
++    val m20 = m.storage[2]
++    val m21 = m.storage[6]
++    val m22 = m.storage[10]
++    val m23 = m.storage[14]
++    val m30 = m.storage[3]
++    val m31 = m.storage[7]
++    val m32 = m.storage[11]
++    val m33 = m.storage[15]
++    storage[0] = (m00 * n00) + (m01 * n10) + (m02 * n20) + (m03 * n30)
++    storage[1] = (m10 * n00) + (m11 * n10) + (m12 * n20) + (m13 * n30)
++    storage[2] = (m20 * n00) + (m21 * n10) + (m22 * n20) + (m23 * n30)
++    storage[3] = (m30 * n00) + (m31 * n10) + (m32 * n20) + (m33 * n30)
++    storage[4] = (m00 * n01) + (m01 * n11) + (m02 * n21) + (m03 * n31)
++    storage[5] = (m10 * n01) + (m11 * n11) + (m12 * n21) + (m13 * n31)
++    storage[6] = (m20 * n01) + (m21 * n11) + (m22 * n21) + (m23 * n31)
++    storage[7] = (m30 * n01) + (m31 * n11) + (m32 * n21) + (m33 * n31)
++    storage[8] = (m00 * n02) + (m01 * n12) + (m02 * n22) + (m03 * n32)
++    storage[9] = (m10 * n02) + (m11 * n12) + (m12 * n22) + (m13 * n32)
++    storage[10] = (m20 * n02) + (m21 * n12) + (m22 * n22) + (m23 * n32)
++    storage[11] = (m30 * n02) + (m31 * n12) + (m32 * n22) + (m33 * n32)
++    storage[12] = (m00 * n03) + (m01 * n13) + (m02 * n23) + (m03 * n33)
++    storage[13] = (m10 * n03) + (m11 * n13) + (m12 * n23) + (m13 * n33)
++    storage[14] = (m20 * n03) + (m21 * n13) + (m22 * n23) + (m23 * n33)
++    storage[15] = (m30 * n03) + (m31 * n13) + (m32 * n23) + (m33 * n33)
++    return this
++  }
++
++  operator fun timesAssign(m : Mat4){
++    val m00 = storage[0]
++    val m01 = storage[4]
++    val m02 = storage[8]
++    val m03 = storage[12]
++    val m10 = storage[1]
++    val m11 = storage[5]
++    val m12 = storage[9]
++    val m13 = storage[13]
++    val m20 = storage[2]
++    val m21 = storage[6]
++    val m22 = storage[10]
++    val m23 = storage[14]
++    val m30 = storage[3]
++    val m31 = storage[7]
++    val m32 = storage[11]
++    val m33 = storage[15]
++    val n00 = m.storage[0]
++    val n01 = m.storage[4]
++    val n02 = m.storage[8]
++    val n03 = m.storage[12]
++    val n10 = m.storage[1]
++    val n11 = m.storage[5]
++    val n12 = m.storage[9]
++    val n13 = m.storage[13]
++    val n20 = m.storage[2]
++    val n21 = m.storage[6]
++    val n22 = m.storage[10]
++    val n23 = m.storage[14]
++    val n30 = m.storage[3]
++    val n31 = m.storage[7]
++    val n32 = m.storage[11]
++    val n33 = m.storage[15]
++    storage[0] = (m00 * n00) + (m01 * n10) + (m02 * n20) + (m03 * n30)
++    storage[1] = (m10 * n00) + (m11 * n10) + (m12 * n20) + (m13 * n30)
++    storage[2] = (m20 * n00) + (m21 * n10) + (m22 * n20) + (m23 * n30)
++    storage[3] = (m30 * n00) + (m31 * n10) + (m32 * n20) + (m33 * n30)
++    storage[4] = (m00 * n01) + (m01 * n11) + (m02 * n21) + (m03 * n31)
++    storage[5] = (m10 * n01) + (m11 * n11) + (m12 * n21) + (m13 * n31)
++    storage[6] = (m20 * n01) + (m21 * n11) + (m22 * n21) + (m23 * n31)
++    storage[7] = (m30 * n01) + (m31 * n11) + (m32 * n21) + (m33 * n31)
++    storage[8] = (m00 * n02) + (m01 * n12) + (m02 * n22) + (m03 * n32)
++    storage[9] = (m10 * n02) + (m11 * n12) + (m12 * n22) + (m13 * n32)
++    storage[10] = (m20 * n02) + (m21 * n12) + (m22 * n22) + (m23 * n32)
++    storage[11] = (m30 * n02) + (m31 * n12) + (m32 * n22) + (m33 * n32)
++    storage[12] = (m00 * n03) + (m01 * n13) + (m02 * n23) + (m03 * n33)
++    storage[13] = (m10 * n03) + (m11 * n13) + (m12 * n23) + (m13 * n33)
++    storage[14] = (m20 * n03) + (m21 * n13) + (m22 * n23) + (m23 * n33)
++    storage[15] = (m30 * n03) + (m31 * n13) + (m32 * n23) + (m33 * n33)
++  }
++
++  operator fun times(m : Mat4) : Mat4 {
++    val res = Mat4(this)
++    res *= m
++    return res
++  }
++
++  operator fun timesAssign(s : Float) {
++    storage[ 0] *= s
++    storage[ 1] *= s
++    storage[ 2] *= s
++    storage[ 3] *= s
++    storage[ 4] *= s
++    storage[ 5] *= s
++    storage[ 6] *= s
++    storage[ 7] *= s
++    storage[ 8] *= s
++    storage[ 9] *= s
++    storage[10] *= s
++    storage[12] *= s
++    storage[13] *= s
++    storage[14] *= s
++    storage[15] *= s
++  }
++
++  operator fun times(s : Float) : Mat4 {
++    val res = Mat4(this)
++    res *= s
++    return res    
++  }
++
++  operator fun times(v : Vec4) : Vec4 {
++    val vp = Vec4()
++    vp.storage[0] = storage[ 0] * v.storage[0] + storage[ 1] * v.storage[1] + storage[ 2] * v.storage[2] + storage[ 3] * v.storage[3]
++    vp.storage[1] = storage[ 4] * v.storage[0] + storage[ 5] * v.storage[1] + storage[ 6] * v.storage[2] + storage[ 7] * v.storage[3]
++    vp.storage[2] = storage[ 8] * v.storage[0] + storage[ 9] * v.storage[1] + storage[10] * v.storage[2] + storage[11] * v.storage[3]
++    vp.storage[3] = storage[12] * v.storage[0] + storage[13] * v.storage[1] + storage[14] * v.storage[2] + storage[15] * v.storage[3]        
++    return vp    
++  }
++
++  fun scale(s : Vec2) : Mat4 { return scale(s.storage[0], s.storage[1], 1.0f)}
++  fun scale(s : Vec3) : Mat4 { return scale(s.storage[0], s.storage[1], s.storage[2])}  
++  fun scale(sx : Float = 1.0f, sy : Float = 1.0f, sz : Float = 1.0f) : Mat4 {
++    storage[ 0] *= sx
++    storage[ 1] *= sx
++    storage[ 2] *= sx
++    storage[ 3] *= sx
++    storage[ 4] *= sy
++    storage[ 5] *= sy
++    storage[ 6] *= sy
++    storage[ 7] *= sy
++    storage[ 8] *= sz
++    storage[ 9] *= sz
++    storage[10] *= sz
++    storage[11] *= sz
++    return this  
++  }
++
++  fun rotate(angle : Float, axis : Vec3) : Mat4 { return rotate(angle, axis.storage[0], axis.storage[1], axis.storage[2])}
++  fun rotate(angle : Float = 0.0f, axisX : Float = 0.0f, axisY : Float = 0.0f, axisZ : Float = 0.0f) : Mat4 {
++    var x = axisX
++    var y = axisY
++    var z = axisZ        
++    val axisLength2 = x*x + y*y + z*z
++    if(axisLength2 < 0.0001f){
++      x=0.0f
++      y=0.0f
++      z=1.0f
++    } else if(axisLength2 < 0.999f || axisLength2 > 1.001f) {
++      val axisLength = sqrt(axisLength2)
++      x /= axisLength
++      y /= axisLength
++      z /= axisLength
++    }
++    val cosa = cos(angle)
++    val sina = sin(angle)
++    val C = 1.0f - cosa
++    val m11 = x * x * C + cosa
++    val m21 = x * y * C - z * sina
++    val m31 = x * z * C + y * sina
++    val m12 = y * x * C + z * sina
++    val m22 = y * y * C + cosa
++    val m32 = y * z * C - x * sina
++    val m13 = z * x * C - y * sina
++    val m23 = z * y * C + x * sina
++    val m33 = z * z * C + cosa
++    val t0  = storage[ 0] * m11 + storage[ 4] * m21 + storage[ 8] * m31
++    val t4  = storage[ 0] * m12 + storage[ 4] * m22 + storage[ 8] * m32
++    val t8  = storage[ 0] * m13 + storage[ 4] * m23 + storage[ 8] * m33
++    val t1  = storage[ 1] * m11 + storage[ 5] * m21 + storage[ 9] * m31
++    val t5  = storage[ 1] * m12 + storage[ 5] * m22 + storage[ 9] * m32
++    val t9  = storage[ 1] * m13 + storage[ 5] * m23 + storage[ 9] * m33
++    val t2  = storage[ 2] * m11 + storage[ 6] * m21 + storage[10] * m31
++    val t6  = storage[ 2] * m12 + storage[ 6] * m22 + storage[10] * m32
++    val t10 = storage[ 2] * m13 + storage[ 6] * m23 + storage[10] * m33
++    val t3  = storage[ 3] * m11 + storage[ 7] * m21 + storage[11] * m31
++    val t7  = storage[ 3] * m12 + storage[ 7] * m22 + storage[11] * m32
++    val t11 = storage[ 3] * m13 + storage[ 7] * m23 + storage[11] * m33
++    storage[ 0] = t0 
++    storage[ 4] = t4 
++    storage[ 8] = t8 
++    storage[ 1] = t1 
++    storage[ 5] = t5 
++    storage[ 9] = t9 
++    storage[ 2] = t2 
++    storage[ 6] = t6 
++    storage[10] = t10
++    storage[ 3] = t3 
++    storage[ 7] = t7 
++    storage[11] = t11
++    return this  
++  }
++
++  fun translate(t : Vec2) : Mat4 { return translate(t.storage[0], t.storage[1])}  
++  fun translate(t : Vec3) : Mat4 { return translate(t.storage[0], t.storage[1], t.storage[2])}  
++  fun translate(x : Float = 0.0f, y : Float = 0.0f, z : Float = 0.0f) : Mat4 {
++    storage[ 0] += storage[12] * x
++    storage[ 4] += storage[12] * y
++    storage[ 8] += storage[12] * z
++    storage[ 1] += storage[13] * x
++    storage[ 5] += storage[13] * y
++    storage[ 9] += storage[13] * z
++    storage[ 2] += storage[14] * x
++    storage[ 6] += storage[14] * y
++    storage[10] += storage[14] * z  
++    storage[ 3] += storage[15] * x
++    storage[ 7] += storage[15] * y
++    storage[11] += storage[15] * z
++    return this      
++  }
++
++  fun transpose() : Mat4 {
++    var temp = storage[4]
++    storage[4] = storage[1]
++    storage[1] = temp
++    temp = storage[8]
++    storage[8] = storage[2]
++    storage[2] = temp
++    temp = storage[12]
++    storage[12] = storage[3]
++    storage[3] = temp
++    temp = storage[9]
++    storage[9] = storage[6]
++    storage[6] = temp
++    temp = storage[13]
++    storage[13] = storage[7]
++    storage[7] = temp
++    temp = storage[14]
++    storage[14] = storage[11]
++    storage[11] = temp
++    return this  
++  }
++
++  fun invert() : Mat4 {
++    val a00 = storage[0]
++    val a01 = storage[1]
++    val a02 = storage[2]
++    val a03 = storage[3]
++    val m000 = storage[4]
++    val m001 = storage[5]
++    val m002 = storage[6]
++    val m003 = storage[7]
++    val m100 = storage[8]
++    val m101 = storage[9]
++    val m102 = storage[10]
++    val m103 = storage[11]
++    val m200 = storage[12]
++    val m201 = storage[13]
++    val m202 = storage[14]
++    val m203 = storage[15]
++    val b00 = a00 * m001 - a01 * m000
++    val b01 = a00 * m002 - a02 * m000
++    val b02 = a00 * m003 - a03 * m000
++    val b03 = a01 * m002 - a02 * m001
++    val b04 = a01 * m003 - a03 * m001
++    val b05 = a02 * m003 - a03 * m002
++    val b06 = m100 * m201 - m101 * m200
++    val b07 = m100 * m202 - m102 * m200
++    val b08 = m100 * m203 - m103 * m200
++    val b09 = m101 * m202 - m102 * m201
++    val m010 = m101 * m203 - m103 * m201
++    val m011 = m102 * m203 - m103 * m202
++    val det =
++        (b00 * m011 - b01 * m010 + b02 * b09 + b03 * b08 - b04 * b07 + b05 * b06)
++    if (det == 0.0f) {
++        return this
++    }
++    val invDet = 1.0f / det
++    storage[0] = (m001 * m011 - m002 * m010 + m003 * b09) * invDet
++    storage[1] = (-a01 * m011 + a02 * m010 - a03 * b09) * invDet
++    storage[2] = (m201 * b05 - m202 * b04 + m203 * b03) * invDet
++    storage[3] = (-m101 * b05 + m102 * b04 - m103 * b03) * invDet
++    storage[4] = (-m000 * m011 + m002 * b08 - m003 * b07) * invDet
++    storage[5] = (a00 * m011 - a02 * b08 + a03 * b07) * invDet
++    storage[6] = (-m200 * b05 + m202 * b02 - m203 * b01) * invDet
++    storage[7] = (m100 * b05 - m102 * b02 + m103 * b01) * invDet
++    storage[8] = (m000 * m010 - m001 * b08 + m003 * b06) * invDet
++    storage[9] = (-a00 * m010 + a01 * b08 - a03 * b06) * invDet
++    storage[10] = (m200 * b04 - m201 * b02 + m203 * b00) * invDet
++    storage[11] = (-m100 * b04 + m101 * b02 - m103 * b00) * invDet
++    storage[12] = (-m000 * b09 + m001 * b07 - m002 * b06) * invDet
++    storage[13] = (a00 * b09 - a01 * b07 + a02 * b06) * invDet
++    storage[14] = (-m200 * b03 + m201 * b01 - m202 * b00) * invDet
++    storage[15] = (m100 * b03 - m101 * b01 + m102 * b00) * invDet
++    return this
++  }
++
++  operator fun provideDelegate(
++      provider: UniformProvider,
++      property: KProperty<*>) : Mat4{
++    provider.register(property.name, this)
++    return this
++  }
++
++  operator fun getValue(provider: UniformProvider, property: KProperty<*>): Mat4 {
++    return this
++  }
++
++  operator fun setValue(provider: UniformProvider, property: KProperty<*>, value: Mat4) {
++    set(value)
++  }  
++
++
++  override fun commit(gl : WebGLRenderingContext, uniformLocation : WebGLUniformLocation, samplerIndex : Int){
++    gl.uniformMatrix4fv(uniformLocation, false, storage);
++  }
++
++}
+diff --git a/webglmath/src/main/kotlin/Mat4Array.kt b/webglmath/src/main/kotlin/Mat4Array.kt
+new file mode 100644
+index 0000000..58edc9f
+--- /dev/null
++++ b/webglmath/src/main/kotlin/Mat4Array.kt
+@@ -0,0 +1,49 @@
++package vision.gears.webglmath
++
++import org.khronos.webgl.Float32Array
++import org.khronos.webgl.get
++import org.khronos.webgl.set
++import org.khronos.webgl.WebGLRenderingContext
++import org.khronos.webgl.WebGLUniformLocation
++import kotlin.reflect.KProperty
++import kotlin.random.Random
++import kotlin.math.pow
++
++
++class Mat4Array(backingStorage: Float32Array?, startIndex: Int = 0, endIndex: Int = 0) : UniformFloat {
++
++  constructor(size : Int) : this(null, size, size) {}
++
++  override val storage = backingStorage?.subarray(startIndex*16, endIndex*16)?:Float32Array(startIndex*16)
++
++  override fun set(vararg values : Float) : Mat4Array {
++    for(i in 0 until storage.length) {
++      storage[i] = values.getOrNull(i%16) ?: if(i%16%5==0) 1.0f else 0.0f
++    }
++    return this
++  }
++
++  operator fun get(i : Int) : Mat4{
++    return Mat4(storage, i*16)
++  }
++
++  operator fun provideDelegate(
++      provider: UniformProvider,
++      property: KProperty<*>) : Mat4Array{
++    provider.register(property.name, this)
++    return this
++  }
++
++  operator fun getValue(provider: UniformProvider, property: KProperty<*>): Mat4Array {
++    return this
++  }
++  
++  operator fun setValue(provider: UniformProvider, property: KProperty<*>, value: Mat4Array) {
++    set(value)
++  }    
++
++  override fun commit(gl : WebGLRenderingContext, uniformLocation : WebGLUniformLocation, samplerIndex : Int){
++    gl.uniformMatrix4fv(uniformLocation, false, storage);
++  }
++
++}
+diff --git a/webglmath/src/main/kotlin/ProgramReflection.kt b/webglmath/src/main/kotlin/ProgramReflection.kt
+new file mode 100644
+index 0000000..5ff4f53
+--- /dev/null
++++ b/webglmath/src/main/kotlin/ProgramReflection.kt
+@@ -0,0 +1,179 @@
++package vision.gears.webglmath
++
++import org.khronos.webgl.WebGLRenderingContext
++import org.khronos.webgl.WebGLUniformLocation
++import org.khronos.webgl.WebGLProgram
++
++val WebGLRenderingContext.Companion.UNSIGNED_INT_SAMPLER_2D : Int get() = 0x8DD2
++val WebGLRenderingContext.Companion.INT_SAMPLER_2D : Int get() = 0x8DCA
++val WebGLRenderingContext.Companion.SAMPLER_2D_SHADOW : Int get() = 0x8B62
++val WebGLRenderingContext.Companion.UNSIGNED_INT_SAMPLER_CUBE : Int get() = 0x8DD4
++val WebGLRenderingContext.Companion.INT_SAMPLER_CUBE : Int get() = 0x8DCC
++val WebGLRenderingContext.Companion.SAMPLER_CUBE_SHADOW : Int get() = 0x8DC5
++val WebGLRenderingContext.Companion.UNSIGNED_INT_SAMPLER_3D : Int get() = 0x8DD3
++val WebGLRenderingContext.Companion.INT_SAMPLER_3D : Int get() = 0x8DCB
++val WebGLRenderingContext.Companion.SAMPLER_3D : Int get() = 0x8B5F
++val WebGLRenderingContext.Companion.UNSIGNED_INT_SAMPLER_2D_ARRAY : Int get() = 0x8DD7
++val WebGLRenderingContext.Companion.INT_SAMPLER_2D_ARRAY : Int get() = 0x8DCF
++val WebGLRenderingContext.Companion.SAMPLER_2D_ARRAY_SHADOW : Int get() = 0x8DC4
++val WebGLRenderingContext.Companion.SAMPLER_2D_ARRAY : Int get() = 0x8DC1
++
++class UniformDescriptor(val name:String, val type: Int, val size: Int, val location: WebGLUniformLocation){
++}
++
++class ProgramReflection(val gl : WebGLRenderingContext, val glProgram : WebGLProgram) : Drawable() {
++
++  val uniformDescriptors = HashMap<String, ArrayList<UniformDescriptor> >()
++
++  init{
++  	// for all uniforms used in glProgram
++  	val nUniforms = gl.getProgramParameter(glProgram, WebGLRenderingContext.ACTIVE_UNIFORMS) as Int
++  	for(i in 0 until nUniforms){ 
++  	  val glUniform = gl.getActiveUniform(glProgram, i)!!
++  	  // separate struct name (if exists) and unqualified uniform name
++  	  val nameParts = glUniform.name.split(".")
++  	  val uniformName = nameParts.lastOrNull() ?: continue
++  	  val structName = nameParts.dropLast(1).lastOrNull() ?: continue
++
++      uniformDescriptors[structName] = this.uniformDescriptors[structName] ?: ArrayList<UniformDescriptor>()
++      uniformDescriptors[structName]!!.add( UniformDescriptor(
++        name = uniformName,
++        type = glUniform.type,
++        size = glUniform.size,
++        location = gl.getUniformLocation(glProgram, glUniform.name)!!
++      ))
++    }
++  }
++  
++  override fun gatherUniforms(target : UniformProvider){
++    for(structName in target.glslStructNames) {
++      // Skip GLSL struct provided by the target if the program does not need it.
++      val descList = uniformDescriptors[structName] ?: continue
++
++      for(uniformDesc in descList) {
++        val reflectionVariable = ProgramReflection.makeVar(uniformDesc.type, uniformDesc.size)
++
++        if(target.uniforms.containsKey(uniformDesc.name)){ // if reflection property already exists, check compatibility
++          val existingVariable = target.uniforms[uniformDesc.name] ?: throw Error("Uniform is null.")
++          if(existingVariable::class != reflectionVariable::class ||
++            existingVariable.getStorageSize() != reflectionVariable.getStorageSize()){
++            throw Error("Trying to reflect uniform ${uniformDesc.name} as a ${reflectionVariable::class.simpleName} with element count ${reflectionVariable.getStorageSize()}, but it already exists in the target object as a ${(existingVariable::class.simpleName)} with element count ${existingVariable.getStorageSize()}.")
++          }
++        } else {
++          target.uniforms[uniformDesc.name] = reflectionVariable
++        }
++      }
++    }
++  }
++  
++  /**
++   * Sets values of all uniforms from the properties of the given objects.
++   * @param {...UniformProvider} uniformProviders - Objects with properties matching the names and the types of the uniforms to be set. Their glslStructNames property must list uniform struct names they are responsible for setting.
++   */
++  override fun draw(vararg uniformProviders : UniformProvider) { 
++    gl.useProgram(glProgram)
++    var textureUnitCount = 0
++
++    for(provider in uniformProviders){
++      for(structName in provider.glslStructNames) {
++        val descList = uniformDescriptors[structName] ?: continue
++        for(uniformDesc in descList) {
++          provider[uniformDesc.name]!!.commit(gl, uniformDesc.location, textureUnitCount)
++          //  keep track of texture units used
++          if( ProgramReflection.isSampler(uniformDesc.type) ){ 
++            textureUnitCount += uniformDesc.size
++          }
++        }
++      }
++    }
++  }
++
++  companion object {
++    /**
++     * @method makeVar
++     * @memberof ProgramReflection
++     * @static 
++     * @description Returns a new reflection variable based on a numerical WebGL type ID.
++     * @param {Number} type - The numeric type of the uniform, i.e. a value of a type identifier property in the rendering context.
++     * @param {Number} arraySize - The number of elements in the uniform, if it is an array. Otherwise, it must be 1.
++     * @return {Vec1 | Vec1Array | Vec2 | Vec2Array | Vec3 | Vec3Array | Vec4 | Vec4Array | Mat4 | Mat4Array | Sampler2D | Sampler2DArray | SamplerCube | SamplerCubeArray | Sampler3D | Sampler3DArray | Sampler2DArrayTexture | Sampler2DArrayTextureArray} The new reflection object.
++     */  
++    fun makeVar(type : Int, arraySize : Int) : Uniform {
++      if(arraySize == 1) {
++        when(type) {
++          WebGLRenderingContext.FLOAT ->         return Vec1()
++          WebGLRenderingContext.FLOAT_VEC2 ->    return Vec2()
++          WebGLRenderingContext.FLOAT_VEC3 ->    return Vec3()
++          WebGLRenderingContext.FLOAT_VEC4 ->    return Vec4()
++          WebGLRenderingContext.FLOAT_MAT4 ->    return Mat4()
++          WebGLRenderingContext.UNSIGNED_INT_SAMPLER_2D , 
++//          WebGLRenderingContext.INT_SAMPLER_2D ,
++//          WebGLRenderingContext.SAMPLER_2D_SHADOW ,
++          WebGLRenderingContext.SAMPLER_2D ->    return Sampler2D()
++//          WebGLRenderingContext.UNSIGNED_INT_SAMPLER_CUBE ,
++//          WebGLRenderingContext.INT_SAMPLER_CUBE ,
++//          WebGLRenderingContext.SAMPLER_CUBE_SHADOW ,
++          WebGLRenderingContext.SAMPLER_CUBE ->  return SamplerCube()
++//          WebGLRenderingContext.UNSIGNED_INT_SAMPLER_3D ,
++//          WebGLRenderingContext.INT_SAMPLER_3D ,
++          WebGLRenderingContext.SAMPLER_3D ->    return Sampler3D()
++//          WebGLRenderingContext.UNSIGNED_INT_SAMPLER_2D_ARRAY ,
++//          WebGLRenderingContext.INT_SAMPLER_2D_ARRAY ,
++//          WebGLRenderingContext.SAMPLER_2D_SHADOW_ARRAY ,
++//          WebGLRenderingContext.SAMPLER_2D_ARRAY ->    return Sampler2DArrayTexture()
++        }
++      } else {
++        when(type) {
++          WebGLRenderingContext.FLOAT ->         return Vec1Array(arraySize)
++          WebGLRenderingContext.FLOAT_VEC2 ->    return Vec2Array(arraySize)
++          WebGLRenderingContext.FLOAT_VEC3 ->    return Vec3Array(arraySize)
++          WebGLRenderingContext.FLOAT_VEC4 ->    return Vec4Array(arraySize)
++          WebGLRenderingContext.FLOAT_MAT4 ->    return Mat4Array(arraySize)
++//          WebGLRenderingContext.UNSIGNED_INT_SAMPLER_2D ,
++//          WebGLRenderingContext.INT_SAMPLER_2D ,
++//          WebGLRenderingContext.SAMPLER_2D_SHADOW ,
++//          WebGLRenderingContext.SAMPLER_2D ->    return Sampler2DArray(arraySize)
++//          WebGLRenderingContext.UNSIGNED_INT_SAMPLER_CUBE ,
++//          WebGLRenderingContext.INT_SAMPLER_CUBE ,
++//          WebGLRenderingContext.SAMPLER_CUBE_SHADOW ,
++//          WebGLRenderingContext.SAMPLER_CUBE ->  return SamplerCubeArray(arraySize)
++//          WebGLRenderingContext.UNSIGNED_INT_SAMPLER_3D , 
++//          WebGLRenderingContext.INT_SAMPLER_3D ,
++//          WebGLRenderingContext.SAMPLER_3D ->    return Sampler3DArray(arraySize)
++//          WebGLRenderingContext.UNSIGNED_INT_SAMPLER_2D_ARRAY ,
++//          WebGLRenderingContext.INT_SAMPLER_2D_ARRAY ,
++//          WebGLRenderingContext.SAMPLER_2D_ARRAY_SHADOW ,
++//          WebGLRenderingContext.SAMPLER_2D_ARRAY ->    return Sampler2DArrayTextureArray(arraySize)
++        }
++      }
++      throw Error("Unhandled uniform variable of type ID ${type}.")
++    }
++
++
++    /**
++     * @method isSampler
++     * @memberof ProgramReflection
++     * @static 
++     * @description Returns true if type is a numerical WebGL type ID of a sampler uniform.
++     * @param {WebGL2RenderingContext} gl - The rendering context.
++     * @param {Number} type - The numeric type of the uniform, i.e. a value of a type identifier property in the rendering context.
++     */
++    fun isSampler(type : Int) : Boolean {
++      return  type == WebGLRenderingContext.SAMPLER_2D ||
++              type == WebGLRenderingContext.SAMPLER_3D ||
++              type == WebGLRenderingContext.SAMPLER_CUBE ||
++              type == WebGLRenderingContext.SAMPLER_2D_SHADOW ||
++              type == WebGLRenderingContext.SAMPLER_2D_ARRAY ||
++              type == WebGLRenderingContext.SAMPLER_2D_ARRAY_SHADOW ||
++              type == WebGLRenderingContext.SAMPLER_CUBE_SHADOW ||
++              type == WebGLRenderingContext.INT_SAMPLER_2D ||
++              type == WebGLRenderingContext.INT_SAMPLER_3D ||
++              type == WebGLRenderingContext.INT_SAMPLER_CUBE ||
++              type == WebGLRenderingContext.INT_SAMPLER_2D_ARRAY ||
++              type == WebGLRenderingContext.UNSIGNED_INT_SAMPLER_2D ||
++              type == WebGLRenderingContext.UNSIGNED_INT_SAMPLER_3D ||
++              type == WebGLRenderingContext.UNSIGNED_INT_SAMPLER_CUBE ||
++              type == WebGLRenderingContext.UNSIGNED_INT_SAMPLER_2D_ARRAY
++    }
++  }
++}
+\ No newline at end of file
+diff --git a/webglmath/src/main/kotlin/Sampler2D.kt b/webglmath/src/main/kotlin/Sampler2D.kt
+new file mode 100644
+index 0000000..71d7d9e
+--- /dev/null
++++ b/webglmath/src/main/kotlin/Sampler2D.kt
+@@ -0,0 +1,41 @@
++package vision.gears.webglmath
++
++import org.khronos.webgl.Int32Array
++import org.khronos.webgl.get
++import org.khronos.webgl.set
++import org.khronos.webgl.WebGLRenderingContext
++import org.khronos.webgl.WebGLUniformLocation
++import org.khronos.webgl.WebGLTexture
++import kotlin.reflect.KProperty
++
++class Sampler2D : UniformSampler {
++
++  override val storage = Int32Array(1)
++  override val glTextures = Array<WebGLTexture?>(1) {null}
++
++  operator fun provideDelegate(
++      provider: UniformProvider,
++      property: KProperty<*>) : Sampler2D {
++    provider.register(property.name, this)
++    return this
++  }
++
++  operator fun getValue(provider: UniformProvider, property: KProperty<*>): Sampler2D {
++    return this
++  }
++  
++  operator fun setValue(provider: UniformProvider, property: KProperty<*>, value: Sampler2D) {
++    set(value)
++  }  
++
++  override fun commit(gl : WebGLRenderingContext, uniformLocation : WebGLUniformLocation, samplerIndex : Int){
++    storage[0] = samplerIndex;
++    if(glTextures[0] != null) {
++      gl.uniform1iv(uniformLocation, storage)
++      gl.activeTexture(WebGLRenderingContext.TEXTURE0 + samplerIndex)
++      gl.bindTexture(WebGLRenderingContext.TEXTURE_2D, glTextures[0])
++    } else {
++      throw Error("No texture bound to Sampler2D uniform.")
++    }
++  }
++}
+\ No newline at end of file
+diff --git a/webglmath/src/main/kotlin/Sampler3D.kt b/webglmath/src/main/kotlin/Sampler3D.kt
+new file mode 100644
+index 0000000..f08d799
+--- /dev/null
++++ b/webglmath/src/main/kotlin/Sampler3D.kt
+@@ -0,0 +1,43 @@
++package vision.gears.webglmath
++
++import org.khronos.webgl.Int32Array
++import org.khronos.webgl.get
++import org.khronos.webgl.set
++import org.khronos.webgl.WebGLRenderingContext
++import org.khronos.webgl.WebGLUniformLocation
++import org.khronos.webgl.WebGLTexture
++import kotlin.reflect.KProperty
++
++val WebGLRenderingContext.Companion.TEXTURE_3D : Int get() = 0x806F
++
++class Sampler3D : UniformSampler {
++
++  override val storage = Int32Array(1)
++  override val glTextures = Array<WebGLTexture?>(1) {null}
++
++  operator fun provideDelegate(
++      provider: UniformProvider,
++      property: KProperty<*>) : Sampler3D {
++    provider.register(property.name, this)
++    return this
++  }
++
++  operator fun getValue(provider: UniformProvider, property: KProperty<*>): Sampler3D {
++    return this
++  }
++  
++  operator fun setValue(provider: UniformProvider, property: KProperty<*>, value: Sampler3D) {
++    set(value)
++  }
++
++  override fun commit(gl : WebGLRenderingContext, uniformLocation : WebGLUniformLocation, samplerIndex : Int){
++    storage[0] = samplerIndex;
++    if(glTextures[0] != null) {
++      gl.uniform1iv(uniformLocation, storage)
++      gl.activeTexture(WebGLRenderingContext.TEXTURE0 + samplerIndex)
++      gl.bindTexture(WebGLRenderingContext.TEXTURE_3D, glTextures[0])
++    } else {
++      throw Error("No texture bound to Sampler3D uniform.")
++    }
++  }
++}
+\ No newline at end of file
+diff --git a/webglmath/src/main/kotlin/SamplerCube.kt b/webglmath/src/main/kotlin/SamplerCube.kt
+new file mode 100644
+index 0000000..9a474e4
+--- /dev/null
++++ b/webglmath/src/main/kotlin/SamplerCube.kt
+@@ -0,0 +1,41 @@
++package vision.gears.webglmath
++
++import org.khronos.webgl.Int32Array
++import org.khronos.webgl.get
++import org.khronos.webgl.set
++import org.khronos.webgl.WebGLRenderingContext
++import org.khronos.webgl.WebGLUniformLocation
++import org.khronos.webgl.WebGLTexture
++import kotlin.reflect.KProperty
++
++class SamplerCube : UniformSampler {
++
++  override val storage = Int32Array(1)
++  override val glTextures = Array<WebGLTexture?>(1) {null}
++
++  operator fun provideDelegate(
++      provider: UniformProvider,
++      property: KProperty<*>) : SamplerCube {
++    provider.register(property.name, this)
++    return this
++  }
++
++  operator fun getValue(provider: UniformProvider, property: KProperty<*>): SamplerCube {
++    return this
++  }
++  
++  operator fun setValue(provider: UniformProvider, property: KProperty<*>, value: SamplerCube) {
++    set(value)
++  }
++
++  override fun commit(gl : WebGLRenderingContext, uniformLocation : WebGLUniformLocation, samplerIndex : Int){
++    storage[0] = samplerIndex;
++    if(glTextures[0] != null) {
++      gl.uniform1iv(uniformLocation, storage)
++      gl.activeTexture(WebGLRenderingContext.TEXTURE0 + samplerIndex)
++      gl.bindTexture(WebGLRenderingContext.TEXTURE_CUBE_MAP, glTextures[0])
++    } else {
++      throw Error("No texture bound to SamplerCube uniform.")
++    }
++  }
++}
+\ No newline at end of file
+diff --git a/webglmath/src/main/kotlin/Uniform.kt b/webglmath/src/main/kotlin/Uniform.kt
+new file mode 100644
+index 0000000..4ecca20
+--- /dev/null
++++ b/webglmath/src/main/kotlin/Uniform.kt
+@@ -0,0 +1,80 @@
++package vision.gears.webglmath
++
++import org.khronos.webgl.Float32Array
++import org.khronos.webgl.Int32Array
++import org.khronos.webgl.get
++import org.khronos.webgl.set
++import org.khronos.webgl.WebGLRenderingContext
++import org.khronos.webgl.WebGLUniformLocation
++import org.khronos.webgl.WebGLTexture
++import kotlin.reflect.KProperty
++
++interface Texture {
++	abstract val glTexture : WebGLTexture?
++}
++
++interface Uniform {
++	fun set(other: Uniform) : Uniform
++	fun set(vararg values : Float) : Uniform
++	fun set(firstTexture : Texture, vararg moreTextures : Texture)
++	fun getStorageSize() : Int
++
++	fun commit(gl : WebGLRenderingContext, uniformLocation : WebGLUniformLocation, samplerIndex : Int = 0)
++}
++
++interface UniformFloat : Uniform {
++	abstract val storage : Float32Array
++
++	override fun getStorageSize() : Int{
++		return storage.length
++	}
++
++	override fun set(other: Uniform) : Uniform {
++		if(other is UniformFloat){
++			for(i : Int in 0 until storage.length) {
++	    		storage[i] = if(i < other.storage.length) other.storage[i] else 0.0f
++	    }
++    } else {
++			throw Error("Cannot set a uniform of floats from a non-float uniform.")
++    }
++    return this
++	}
++
++	override fun set(firstTexture : Texture, vararg moreTextures : Texture){
++		throw Error("Cannot set a texture to a non-sampler uniform.")
++	}
++
++}
++
++interface UniformSampler : Uniform {
++	abstract val storage : Int32Array
++	abstract val glTextures : Array<WebGLTexture?>
++
++	override fun getStorageSize() : Int{
++		return storage.length
++	}
++
++	override fun set(other: Uniform) : Uniform {
++		if(other is UniformSampler){
++			for(i : Int in 0 until storage.length) {
++	    		storage[i] = if(i < other.storage.length) other.storage[i] else 0
++	    		glTextures[i] = other.glTextures.getOrNull(i)
++	    }
++    } else {
++			throw Error("Cannot set a uniform of textures from a non-texture uniform.")
++    }
++    return this
++	}
++
++	override fun set(firstTexture : Texture, vararg moreTextures : Texture){
++		glTextures[0] = firstTexture.glTexture
++		for(i : Int in 0 until storage.length) {
++			glTextures[i+1] = moreTextures.getOrNull(i)?.glTexture
++		}
++	}
++
++	override fun set(vararg values : Float) : UniformFloat {
++		throw Error("Cannot set float values to a texture uniform.")
++	}
++}
++
+diff --git a/webglmath/src/main/kotlin/UniformProvider.kt b/webglmath/src/main/kotlin/UniformProvider.kt
+new file mode 100644
+index 0000000..5a49df2
+--- /dev/null
++++ b/webglmath/src/main/kotlin/UniformProvider.kt
+@@ -0,0 +1,64 @@
++package vision.gears.webglmath
++
++open class UniformProvider(vararg val glslStructNames : String) : Drawable() {
++  internal val uniforms = HashMap<String, Uniform>()
++  fun register(uniformName : String, uniform : Uniform){
++    uniforms[uniformName] = uniform
++  }
++  operator fun get(name : String): Uniform? {
++    if(!uniforms.containsKey(name)){
++      console.error("""WARNING: Attempt to access unknown or non-active uniform '${name}'.""" );         
++    }
++    return uniforms[name] }
++  operator fun set(name : String, uniform : Uniform ) { (uniforms[name] ?: return).set(uniform) }
++  operator fun set(name : String, value : Float ) { (uniforms[name] ?: return).set(value) }
++
++  val components = ArrayList<Drawable>()
++
++  fun addComponentsAndGatherUniforms(vararg children : Drawable){
++    components.addAll(children)
++    gatherUniforms(this)
++  }
++
++  override fun gatherUniforms(target : UniformProvider){
++    components.forEach {
++      it.gatherUniforms(target)
++    }
++  }
++
++  override fun draw(vararg uniformProviders : UniformProvider){
++    components.forEach {
++      it.draw(this, *uniformProviders)
++    }
++  }
++
++  /**
++   * Recursively calls drawWithOverrides on subcomponents, but if there is
++   * an object of matching type in overrides, drawWithOverrides is called
++   * on it instead of the subcomponent.
++   */
++  override fun drawWithOverrides(overrides : Map<String, UniformProvider>, vararg uniformProviders : UniformProvider){
++    components.forEach{
++      (overrides[it::class.simpleName]?:it).drawWithOverrides(
++        overrides,
++        this,
++        *uniformProviders
++        )
++    }
++  }    
++
++  fun using(vararg overriders : UniformProvider) : Drawable {
++    val overrideMap = overriders.map{(it::class.simpleName?:"<no class name>") to it}.toMap()
++    return object : Drawable() {
++      override fun draw(vararg uniformProviders : UniformProvider){
++        this@UniformProvider.drawWithOverrides(overrideMap, *uniformProviders)
++      }
++      override fun drawWithOverrides(overrides : Map<String, UniformProvider>, vararg uniformProviders : UniformProvider){
++        val allOverrides : MutableMap<String, UniformProvider> = overrideMap.toMutableMap()
++        overrides.forEach{ (key : String, value : Drawable) -> allOverrides[key] = value } 
++        this@UniformProvider.drawWithOverrides(allOverrides, *uniformProviders)
++      }
++    }
++  }
++}
++
+diff --git a/webglmath/src/main/kotlin/Vec1.kt b/webglmath/src/main/kotlin/Vec1.kt
+new file mode 100644
+index 0000000..bede61c
+--- /dev/null
++++ b/webglmath/src/main/kotlin/Vec1.kt
+@@ -0,0 +1,171 @@
++package vision.gears.webglmath
++
++import org.khronos.webgl.Float32Array
++import org.khronos.webgl.get
++import org.khronos.webgl.set
++import org.khronos.webgl.WebGLRenderingContext
++import org.khronos.webgl.WebGLUniformLocation
++import kotlin.reflect.KProperty
++import kotlin.random.Random
++
++@Suppress("NOTHING_TO_INLINE")
++class Vec1(backingStorage: Float32Array?, offset: Int = 0) : UniformFloat {
++
++  constructor(u: Float = 0.0f) : this(null, 0){
++    storage[0] = u
++  }
++  constructor(other : Vec1) : this(null, 0)  {
++    storage.set(other.storage);
++  }
++
++  override val storage: Float32Array = backingStorage?.subarray(offset, offset+1)?:Float32Array(1)
++  inline var x : Float
++    get() = storage[0]
++    set(value) { storage[0] = value }
++  inline val xx : Vec2
++    get() = Vec2(storage[0], storage[0])
++  inline val xxx : Vec3
++    get() = Vec3(storage[0], storage[0], storage[0])
++  inline val xxxx : Vec4
++    get() = Vec4(storage[0], storage[0], storage[0], storage[0])        
++
++  inline fun clone() : Vec1 {
++    return Vec1(this);
++  }
++
++  override fun set(vararg values : Float) : Vec1 {
++    storage[0] = values.getOrElse(0) {0.0f}
++    return this 
++  }
++
++  companion object {
++    val zeros = Vec1()
++    val ones = Vec1(1.0f) 
++
++    inline fun makeRandom(minVal: Vec1 = Vec1.zeros, maxVal: Vec1 = Vec1.ones) : Vec1 {
++      return Vec1(
++          Random.nextFloat() * (maxVal.storage[0] - minVal.storage[0]) + minVal.storage[0]                    
++        )  
++    }
++    inline fun makeRandom(minVal: Float = 0.0f, maxVal: Float = 1.0f): Vec1 {
++      return Vec1.makeRandom(Vec1(minVal), Vec1(maxVal))
++    }
++  }
++
++  inline fun randomize(minVal: Vec1 = Vec1.zeros, maxVal: Vec1 = Vec1.ones){
++    set(Vec1.makeRandom(minVal, maxVal))
++  }
++  inline fun randomize(minVal: Float = 0.0f, maxVal: Float = 1.0f){
++    randomize(Vec1(minVal), Vec1(maxVal))
++  }
++
++  inline fun clamp(minVal: Vec1 = Vec1.zeros, maxVal: Vec1 = Vec1.ones) : Vec1 {
++    if(storage[0] < minVal.storage[0]){
++      storage[0] = minVal.storage[0]
++    }
++    if(storage[0] > maxVal.storage[0]){
++      storage[0] = maxVal.storage[0]
++    }
++    return this
++  }
++
++  operator inline fun unaryPlus() : Vec1 {
++    return this
++  }
++
++  operator inline fun unaryMinus() : Vec1 {
++    return Vec1(-storage[0])
++  }
++
++  operator inline fun times(scalar : Float) : Vec1 {
++    return Vec1(
++      storage[0] * scalar
++      )
++  }
++
++  operator inline fun div(scalar : Float) : Vec1 {
++    return Vec1(
++      storage[0] / scalar
++      )
++  }
++
++  operator inline fun timesAssign(scalar : Float) {
++    storage[0] *= scalar
++  }
++
++  operator inline fun divAssign(scalar : Float) {
++    storage[0] /= scalar
++  }    
++
++  operator inline fun plusAssign(other : Vec1) {
++    storage[0] += other.storage[0]
++  }
++
++  operator inline fun plus(other : Vec1) : Vec1 {
++    return Vec1(
++      storage[0] + other.storage[0]
++      )
++  }
++
++  operator inline fun minusAssign(other : Vec1) {
++    storage[0] -= other.storage[0]
++  }
++
++  operator inline fun minus(other : Vec1) : Vec1 {
++    return Vec1(
++      storage[0] - other.storage[0]
++      )
++  }
++
++  operator inline fun timesAssign(other : Vec1) {
++    storage[0] *= other.storage[0]
++  }
++
++  operator inline fun times(other : Vec1) : Vec1 {
++    return Vec1(
++      storage[0] * other.storage[0]
++      )
++  }
++
++  operator inline fun divAssign(other : Vec1) {
++    storage[0] /= other.storage[0]
++  }
++
++  operator inline fun div(other : Vec1) : Vec1 {
++    return Vec1(
++      storage[0] / other.storage[0]
++      )
++  }       
++
++  inline fun lengthSquared() : Float {
++    return storage[0] * storage[0]
++  }
++
++  inline fun length() : Float {
++    return storage[0];
++  }
++
++  operator fun provideDelegate(
++      provider: UniformProvider,
++      property: KProperty<*>) : Vec1 {
++    provider.register(property.name, this)
++    return this
++  }
++
++  operator fun getValue(provider: UniformProvider, property: KProperty<*>): Vec1 {
++    return this
++  }
++
++  operator fun setValue(provider: UniformProvider, property: KProperty<*>, value: Vec1) {
++    set(value)
++  }
++
++  override fun commit(gl : WebGLRenderingContext, uniformLocation : WebGLUniformLocation, samplerIndex : Int){
++    gl.uniform1fv(uniformLocation, storage);
++  }
++}
++
++@Suppress("NOTHING_TO_INLINE")
++operator inline fun Float.times(v: Vec1) = Vec1(this * v.storage[0])
++@Suppress("NOTHING_TO_INLINE")
++operator inline fun Float.div(v: Vec1) = Vec1(this / v.storage[0])
+diff --git a/webglmath/src/main/kotlin/Vec1Array.kt b/webglmath/src/main/kotlin/Vec1Array.kt
+new file mode 100644
+index 0000000..59f39a4
+--- /dev/null
++++ b/webglmath/src/main/kotlin/Vec1Array.kt
+@@ -0,0 +1,98 @@
++package vision.gears.webglmath
++
++import org.khronos.webgl.Float32Array
++import org.khronos.webgl.get
++import org.khronos.webgl.set
++import org.khronos.webgl.WebGLRenderingContext
++import org.khronos.webgl.WebGLUniformLocation
++import kotlin.reflect.KProperty
++import kotlin.random.Random
++import kotlin.math.pow
++import kotlin.math.sqrt
++
++class Vec1Array(backingStorage: Float32Array?, startIndex: Int = 0, endIndex: Int = 0) : VecArray() {
++
++  constructor(size : Int) : this(null, size, size) {}
++
++  override val storage = backingStorage?.subarray(startIndex, endIndex)?:Float32Array(startIndex)
++
++  override fun set(vararg values : Float) : Vec1Array {
++    for(i in 0 until storage.length) {
++      storage[i] = values.getOrNull(i) ?: 0.0f
++    }
++    return this
++  }
++
++  operator fun get(i : Int) : Vec1{
++    return Vec1(storage, i)
++  }
++
++  fun subarray(begin : Int, end : Int) : Vec1Array {
++    return Vec1Array(storage, begin, end)
++  }
++
++  fun setDot(b : Vec2Array, c : Vec2Array) {
++    for(i in 0 until storage.length) {
++      storage[i] = b.storage[i*2] * c.storage[i*2] + b.storage[i*2+1] * c.storage[i*2+1]
++    } 
++  }
++  fun setDot(b : Vec3Array, c : Vec3Array) {
++    for(i in 0 until storage.length) {
++      storage[i] = b.storage[i*3] * c.storage[i*3] + b.storage[i*3+1] * c.storage[i*3+1] + b.storage[i*3+2] * c.storage[i*3+2]
++    }
++  }
++  fun setDot(b : Vec4Array, c : Vec4Array) {
++    for(i in 0 until storage.length) {
++      storage[i] = b.storage[i*4] * c.storage[i*4] + b.storage[i*4+1] * c.storage[i*4+1] + b.storage[i*4+2] * c.storage[i*4+2] + b.storage[i*4+3] * c.storage[i*4+3]
++    }
++  }  
++  fun setDot(b : Vec2Array, c : Vec2) {
++    for(i in 0 until storage.length) {
++      storage[i] = b.storage[i*2] * c.storage[0] + b.storage[i*2+1] * c.storage[1]
++    }
++  }
++  fun setDot(b : Vec3Array, c : Vec3) {
++    for(i in 0 until storage.length) {
++      storage[i] = b.storage[i*3] * c.storage[0] + b.storage[i*3+1] * c.storage[1] + b.storage[i*3+2] * c.storage[2]
++    }
++  }
++  fun setDot(b : Vec4Array, c : Vec4) {
++    for(i in 0 until storage.length) {
++      storage[i] = b.storage[i*4] * c.storage[0] + b.storage[i*4+1] * c.storage[1] + b.storage[i*4+2] * c.storage[2] + b.storage[i*4+3] * c.storage[3]
++    }
++  }
++  fun setLength(b : Vec2Array) {
++    for(i in 0 until storage.length) {
++      storage[i] = sqrt(b.storage[i*2] * b.storage[i*2] + b.storage[i*2+1] * b.storage[i*2+1])
++    }
++  }
++  fun setLength(b : Vec3Array) {
++    for(i in 0 until storage.length) {
++      storage[i] = sqrt(b.storage[i*3] * b.storage[i*3] + b.storage[i*3+1] * b.storage[i*3+1] + b.storage[i*3+2] * b.storage[i*3+2])
++    }
++  }
++  fun setLength(b : Vec4Array) {
++    for(i in 0 until storage.length) {
++      storage[i] = sqrt(b.storage[i*4] * b.storage[i*4] + b.storage[i*4+1] * b.storage[i*4+1] + b.storage[i*4+2] * b.storage[i*4+2] + b.storage[i*4+3] * b.storage[i*4+3])
++    }
++  }
++
++  operator fun provideDelegate(
++      provider: UniformProvider,
++      property: KProperty<*>) : Vec1Array {
++    provider.register(property.name, this)
++    return this
++  }
++
++  operator fun getValue(provider: UniformProvider, property: KProperty<*>): Vec1Array {
++    return this
++  }
++
++  operator fun setValue(provider: UniformProvider, property: KProperty<*>, value: Vec1Array) {
++    set(value)
++  }  
++
++  override fun commit(gl : WebGLRenderingContext, uniformLocation : WebGLUniformLocation, samplerIndex : Int){
++    gl.uniform1fv(uniformLocation, storage);
++  }  
++} 
+\ No newline at end of file
+diff --git a/webglmath/src/main/kotlin/Vec2.kt b/webglmath/src/main/kotlin/Vec2.kt
+new file mode 100644
+index 0000000..f64df63
+--- /dev/null
++++ b/webglmath/src/main/kotlin/Vec2.kt
+@@ -0,0 +1,241 @@
++package vision.gears.webglmath
++
++import org.khronos.webgl.Float32Array
++import org.khronos.webgl.get
++import org.khronos.webgl.set
++import org.khronos.webgl.WebGLRenderingContext
++import org.khronos.webgl.WebGLUniformLocation
++import kotlin.reflect.KProperty
++import kotlin.random.Random
++import kotlin.math.sqrt
++import kotlinx.serialization.*
++import kotlinx.serialization.descriptors.*
++import kotlinx.serialization.json.*
++import kotlinx.serialization.encoding.*
++
++object Vec2Serializer : KSerializer<Vec2> {
++  @kotlinx.serialization.InternalSerializationApi
++  override val descriptor: SerialDescriptor =
++    buildSerialDescriptor("vision.gears.Vec2", StructureKind.LIST)
++  override fun deserialize(decoder: Decoder): Vec2 {
++    val input = decoder as? JsonDecoder ?: throw SerializationException("Expected Json Input")
++    val array = input.decodeJsonElement() as? JsonArray ?: throw SerializationException("Expected JsonArray")
++    return Vec2(
++      (array[0] as? JsonPrimitive)?.float ?: 0.0f,
++      (array[1] as? JsonPrimitive)?.float ?: 0.0f 
++    )
++    //return Vec2(decoder.decodeSerializableValue(FloatArraySerializer()))
++  }
++  override fun serialize(encoder: Encoder, value : Vec2) {
++    val output = encoder as? JsonEncoder ?: throw SerializationException("This class can be saved only by Json")
++    val array = buildJsonArray {
++      add(value.x)
++      add(value.y)
++    }
++    /*array.encodeFloatElement(descriptor, 0, value.x)
++    array.encodeFloatElement(descriptor, 1, value.y)*/
++    output.encodeJsonElement(array)
++  }      
++}
++
++
++@Suppress("NOTHING_TO_INLINE")
++@Serializable(with = Vec2Serializer::class)
++class Vec2(backingStorage: Float32Array?, offset: Int = 0) : UniformFloat {
++
++  constructor(u: Float = 0.0f, v: Float = 0.0f) : this(null, 0){
++    storage[0] = u
++    storage[1] = v
++  }
++  constructor(other : Vec1, v: Float = 0.0f) : this(other.storage[0], v ){}
++  constructor(other : Vec2) : this(null, 0)  {
++    storage.set(other.storage);
++  }
++
++  override val storage: Float32Array = backingStorage?.subarray(offset, offset+2)?:Float32Array(2)
++  inline var x : Float
++    get() = storage[0]
++    set(value) { storage[0] = value }
++  inline var y : Float
++    get() = storage[1]
++    set(value) { storage[1] = value }
++  inline val xy0 : Vec3
++    get() = Vec3(storage[0], storage[1], 0.0f)
++  inline val xy00 : Vec4
++    get() = Vec4(storage[0], storage[1], 0.0f, 0.0f)    
++  inline val xy01 : Vec4
++    get() = Vec4(storage[0], storage[1], 0.0f, 1.0f)
++
++  inline fun clone() : Vec2 {
++    return Vec2(this);
++  }
++
++  override fun set(vararg values : Float) : Vec2 {
++    storage[0] = values.getOrElse(0) {0.0f}
++    storage[1] = values.getOrElse(1) {0.0f}
++    return this 
++  }
++
++  companion object {
++    val zeros = Vec2()
++    val ones = Vec2(1.0f, 1.0f) 
++
++    inline fun makeRandom(minVal: Vec2 = Vec2.zeros, maxVal: Vec2 = Vec2.ones) : Vec2 {
++      return Vec2(
++          Random.nextFloat() * (maxVal.storage[0] - minVal.storage[0]) + minVal.storage[0],
++          Random.nextFloat() * (maxVal.storage[1] - minVal.storage[1]) + minVal.storage[1]
++        )  
++    }
++    inline fun makeRandom(minVal: Float = 0.0f, maxVal: Float = 1.0f) : Vec2 {
++      return Vec2.makeRandom(Vec2(minVal, minVal), Vec2(maxVal, maxVal))
++    }
++  }
++
++  inline fun randomize(minVal: Vec2 = Vec2.zeros, maxVal: Vec2 = Vec2.ones){
++    set(Vec2.makeRandom(minVal, maxVal))
++  }
++  inline fun randomize(minVal: Float = 0.0f, maxVal: Float = 1.0f){
++    randomize(Vec2(minVal, minVal), Vec2(maxVal, maxVal))
++  }
++
++  inline fun clamp(minVal: Vec2 = Vec2.zeros, maxVal: Vec2 = Vec2.ones) : Vec2 {
++    if(storage[0] < minVal.storage[0]){
++      storage[0] = minVal.storage[0]
++    }
++    if(storage[1] < minVal.storage[1]){
++      storage[1] = minVal.storage[1]
++    }
++    if(storage[0] > maxVal.storage[0]){
++      storage[0] = maxVal.storage[0]
++    }
++    if(storage[1] > maxVal.storage[1]){
++      storage[1] = maxVal.storage[1]
++    }
++    return this
++  }
++
++  operator inline fun unaryPlus() : Vec2 {
++    return this
++  }
++
++  operator inline fun unaryMinus() : Vec2 {
++    return Vec2(-storage[0], -storage[1])
++  }
++
++  operator inline fun times(scalar : Float) : Vec2 {
++    return Vec2(
++      storage[0] * scalar,
++      storage[1] * scalar
++      )
++  }
++
++  operator inline fun div(scalar : Float) : Vec2 {
++    return Vec2(
++      storage[0] / scalar,
++      storage[1] / scalar      
++      )
++  }
++
++  operator inline fun timesAssign(scalar : Float) {
++    storage[0] *= scalar
++    storage[1] *= scalar
++  }
++
++  operator inline fun divAssign(scalar : Float) {
++    storage[0] /= scalar
++    storage[1] /= scalar
++  }
++
++  operator inline fun plusAssign(other : Vec2) {
++    storage[0] += other.storage[0]
++    storage[1] += other.storage[1]
++  }
++
++  operator inline fun plus(other : Vec2) : Vec2 {
++    return Vec2(
++      storage[0] + other.storage[0],
++      storage[1] + other.storage[1]
++      )
++  }
++
++  operator inline fun minusAssign(other : Vec2) {
++    storage[0] -= other.storage[0]
++    storage[1] -= other.storage[1]
++  }
++
++  operator inline fun minus(other : Vec2) : Vec2 {
++    return Vec2(
++      storage[0] - other.storage[0],
++      storage[1] - other.storage[1]
++      )
++  }
++
++  operator inline fun timesAssign(other : Vec2) {
++    storage[0] *= other.storage[0]
++    storage[1] *= other.storage[1]
++  }
++
++  operator inline fun times(other : Vec2) : Vec2 {
++    return Vec2(
++      storage[0] * other.storage[0],
++      storage[1] * other.storage[1]
++      )
++  }
++
++  operator inline fun divAssign(other : Vec2) {
++    storage[0] /= other.storage[0]
++    storage[1] /= other.storage[1]
++  }
++
++  operator inline fun div(other : Vec2) : Vec2 {
++    return Vec2(
++      storage[0] / other.storage[0],
++      storage[1] / other.storage[1]
++      )
++  }       
++
++  inline fun lengthSquared() : Float {
++    return storage[0] * storage[0] + storage[1] * storage[1]
++  }
++
++  inline fun length() : Float {
++    return sqrt(lengthSquared());
++  }
++
++  inline fun normalize() : Vec2 {
++    val l = this.length()
++    storage[0] /= l
++    storage[1] /= l
++    return this
++  }
++
++  infix inline fun dot(other : Vec2) : Float {
++    return (
++     storage[0] * other.storage[0] +
++     storage[1] * other.storage[1] )
++  }
++
++  operator fun provideDelegate(
++      provider: UniformProvider,
++      property: KProperty<*>) : Vec2 {
++    provider.register(property.name, this)
++    return this
++  }
++
++  operator fun getValue(provider: UniformProvider, property: KProperty<*>): Vec2 {
++    return this
++  }
++
++  operator fun setValue(provider: UniformProvider, property: KProperty<*>, value: Vec2) {
++    set(value)
++  }
++  
++  override fun commit(gl : WebGLRenderingContext, uniformLocation : WebGLUniformLocation, samplerIndex : Int){
++    gl.uniform2fv(uniformLocation, storage);
++  }
++}
++
++@Suppress("NOTHING_TO_INLINE")
++operator inline fun Float.times(v: Vec2) = Vec2(this * v.storage[0], this * v.storage[1])
++@Suppress("NOTHING_TO_INLINE")
++operator inline fun Float.div(v: Vec2) = Vec2(this / v.storage[0], this / v.storage[1])
+diff --git a/webglmath/src/main/kotlin/Vec2Array.kt b/webglmath/src/main/kotlin/Vec2Array.kt
+new file mode 100644
+index 0000000..90b9d81
+--- /dev/null
++++ b/webglmath/src/main/kotlin/Vec2Array.kt
+@@ -0,0 +1,96 @@
++package vision.gears.webglmath
++
++import org.khronos.webgl.Float32Array
++import org.khronos.webgl.get
++import org.khronos.webgl.set
++import org.khronos.webgl.WebGLRenderingContext
++import org.khronos.webgl.WebGLUniformLocation
++import kotlin.reflect.KProperty
++import kotlin.random.Random
++import kotlin.math.pow
++import kotlin.math.sqrt
++import kotlin.math.cos
++import kotlin.math.sin
++
++class Vec2Array(backingStorage: Float32Array?, startIndex: Int = 0, endIndex: Int = 0) : VecArray() {
++
++  constructor(size : Int) : this(null, size, size) {}
++
++  override val storage = backingStorage?.subarray(startIndex*2, endIndex*2)?:Float32Array(startIndex*2)
++
++  override fun set(vararg values : Float) : Vec2Array {
++    for(i in 0 until storage.length) {
++      storage[i] = values.getOrNull(i%2) ?: 0.0f
++    }
++    return this
++  }
++
++  operator fun get(i : Int) : Vec2{
++    return Vec2(storage, i*2)
++  }
++
++  fun subarray(begin : Int, end : Int) : Vec2Array {
++    return Vec2Array(storage, begin*2, end*2)
++  }
++
++  fun setNormalized(b : Vec2Array) {
++    for(i in 0 until storage.length step 2) {
++      val l2 =
++        b.storage[i  ] * b.storage[i  ] +
++        b.storage[i+1] * b.storage[i+1]
++      val linv = 1 / sqrt(l2)
++      storage[i  ] = b.storage[i  ] * linv
++      storage[i+1] = b.storage[i+1] * linv
++    }
++  }
++
++  fun setAffineTransformed(v : Vec2Array, m : Mat4) {  
++    for(i in 0 until storage.length step 2) {
++      storage[i+0] =
++         v.storage[i+0] * m.storage[ 0] +
++         v.storage[i+1] * m.storage[ 1] +
++                          m.storage[ 3]
++      storage[i+1] =
++         v.storage[i+0] * m.storage[ 4] +
++         v.storage[i+1] * m.storage[ 5] +
++                          m.storage[ 7]
++    }
++  }
++
++  fun setAffineNormalTransformed(v : Vec2Array, m : Mat4) {  
++    for(i in 0 until storage.length step 2) {
++      storage[i+0] =
++         v.storage[i+0] * m.storage[ 0] +
++         v.storage[i+1] * m.storage[ 1]
++      storage[i+1] =
++         v.storage[i+0] * m.storage[ 4] +
++         v.storage[i+1] * m.storage[ 5]
++    }
++  }  
++
++  fun setCosSin(alphas : Vec1Array){
++    for(i in 0 until storage.length step 2) {
++      this.storage[i+0] = cos(alphas.storage[i/2]);
++      this.storage[i+1] = sin(alphas.storage[i/2]);
++    }
++  }
++
++  operator fun provideDelegate(
++      provider: UniformProvider,
++      property: KProperty<*>) : Vec2Array {
++    provider.register(property.name, this)
++    return this
++  }
++
++  operator fun getValue(provider: UniformProvider, property: KProperty<*>): Vec2Array {
++    return this
++  }
++
++  operator fun setValue(provider: UniformProvider, property: KProperty<*>, value: Vec2Array) {
++    set(value)
++  }  
++
++  override fun commit(gl : WebGLRenderingContext, uniformLocation : WebGLUniformLocation, samplerIndex : Int){
++    gl.uniform4fv(uniformLocation, storage);
++  }  
++} 
+\ No newline at end of file
+diff --git a/webglmath/src/main/kotlin/Vec3.kt b/webglmath/src/main/kotlin/Vec3.kt
+new file mode 100644
+index 0000000..99ba02b
+--- /dev/null
++++ b/webglmath/src/main/kotlin/Vec3.kt
+@@ -0,0 +1,246 @@
++package vision.gears.webglmath
++
++import org.khronos.webgl.Float32Array
++import org.khronos.webgl.get
++import org.khronos.webgl.set
++import org.khronos.webgl.WebGLRenderingContext
++import org.khronos.webgl.WebGLUniformLocation
++import kotlin.reflect.KProperty
++import kotlin.random.Random
++import kotlin.math.sqrt
++
++@Suppress("NOTHING_TO_INLINE")
++class Vec3(backingStorage: Float32Array?, offset: Int = 0) : UniformFloat {
++
++  constructor(u: Float = 0.0f, v: Float = 0.0f, s: Float = 0.0f) : this(null, 0){
++    storage[0] = u
++    storage[1] = v
++    storage[2] = s
++  }
++  constructor(other : Vec1, v: Float = 0.0f, s: Float = 0.0f) : this(other.storage[0], v, s){}
++  constructor(other : Vec2, s: Float = 0.0f) : this(other.storage[0], other.storage[1], s){}
++  constructor(other : Vec3) : this(null, 0)  {
++    storage.set(other.storage);
++  }
++  constructor(other : Vec4) : this(other.storage[0]/other.storage[3], other.storage[1]/other.storage[3], other.storage[2]/other.storage[3]){}
++
++  override val storage: Float32Array = backingStorage?.subarray(offset, offset+3)?:Float32Array(3)
++  inline var x : Float
++    get() = storage[0]
++    set(value) { storage[0] = value }
++  inline var y : Float
++    get() = storage[1]
++    set(value) { storage[1] = value }
++  inline var z : Float
++    get() = storage[2]
++    set(value) { storage[2] = value }
++  inline var xy : Vec2
++    get() = Vec2(storage)
++    set(value) { Vec2(storage).set(value) }
++  inline val xyz0 : Vec4
++    get() = Vec4(storage[0], storage[1], storage[2], 0.0f)    
++  inline val xyz1 : Vec4
++    get() = Vec4(storage[0], storage[1], storage[2], 1.0f)
++
++  inline fun clone() : Vec3 {
++    return Vec3(this);
++  }
++
++  override fun set(vararg values : Float) : Vec3 {
++    storage[0] = values.getOrElse(0) {0.0f}
++    storage[1] = values.getOrElse(1) {0.0f}
++    storage[2] = values.getOrElse(2) {0.0f}
++    return this 
++  }
++
++  companion object {
++    val zeros = Vec3()
++    val ones = Vec3(1.0f, 1.0f, 1.0f) 
++
++    inline fun makeRandom(minVal: Vec3 = Vec3.zeros, maxVal: Vec3 = Vec3.ones) : Vec3 {
++      return Vec3(
++          Random.nextFloat() * (maxVal.storage[0] - minVal.storage[0]) + minVal.storage[0],
++          Random.nextFloat() * (maxVal.storage[1] - minVal.storage[1]) + minVal.storage[1],
++          Random.nextFloat() * (maxVal.storage[2] - minVal.storage[2]) + minVal.storage[2]                    
++        )  
++    }
++    inline fun makeRandom(minVal: Float = 0.0f, maxVal: Float = 1.0f) : Vec3 {
++      return Vec3.makeRandom(Vec3(minVal, minVal, minVal), Vec3(maxVal, maxVal, maxVal))
++    }
++  }
++
++  inline fun randomize(minVal: Vec3 = Vec3.zeros, maxVal: Vec3 = Vec3.ones){
++    set(Vec3.makeRandom(minVal, maxVal))
++  }
++  inline fun randomize(minVal: Float = 0.0f, maxVal: Float = 1.0f){
++    randomize(Vec3(minVal, minVal, minVal), Vec3(maxVal, maxVal, maxVal))
++  }
++
++  inline fun clamp(minVal: Vec3 = Vec3.zeros, maxVal: Vec3 = Vec3.ones) : Vec3 {
++    if(storage[0] < minVal.storage[0]){
++      storage[0] = minVal.storage[0]
++    }
++    if(storage[1] < minVal.storage[1]){
++      storage[1] = minVal.storage[1]
++    }
++    if(storage[2] < minVal.storage[2]){
++      storage[2] = minVal.storage[2]
++    }
++    if(storage[0] > maxVal.storage[0]){
++      storage[0] = maxVal.storage[0]
++    }
++    if(storage[1] > maxVal.storage[1]){
++      storage[1] = maxVal.storage[1]
++    }
++    if(storage[2] > maxVal.storage[2]){
++      storage[2] = maxVal.storage[2]
++    }        
++    return this
++  }
++
++  operator inline fun unaryPlus() : Vec3 {
++    return this
++  }
++
++  operator inline fun unaryMinus() : Vec3 {
++    return Vec3(-storage[0], -storage[1], -storage[2])
++  }
++
++  operator inline fun times(scalar : Float) : Vec3 {
++    return Vec3(
++      storage[0] * scalar,
++      storage[1] * scalar,
++      storage[2] * scalar
++      )
++  }
++
++  operator inline fun div(scalar : Float) : Vec3 {
++    return Vec3(
++      storage[0] / scalar,
++      storage[1] / scalar,
++      storage[2] / scalar      
++      )
++  }
++
++  operator inline fun timesAssign(scalar : Float) {
++    storage[0] *= scalar
++    storage[1] *= scalar
++    storage[2] *= scalar    
++  }
++
++  operator inline fun divAssign(scalar : Float) {
++    storage[0] /= scalar
++    storage[1] /= scalar
++    storage[2] /= scalar
++  }
++
++  operator inline fun plusAssign(other : Vec3) {
++    storage[0] += other.storage[0]
++    storage[1] += other.storage[1]
++    storage[2] += other.storage[2]
++  }
++
++  operator inline fun plus(other : Vec3) : Vec3 {
++    return Vec3(
++      storage[0] + other.storage[0],
++      storage[1] + other.storage[1],
++      storage[2] + other.storage[2]
++      )
++  }
++
++  operator inline fun minusAssign(other : Vec3) {
++    storage[0] -= other.storage[0]
++    storage[1] -= other.storage[1]
++    storage[2] -= other.storage[2]
++  }
++
++  operator inline fun minus(other : Vec3) : Vec3 {
++    return Vec3(
++      storage[0] - other.storage[0],
++      storage[1] - other.storage[1],
++      storage[2] - other.storage[2]
++      )
++  }
++
++  operator inline fun timesAssign(other : Vec3) {
++    storage[0] *= other.storage[0]
++    storage[1] *= other.storage[1]
++    storage[2] *= other.storage[2]
++  }
++
++  operator inline fun times(other : Vec3) : Vec3 {
++    return Vec3(
++      storage[0] * other.storage[0],
++      storage[1] * other.storage[1],
++      storage[2] * other.storage[2]
++      )
++  }
++
++  operator inline fun divAssign(other : Vec3) {
++    storage[0] /= other.storage[0]
++    storage[1] /= other.storage[1]
++    storage[2] /= other.storage[2]
++  }
++
++  operator inline fun div(other : Vec3) : Vec3 {
++    return Vec3(
++      storage[0] / other.storage[0],
++      storage[1] / other.storage[1],
++      storage[2] / other.storage[2]
++      )
++  }       
++
++  inline fun lengthSquared() : Float {
++    return storage[0] * storage[0] + storage[1] * storage[1] + storage[2] * storage[2]
++  }
++
++  inline fun length() : Float {
++    return sqrt(lengthSquared());
++  }
++
++  inline fun normalize() : Vec3 {
++    val l = this.length()
++    storage[0] /= l
++    storage[1] /= l
++    storage[2] /= l
++    return this
++  }
++
++  infix inline fun dot(other : Vec3) : Float {
++    return (
++      storage[0] * other.storage[0] +
++      storage[1] * other.storage[1] +
++      storage[2] * other.storage[2] )
++  }
++
++  infix inline fun cross(other : Vec3) : Vec3 {
++    return Vec3(
++      storage[1] * other.storage[2] - storage[2] * other.storage[1],
++      storage[2] * other.storage[0] - storage[0] * other.storage[2],
++      storage[0] * other.storage[1] - storage[1] * other.storage[0])
++  }
++
++  operator fun provideDelegate(
++      provider: UniformProvider,
++      property: KProperty<*>) : Vec3 {
++    provider.register(property.name, this)
++    return this
++  }
++
++  operator fun getValue(provider: UniformProvider, property: KProperty<*>): Vec3 {
++    return this
++  }
++
++  operator fun setValue(provider: UniformProvider, property: KProperty<*>, value: Vec3) {
++    set(value)
++  }
++
++  override fun commit(gl : WebGLRenderingContext, uniformLocation : WebGLUniformLocation, samplerIndex : Int){
++    gl.uniform3fv(uniformLocation, storage);
++  }
++}
++
++@Suppress("NOTHING_TO_INLINE")
++operator inline fun Float.times(v: Vec3) = Vec3(v.x * this, v.y * this, v.z * this)
++@Suppress("NOTHING_TO_INLINE")
++operator inline fun Float.div(v: Vec3) = Vec3(this / v.x, this / v.y, this / v.z)
+\ No newline at end of file
+diff --git a/webglmath/src/main/kotlin/Vec3Array.kt b/webglmath/src/main/kotlin/Vec3Array.kt
+new file mode 100644
+index 0000000..932fe3f
+--- /dev/null
++++ b/webglmath/src/main/kotlin/Vec3Array.kt
+@@ -0,0 +1,117 @@
++package vision.gears.webglmath
++
++import org.khronos.webgl.Float32Array
++import org.khronos.webgl.get
++import org.khronos.webgl.set
++import org.khronos.webgl.WebGLRenderingContext
++import org.khronos.webgl.WebGLUniformLocation
++import kotlin.reflect.KProperty
++import kotlin.random.Random
++import kotlin.math.pow
++import kotlin.math.sqrt
++
++class Vec3Array(backingStorage: Float32Array?, startIndex: Int = 0, endIndex: Int = 0) : VecArray() {
++
++  constructor(size : Int) : this(null, size, size) {}
++
++  override val storage = backingStorage?.subarray(startIndex*3, endIndex*3)?:Float32Array(startIndex*3)
++
++  override fun set(vararg values : Float) : Vec3Array {
++    for(i in 0 until storage.length) {
++      storage[i] = values.getOrNull(i%3) ?: 0.0f
++    }
++    return this
++  }
++
++  operator fun get(i : Int) : Vec3{
++    return Vec3(storage, i*3)
++  }
++
++  fun subarray(begin : Int, end : Int) : Vec3Array {
++    return Vec3Array(storage, begin*3, end*3)
++  }
++
++  fun setNormalized(b : Vec3Array) {
++    for(i in 0 until storage.length step 3) {
++      val l2 =
++        b.storage[i  ] * b.storage[i  ] +
++        b.storage[i+1] * b.storage[i+1] +
++        b.storage[i+2] * b.storage[i+2]
++      val linv = 1 / sqrt(l2)
++      storage[i  ] = b.storage[i  ] * linv
++      storage[i+1] = b.storage[i+1] * linv
++      storage[i+2] = b.storage[i+2] * linv
++    }
++  }
++
++  fun setCrossed(b : Vec3Array, c : Vec3Array) {
++    var j = 0
++    for(i in 0 until storage.length step 3) {
++      val b0 = b.storage[j];
++      val c0 = c.storage[j++];    
++      val b1 = b.storage[j];
++      val c1 = c.storage[j++];    
++      val b2 = b.storage[j];
++      val c2 = c.storage[j++];
++      storage[i  ] = b1 * c2 - b2 * c1;
++      storage[i+1] = b2 * c0 - b0 * c2;
++      storage[i+2] = b0 * c1 - b1 * c0; 
++    }
++  }  
++
++  fun setAffineTransformed(v : Vec3Array, m : Mat4) {  
++    for(i in 0 until storage.length step 3) {
++      storage[i+0] =
++         v.storage[i+0] * m.storage[ 0] +
++         v.storage[i+1] * m.storage[ 1] +
++         v.storage[i+2] * m.storage[ 2] +
++                          m.storage[ 3]
++      storage[i+1] =
++         v.storage[i+0] * m.storage[ 4] +
++         v.storage[i+1] * m.storage[ 5] +
++         v.storage[i+2] * m.storage[ 6] +
++                          m.storage[ 7]
++      storage[i+2] =
++         v.storage[i+0] * m.storage[ 8] +
++         v.storage[i+1] * m.storage[ 9] +
++         v.storage[i+2] * m.storage[10] +
++                          m.storage[11]      
++    }
++  }
++
++  fun setAffineNormalTransformed(v : Vec3Array, m : Mat4) {  
++    for(i in 0 until storage.length step 3) {
++      storage[i+0] =
++         v.storage[i+0] * m.storage[ 0] +
++         v.storage[i+1] * m.storage[ 1] +
++         v.storage[i+2] * m.storage[ 2]
++      storage[i+1] =
++         v.storage[i+0] * m.storage[ 4] +
++         v.storage[i+1] * m.storage[ 5] +
++         v.storage[i+2] * m.storage[ 6]
++      storage[i+2] =
++         v.storage[i+0] * m.storage[ 8] +
++         v.storage[i+1] * m.storage[ 9] +
++         v.storage[i+2] * m.storage[10]      
++    }
++  }  
++
++  operator fun provideDelegate(
++      provider: UniformProvider,
++      property: KProperty<*>) : Vec3Array {
++    provider.register(property.name, this)
++    return this
++  }
++
++  operator fun getValue(provider: UniformProvider, property: KProperty<*>): Vec3Array {
++    return this
++  }
++  
++  operator fun setValue(provider: UniformProvider, property: KProperty<*>, value: Vec3Array) {
++    set(value)
++  }  
++
++  override fun commit(gl : WebGLRenderingContext, uniformLocation : WebGLUniformLocation, samplerIndex : Int){
++    gl.uniform3fv(uniformLocation, storage);
++  }  
++} 
+\ No newline at end of file
+diff --git a/webglmath/src/main/kotlin/Vec4.kt b/webglmath/src/main/kotlin/Vec4.kt
+new file mode 100644
+index 0000000..93e12f0
+--- /dev/null
++++ b/webglmath/src/main/kotlin/Vec4.kt
+@@ -0,0 +1,281 @@
++package vision.gears.webglmath
++
++import org.khronos.webgl.Float32Array
++import org.khronos.webgl.get
++import org.khronos.webgl.set
++import org.khronos.webgl.WebGLRenderingContext
++import org.khronos.webgl.WebGLUniformLocation
++import kotlin.reflect.KProperty
++import kotlin.random.Random
++import kotlin.math.sqrt
++
++@Suppress("NOTHING_TO_INLINE")
++class Vec4(backingStorage: Float32Array?, offset: Int = 0) : UniformFloat {
++
++  constructor(u: Float = 0.0f, v: Float = 0.0f, s: Float = 0.0f, t: Float = 1.0f) : this(null, 0){
++    storage[0] = u
++    storage[1] = v
++    storage[2] = s
++    storage[3] = t
++  }
++  constructor(other : Vec1, v: Float = 0.0f, s: Float = 0.0f, w: Float = 1.0f) : this(other.storage[0], v, s, w){}
++  constructor(other : Vec2, s: Float = 0.0f, w: Float = 1.0f) : this(other.storage[0], other.storage[1], s, w){}
++  constructor(other : Vec3, w: Float = 1.0f) : this(other.storage[0], other.storage[1], other.storage[2], w){}
++  constructor(other : Vec4) : this(null, 0)  {
++    storage.set(other.storage);
++  }
++
++  override val storage: Float32Array = backingStorage?.subarray(offset, offset+4)?:Float32Array(4)
++  inline var x : Float
++    get() = storage[0]
++    set(value) { storage[0] = value }
++  inline var y : Float
++    get() = storage[1]
++    set(value) { storage[1] = value }
++  inline var z : Float
++    get() = storage[2]
++    set(value) { storage[2] = value }
++  inline var w : Float
++    get() = storage[3]
++    set(value) { storage[3] = value }    
++  inline var xy : Vec2
++    get() = Vec2(storage)
++    set(value) { Vec2(storage).set(value) }
++  inline var xyz : Vec3
++    get() = Vec3(storage)
++    set(value) { Vec3(storage).set(value) }
++
++  inline fun clone() : Vec4 {
++    return Vec4(this);
++  }
++
++  override fun set(vararg values : Float) : Vec4 {
++    storage[0] = values.getOrElse(0) {0.0f}
++    storage[1] = values.getOrElse(1) {0.0f}
++    storage[2] = values.getOrElse(2) {0.0f}
++    storage[3] = values.getOrElse(3) {1.0f}
++    return this 
++  }
++
++  companion object {
++    val zeros = Vec4(0.0f, 0.0f, 0.0f, 0.0f)
++    val ones = Vec4(1.0f, 1.0f, 1.0f, 1.0f) 
++
++    inline fun makeRandom(minVal: Vec4 = Vec4.zeros, maxVal: Vec4 = Vec4.ones) : Vec4 {
++      return Vec4(
++          Random.nextFloat() * (maxVal.storage[0] - minVal.storage[0]) + minVal.storage[0],
++          Random.nextFloat() * (maxVal.storage[1] - minVal.storage[1]) + minVal.storage[1],
++          Random.nextFloat() * (maxVal.storage[2] - minVal.storage[2]) + minVal.storage[2],                    
++          Random.nextFloat() * (maxVal.storage[3] - minVal.storage[3]) + minVal.storage[3]
++        )  
++    }
++    inline fun makeRandom(minVal: Float = 0.0f, maxVal: Float = 1.0f) : Vec4 {
++      return Vec4.makeRandom(Vec4(minVal, minVal, minVal, minVal), Vec4(maxVal, maxVal, maxVal, maxVal))
++    }
++  }
++
++  inline fun setRandom(minVal: Vec4 = Vec4.zeros, maxVal: Vec4 = Vec4.ones){
++    set(Vec4.makeRandom(minVal, maxVal))
++  }
++  inline fun setRandom(minVal: Float = 0.0f, maxVal: Float = 1.0f){
++    setRandom(Vec4(minVal, minVal, minVal, minVal), Vec4(maxVal, maxVal, maxVal, minVal))
++  }
++
++  inline fun clamp(minVal: Vec4 = Vec4.zeros, maxVal: Vec4 = Vec4.ones) : Vec4 {
++    if(storage[0] < minVal.storage[0]){
++      storage[0] = minVal.storage[0]
++    }
++    if(storage[1] < minVal.storage[1]){
++      storage[1] = minVal.storage[1]
++    }
++    if(storage[2] < minVal.storage[2]){
++      storage[2] = minVal.storage[2]
++    }
++    if(storage[3] < minVal.storage[3]){
++      storage[3] = minVal.storage[3]
++    }    
++    if(storage[0] > maxVal.storage[0]){
++      storage[0] = maxVal.storage[0]
++    }
++    if(storage[1] > maxVal.storage[1]){
++      storage[1] = maxVal.storage[1]
++    }
++    if(storage[2] > maxVal.storage[2]){
++      storage[2] = maxVal.storage[2]
++    }        
++    if(storage[3] > maxVal.storage[3]){
++      storage[3] = maxVal.storage[3]
++    }            
++    return this
++  }
++
++  operator inline fun unaryPlus() : Vec4 {
++    return this
++  }
++
++  operator inline fun unaryMinus() : Vec4 {
++    return Vec4(-storage[0], -storage[1], -storage[2], -storage[3])
++  }
++
++  operator inline fun times(scalar : Float) : Vec4 {
++    return Vec4(
++      storage[0] * scalar,
++      storage[1] * scalar,
++      storage[2] * scalar,
++      storage[3] * scalar
++      )
++  }
++
++  operator inline fun div(scalar : Float) : Vec4 {
++    return Vec4(
++      storage[0] / scalar,
++      storage[1] / scalar,
++      storage[2] / scalar,
++      storage[3] / scalar      
++      )
++  }
++
++  operator inline fun timesAssign(scalar : Float) {
++    storage[0] *= scalar
++    storage[1] *= scalar
++    storage[2] *= scalar    
++    storage[3] *= scalar
++  }
++
++  operator inline fun divAssign(scalar : Float) {
++    storage[0] /= scalar
++    storage[1] /= scalar
++    storage[2] /= scalar
++    storage[3] /= scalar
++  }  
++
++  operator inline fun plusAssign(other : Vec4) {
++    storage[0] += other.storage[0]
++    storage[1] += other.storage[1]
++    storage[2] += other.storage[2]
++    storage[3] += other.storage[3]
++  }
++
++  operator inline fun plus(other : Vec4) : Vec4 {
++    return Vec4(
++      storage[0] + other.storage[0],
++      storage[1] + other.storage[1],
++      storage[2] + other.storage[2],
++      storage[3] + other.storage[3]
++      )
++  }
++
++  operator inline fun minusAssign(other : Vec4) {
++    storage[0] -= other.storage[0]
++    storage[1] -= other.storage[1]
++    storage[2] -= other.storage[2]
++    storage[3] -= other.storage[3]
++  }
++
++  operator inline fun minus(other : Vec4) : Vec4 {
++    return Vec4(
++      storage[0] - other.storage[0],
++      storage[1] - other.storage[1],
++      storage[2] - other.storage[2],
++      storage[3] - other.storage[3]
++      )
++  }
++
++  operator inline fun timesAssign(other : Vec4) {
++    storage[0] *= other.storage[0]
++    storage[1] *= other.storage[1]
++    storage[2] *= other.storage[2]
++    storage[3] *= other.storage[3]
++  }
++
++  operator inline fun times(other : Vec4) : Vec4 {
++    return Vec4(
++      storage[0] * other.storage[0],
++      storage[1] * other.storage[1],
++      storage[2] * other.storage[2],
++      storage[3] * other.storage[3]
++      )
++  }
++
++  operator inline fun divAssign(other : Vec4) {
++    storage[0] /= other.storage[0]
++    storage[1] /= other.storage[1]
++    storage[2] /= other.storage[2]
++    storage[3] /= other.storage[3]
++  }
++
++  operator inline fun div(other : Vec4) : Vec4 {
++    return Vec4(
++      storage[0] / other.storage[0],
++      storage[1] / other.storage[1],
++      storage[2] / other.storage[2],
++      storage[3] / other.storage[3]
++      )
++  }       
++
++  inline fun lengthSquared() : Float {
++    return storage[0] * storage[0] + storage[1] * storage[1] + storage[2] * storage[2] + storage[3] * storage[3]
++  }
++
++  inline fun length() : Float {
++    return sqrt(lengthSquared());
++  }
++
++  inline fun normalize() : Vec4 {
++    val l = this.length()
++    storage[0] /= l
++    storage[1] /= l
++    storage[2] /= l
++    storage[3] /= l    
++    return this
++  }
++
++  infix inline fun dot(other : Vec4) : Float {
++    return (
++      storage[0] * other.storage[0] +
++      storage[1] * other.storage[1] +
++      storage[2] * other.storage[2] +
++      storage[3] * other.storage[3] )
++  }
++
++  inline operator fun timesAssign(m : Mat4){
++    val t = Float32Array(storage)
++    storage[0] = m.storage[ 0] * t[0] + m.storage[ 1] * t[1] + m.storage[ 2] * t[2] + m.storage[ 3] * t[3]
++    storage[1] = m.storage[ 4] * t[0] + m.storage[ 5] * t[1] + m.storage[ 6] * t[2] + m.storage[ 7] * t[3]
++    storage[2] = m.storage[ 8] * t[0] + m.storage[ 9] * t[1] + m.storage[10] * t[2] + m.storage[11] * t[3]
++    storage[3] = m.storage[12] * t[0] + m.storage[13] * t[1] + m.storage[14] * t[2] + m.storage[15] * t[3]            
++  }
++
++  inline operator fun times(m : Mat4) : Vec4 {
++    val vp = Vec4(this)
++    vp.storage[0] = m.storage[ 0] * storage[0] + m.storage[ 1] * storage[1] + m.storage[ 2] * storage[2] + m.storage[ 3] * storage[3]
++    vp.storage[1] = m.storage[ 4] * storage[0] + m.storage[ 5] * storage[1] + m.storage[ 6] * storage[2] + m.storage[ 7] * storage[3]
++    vp.storage[2] = m.storage[ 8] * storage[0] + m.storage[ 9] * storage[1] + m.storage[10] * storage[2] + m.storage[11] * storage[3]
++    vp.storage[3] = m.storage[12] * storage[0] + m.storage[13] * storage[1] + m.storage[14] * storage[2] + m.storage[15] * storage[3]        
++    return vp    
++  }  
++
++  operator fun provideDelegate(
++      provider: UniformProvider,
++      property: KProperty<*>) : Vec4 {
++    provider.register(property.name, this)
++    return this
++  }
++
++  operator fun getValue(provider: UniformProvider, property: KProperty<*>): Vec4 {
++    return this
++  }
++
++  operator fun setValue(provider: UniformProvider, property: KProperty<*>, value: Vec4) {
++    set(value)
++  }
++
++  override fun commit(gl : WebGLRenderingContext, uniformLocation : WebGLUniformLocation, samplerIndex : Int){
++    gl.uniform4fv(uniformLocation, storage);
++  }
++}
++
++@Suppress("NOTHING_TO_INLINE")
++operator inline fun Float.times(v: Vec4) = Vec4(this * v.storage[0], this * v.storage[1], this * v.storage[2], this * v.storage[3])
++@Suppress("NOTHING_TO_INLINE")
++operator inline fun Float.div(v: Vec4) = Vec4(this / v.storage[0], this / v.storage[1], this / v.storage[2], this / v.storage[3])
+diff --git a/webglmath/src/main/kotlin/Vec4Array.kt b/webglmath/src/main/kotlin/Vec4Array.kt
+new file mode 100644
+index 0000000..7aba377
+--- /dev/null
++++ b/webglmath/src/main/kotlin/Vec4Array.kt
+@@ -0,0 +1,109 @@
++package vision.gears.webglmath
++
++import org.khronos.webgl.Float32Array
++import org.khronos.webgl.get
++import org.khronos.webgl.set
++import org.khronos.webgl.WebGLRenderingContext
++import org.khronos.webgl.WebGLUniformLocation
++import kotlin.reflect.KProperty
++import kotlin.random.Random
++import kotlin.math.pow
++import kotlin.math.sqrt
++
++class Vec4Array(backingStorage: Float32Array?, startIndex: Int = 0, endIndex: Int = 0) : VecArray() {
++
++  constructor(size : Int) : this(null, size, size) {}
++
++  override val storage = backingStorage?.subarray(startIndex*4, endIndex*4)?:Float32Array(startIndex*4)
++
++  override fun set(vararg values : Float) : Vec4Array {
++    for(i in 0 until storage.length) {
++      storage[i] = values.getOrNull(i%4) ?: if(i%4 == 3) 1.0f else 0.0f
++    }
++    return this
++  }
++
++  operator fun get(i : Int) : Vec4{
++    return Vec4(storage, i*4)
++  }
++
++  fun subarray(begin : Int, end : Int) : Vec4Array {
++    return Vec4Array(storage, begin*4, end*4)
++  }
++
++  fun setNormalized(b : Vec4Array) {
++    for(i in 0 until storage.length step 4) {
++      val l2 =
++        b.storage[i  ] * b.storage[i  ] +
++        b.storage[i+1] * b.storage[i+1] +
++        b.storage[i+2] * b.storage[i+2] +
++        b.storage[i+3] * b.storage[i+3]        
++      val linv = 1 / sqrt(l2)
++      storage[i  ] = b.storage[i  ] * linv
++      storage[i+1] = b.storage[i+1] * linv
++      storage[i+2] = b.storage[i+2] * linv
++      storage[i+3] = b.storage[i+3] * linv      
++    }
++  }
++
++  fun setTransformed(v : Vec4Array, m : Mat4) {  
++    for(i in 0 until storage.length step 4) {
++      storage[i+0] =
++          v.storage[i+0] * m.storage[ 0] +
++          v.storage[i+1] * m.storage[ 1] +
++          v.storage[i+2] * m.storage[ 2] +
++          v.storage[i+3] * m.storage[ 3]
++      storage[i+1] =
++          v.storage[i+0] * m.storage[ 4] +
++          v.storage[i+1] * m.storage[ 5] +
++          v.storage[i+2] * m.storage[ 6] +
++          v.storage[i+3] * m.storage[ 7]
++      storage[i+2] =
++          v.storage[i+0] * m.storage[ 8] +
++          v.storage[i+1] * m.storage[ 9] +
++          v.storage[i+2] * m.storage[10] +
++          v.storage[i+3] * m.storage[11]
++      storage[i+3] =
++          v.storage[i+0] * m.storage[12] +
++          v.storage[i+1] * m.storage[13] +
++          v.storage[i+2] * m.storage[14] +
++          v.storage[i+3] * m.storage[15]                
++    }
++  }
++
++  fun transformNormal(v : Vec3Array, m : Mat4) {  
++    for(i in 0 until storage.length step 3) {
++      storage[i+0] =
++         v.storage[i+0] * m.storage[ 0] +
++         v.storage[i+1] * m.storage[ 1] +
++         v.storage[i+2] * m.storage[ 2]
++      storage[i+1] =
++         v.storage[i+0] * m.storage[ 4] +
++         v.storage[i+1] * m.storage[ 5] +
++         v.storage[i+2] * m.storage[ 6]
++      storage[i+2] =
++         v.storage[i+0] * m.storage[ 8] +
++         v.storage[i+1] * m.storage[ 9] +
++         v.storage[i+2] * m.storage[10]      
++    }
++  }  
++
++  operator fun provideDelegate(
++      provider: UniformProvider,
++      property: KProperty<*>) : Vec4Array {
++    provider.register(property.name, this)
++    return this
++  }
++
++  operator fun getValue(provider: UniformProvider, property: KProperty<*>): Vec4Array {
++    return this
++  }
++  
++  operator fun setValue(provider: UniformProvider, property: KProperty<*>, value: Vec4Array) {
++    set(value)
++  }    
++
++  override fun commit(gl : WebGLRenderingContext, uniformLocation : WebGLUniformLocation, samplerIndex : Int){
++    gl.uniform4fv(uniformLocation, storage);
++  }  
++} 
+\ No newline at end of file
+diff --git a/webglmath/src/main/kotlin/VecArray.kt b/webglmath/src/main/kotlin/VecArray.kt
+new file mode 100644
+index 0000000..283f51c
+--- /dev/null
++++ b/webglmath/src/main/kotlin/VecArray.kt
+@@ -0,0 +1,142 @@
++package vision.gears.webglmath
++
++import org.khronos.webgl.Float32Array
++import org.khronos.webgl.get
++import org.khronos.webgl.set
++import org.khronos.webgl.WebGLRenderingContext
++import org.khronos.webgl.WebGLUniformLocation
++import kotlin.random.Random
++import kotlin.math.pow
++
++interface Gif {
++  operator fun invoke(i : Int) : Float
++}
++
++abstract class VecArray : UniformFloat, Gif {
++
++  override operator fun invoke(i : Int) : Float{
++    return storage[i % storage.length]
++  }
++
++  infix fun gets(other : Gif){
++    for(i in 0 until storage.length) {
++      storage[i] = other(i)
++    }
++  }
++
++  operator fun plus(c : Gif) : Gif {
++    return object : Gif {
++      override operator fun invoke(i : Int) : Float {
++        return this@VecArray(i) + c(i)
++      }
++    }
++  }
++
++  operator fun minus(c : Gif) : Gif {
++    return object : Gif {
++      override operator fun invoke(i : Int) : Float {
++        return this@VecArray(i) - c(i)
++      }
++    }
++  }
++
++  operator fun times(c : Gif) : Gif {
++    return object : Gif {
++      override operator fun invoke(i : Int) : Float {
++        return this@VecArray(i) * c(i)
++      }
++    }
++  }
++
++  operator fun div(c : Gif) : Gif {
++    return object : Gif {
++      override operator fun invoke(i : Int) : Float {
++        return this@VecArray(i) / c(i)
++      }
++    }
++  }      
++
++  operator fun times(s : Float) : Gif {
++    return object : Gif {
++      override operator fun invoke(i : Int) : Float {
++        return this@VecArray(i) * s
++      }
++    }
++  }
++
++  operator fun div(s : Float) : Gif {
++    return object : Gif {
++      override operator fun invoke(i : Int) : Float {
++        return this@VecArray(i) / s
++      }
++    }
++  }
++
++  fun expand(factor : Int) : Gif {
++    return object : Gif {
++      override operator fun invoke(i : Int) : Float {
++        return this@VecArray(i / factor)
++      }
++    }    
++  }
++
++  operator fun plusAssign(other : Gif) {
++    for(i in 0 until storage.length) {
++      storage[i] += other(i)
++    }
++  }
++
++  operator fun minusAssign(other : Gif) {
++    for(i in 0 until storage.length) {
++      storage[i] -= other(i)
++    }
++  }  
++
++  operator fun timesAssign(other : Gif) {
++    for(i in 0 until storage.length) {
++      storage[i] *= other(i)
++    }
++  }
++
++  operator fun divAssign(other : Gif) {
++    for(i in 0 until storage.length) {
++      storage[i] /= other(i)
++    }
++  }  
++
++  operator fun timesAssign(s : Float) {
++    for(i in 0 until storage.length) {
++      storage[i] *= s
++    }
++  }
++
++  operator fun divAssign(s : Float) {
++    for(i in 0 until storage.length) {
++      storage[i] /= s
++    }
++  }  
++
++  fun powAssign(s : Float) {
++    for(i in 0 until storage.length) {
++      storage[i] = storage[i].pow(s)
++    }
++  }
++
++  fun randomize() {
++    for(i in 0 until storage.length) {
++      storage[i] = Random.nextFloat()
++    }
++  }
++
++  fun clamp() {
++    for(i in 0 until storage.length) {
++      if(storage[i] < 0.0f) {
++        storage[i] = 0.0f
++      }
++      if(storage[i] > 1.0f) {
++        storage[i] = 1.0f
++      }
++    }
++  }  
++
++}
+-- 
+2.16.1.windows.1
+
