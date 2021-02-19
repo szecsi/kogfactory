@@ -1,0 +1,26 @@
+From 50d18cf17f500c82172bdd964761d25fdc2710ff Mon Sep 17 00:00:00 2001
+From: szecsi <szecsi.laszlo@gmail.com>
+Date: Mon, 15 Feb 2021 20:10:08 +0100
+Subject: [PATCH] Material class
+
+---
+ client/src/main/kotlin/Material.kt | 7 +++++++
+ 1 file changed, 7 insertions(+)
+ create mode 100644 client/src/main/kotlin/Material.kt
+
+diff --git a/client/src/main/kotlin/Material.kt b/client/src/main/kotlin/Material.kt
+new file mode 100644
+index 0000000..7c5dbbb
+--- /dev/null
++++ b/client/src/main/kotlin/Material.kt
+@@ -0,0 +1,7 @@
++import vision.gears.webglmath.UniformProvider
++
++class Material(program : Program) : UniformProvider("material") {
++  init {
++    addComponentsAndGatherUniforms(program)
++  }
++}
+-- 
+2.28.0.windows.1
+

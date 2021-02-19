@@ -1,0 +1,29 @@
+From 567c6df95996c150ec9a2a86a681fa1faf5a5e3d Mon Sep 17 00:00:00 2001
+From: szecsi <szecsi.laszlo@gmail.com>
+Date: Mon, 15 Feb 2021 19:43:00 +0100
+Subject: [PATCH] View and projection transformation in vertex shader
+
+---
+ client/src/main/glsl/trafo-vs.glsl | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/client/src/main/glsl/trafo-vs.glsl b/client/src/main/glsl/trafo-vs.glsl
+index 45ab90f..005876b 100644
+--- a/client/src/main/glsl/trafo-vs.glsl
++++ b/client/src/main/glsl/trafo-vs.glsl
+@@ -6,6 +6,10 @@ uniform struct{
+   mat4 modelMatrix;
+ } gameObject;
+ 
++uniform struct{
++  mat4 viewProjMatrix;
++} camera;
++
+ void main(void) {
+-  gl_Position = vertexPosition * gameObject.modelMatrix;
++  gl_Position = vertexPosition * gameObject.modelMatrix * camera.viewProjMatrix;
+ }
+\ No newline at end of file
+-- 
+2.28.0.windows.1
+

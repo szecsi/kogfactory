@@ -1,0 +1,31 @@
+From b929e77b2b7eb9966ee42d37b06a73e1564485f5 Mon Sep 17 00:00:00 2001
+From: szecsi <szecsi.laszlo@gmail.com>
+Date: Mon, 15 Feb 2021 19:42:15 +0100
+Subject: [PATCH] Model transformation in vertex shader
+
+---
+ client/src/main/glsl/trafo-vs.glsl | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
+ create mode 100644 client/src/main/glsl/trafo-vs.glsl
+
+diff --git a/client/src/main/glsl/trafo-vs.glsl b/client/src/main/glsl/trafo-vs.glsl
+new file mode 100644
+index 0000000..45ab90f
+--- /dev/null
++++ b/client/src/main/glsl/trafo-vs.glsl
+@@ -0,0 +1,11 @@
++#version 300 es
++
++in vec4 vertexPosition;
++
++uniform struct{
++  mat4 modelMatrix;
++} gameObject;
++
++void main(void) {
++  gl_Position = vertexPosition * gameObject.modelMatrix;
++}
+\ No newline at end of file
+-- 
+2.28.0.windows.1
+

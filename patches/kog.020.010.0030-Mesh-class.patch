@@ -1,0 +1,29 @@
+From a5e37b877e5adb5fe3315fd81864937018295676 Mon Sep 17 00:00:00 2001
+From: szecsi <szecsi.laszlo@gmail.com>
+Date: Mon, 15 Feb 2021 20:11:07 +0100
+Subject: [PATCH] Mesh class
+
+---
+ client/src/main/kotlin/Mesh.kt | 9 +++++++++
+ 1 file changed, 9 insertions(+)
+ create mode 100644 client/src/main/kotlin/Mesh.kt
+
+diff --git a/client/src/main/kotlin/Mesh.kt b/client/src/main/kotlin/Mesh.kt
+new file mode 100644
+index 0000000..4a7599f
+--- /dev/null
++++ b/client/src/main/kotlin/Mesh.kt
+@@ -0,0 +1,9 @@
++import vision.gears.webglmath.UniformProvider
++import vision.gears.webglmath.Geometry
++
++class Mesh(material : Material, geometry : Geometry) : UniformProvider("mesh") {
++
++  init{
++    addComponentsAndGatherUniforms(material, geometry)
++  }
++}
+\ No newline at end of file
+-- 
+2.28.0.windows.1
+
