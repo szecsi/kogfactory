@@ -1,0 +1,36 @@
+From 2cc3c609bfa335274bbfbef664040effe548740f Mon Sep 17 00:00:00 2001
+From: szecsi <szecsi.laszlo@gmail.com>
+Date: Tue, 23 Feb 2021 15:07:45 +0100
+Subject: [PATCH] Lose manual shape resources and drawing
+
+---
+ client/src/main/kotlin/Scene.kt | 7 -------
+ 1 file changed, 7 deletions(-)
+
+diff --git a/client/src/main/kotlin/Scene.kt b/client/src/main/kotlin/Scene.kt
+index bfa18e6..18b756d 100644
+--- a/client/src/main/kotlin/Scene.kt
++++ b/client/src/main/kotlin/Scene.kt
+@@ -5,11 +5,6 @@ import kotlin.js.Date
+ class Scene (
+   val gl : WebGL2RenderingContext){
+ 
+-  val vsIdle = Shader(gl, GL.VERTEX_SHADER, "idle-vs.glsl")
+-  val fsSolid = Shader(gl, GL.FRAGMENT_SHADER, "solid-fs.glsl")
+-  val solidProgram = Program(gl, vsIdle, fsSolid)
+-  val triangleGeometry = TriangleGeometry(gl)
+-
+   fun resize(gl : WebGL2RenderingContext, canvas : HTMLCanvasElement) {
+     gl.viewport(0, 0, canvas.width, canvas.height)//#viewport# tell the rasterizer which part of the canvas to draw to ˙HUN˙ a raszterizáló ide rajzoljon
+   }
+@@ -27,7 +22,5 @@ class Scene (
+     gl.clearColor(0.3f, 0.0f, 0.3f, 1.0f)//## red, green, blue, alpha in [0, 1]
+     gl.clearDepth(1.0f)//## will be useful in 3D ˙HUN˙ 3D-ben lesz hasznos
+     gl.clear(GL.COLOR_BUFFER_BIT or GL.DEPTH_BUFFER_BIT)//#or# bitwise OR of flags
+-    gl.useProgram(solidProgram.glProgram)
+-    triangleGeometry.draw()
+   }
+ }
+-- 
+2.28.0.windows.1
+

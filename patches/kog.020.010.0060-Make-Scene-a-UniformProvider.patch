@@ -1,0 +1,48 @@
+From efd875b1933fa4d98789e78fd407dcc719a20111 Mon Sep 17 00:00:00 2001
+From: szecsi <szecsi.laszlo@gmail.com>
+Date: Tue, 23 Feb 2021 15:38:56 +0100
+Subject: [PATCH] Make Scene a UniformProvider
+
+---
+ client/src/main/kotlin/Scene.kt | 11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
+
+diff --git a/client/src/main/kotlin/Scene.kt b/client/src/main/kotlin/Scene.kt
+index 18b756d..860d32e 100644
+--- a/client/src/main/kotlin/Scene.kt
++++ b/client/src/main/kotlin/Scene.kt
+@@ -1,9 +1,11 @@
+ import org.w3c.dom.HTMLCanvasElement
+ import org.khronos.webgl.WebGLRenderingContext as GL //# GL# we need this for the constants declared ˙HUN˙ a constansok miatt kell
+ import kotlin.js.Date
++import vision.gears.webglmath.UniformProvider
++import vision.gears.webglmath.Vec1
+ 
+ class Scene (
+-  val gl : WebGL2RenderingContext){
++  val gl : WebGL2RenderingContext) : UniformProvider("scene") {
+ 
+   fun resize(gl : WebGL2RenderingContext, canvas : HTMLCanvasElement) {
+     gl.viewport(0, 0, canvas.width, canvas.height)//#viewport# tell the rasterizer which part of the canvas to draw to ˙HUN˙ a raszterizáló ide rajzoljon
+@@ -11,12 +13,17 @@ class Scene (
+ 
+   val timeAtFirstFrame = Date().getTime()
+   var timeAtLastFrame =  timeAtFirstFrame
++  val time by Vec1()
++
++  init{
++    addComponentsAndGatherUniforms(*Program.all)
++  }
+ 
+   @Suppress("UNUSED_PARAMETER")
+   fun update(gl : WebGL2RenderingContext, keysPressed : Set<String>) {
+     val timeAtThisFrame = Date().getTime() 
+     val dt = (timeAtThisFrame - timeAtLastFrame).toFloat() / 1000.0f
+-    val t  = (timeAtThisFrame - timeAtFirstFrame).toFloat() / 1000.0f    
++    time.set( (timeAtThisFrame - timeAtFirstFrame).toFloat() / 1000.0f )
+     timeAtLastFrame = timeAtThisFrame
+     
+     gl.clearColor(0.3f, 0.0f, 0.3f, 1.0f)//## red, green, blue, alpha in [0, 1]
+-- 
+2.28.0.windows.1
+

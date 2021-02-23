@@ -1,0 +1,39 @@
+From 30c5e07190468467d255044a4be7f98a15bc6acd Mon Sep 17 00:00:00 2001
+From: szecsi <szecsi.laszlo@gmail.com>
+Date: Tue, 23 Feb 2021 14:34:52 +0100
+Subject: [PATCH] GameObject class
+
+---
+ client/src/main/kotlin/GameObject.kt | 20 ++++++++++++++++++++
+ 1 file changed, 20 insertions(+)
+ create mode 100644 client/src/main/kotlin/GameObject.kt
+
+diff --git a/client/src/main/kotlin/GameObject.kt b/client/src/main/kotlin/GameObject.kt
+new file mode 100644
+index 0000000..680a2ec
+--- /dev/null
++++ b/client/src/main/kotlin/GameObject.kt
+@@ -0,0 +1,20 @@
++import vision.gears.webglmath.UniformProvider
++import vision.gears.webglmath.Vec2
++import vision.gears.webglmath.Mat4
++import kotlin.math.exp
++import kotlin.math.PI
++import kotlin.math.floor
++
++class GameObject(
++  val mesh : UniformProvider,
++  val position : Vec2 = Vec2.zeros.clone(),
++  var roll : Float = 0.0f,
++  val scale : Vec2 = Vec2.ones.clone()
++   ) : UniformProvider("gameObject") {
++
++  val modelMatrix by Mat4()
++
++  init { 
++    addComponentsAndGatherUniforms(mesh)
++  }
++}
+-- 
+2.28.0.windows.1
+

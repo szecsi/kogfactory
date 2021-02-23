@@ -1,0 +1,23 @@
+From 6679ff2969efd8fa62e7212fb1b073a17d20a632 Mon Sep 17 00:00:00 2001
+From: szecsi <szecsi.laszlo@gmail.com>
+Date: Tue, 23 Feb 2021 15:39:45 +0100
+Subject: [PATCH] Imports in Program
+
+---
+ client/src/main/kotlin/Program.kt | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/client/src/main/kotlin/Program.kt b/client/src/main/kotlin/Program.kt
+index 607786b..bd9f69f 100644
+--- a/client/src/main/kotlin/Program.kt
++++ b/client/src/main/kotlin/Program.kt
+@@ -1,4 +1,6 @@
+ import org.khronos.webgl.WebGLRenderingContext as GL
++import vision.gears.webglmath.UniformProvider
++import vision.gears.webglmath.ProgramReflection
+ 
+ class Program(
+   val gl : WebGL2RenderingContext,
+-- 
+2.28.0.windows.1
+
