@@ -11,17 +11,19 @@ use trafo instead of idle
 set-position-uniform-by-location-handle
 t-dt (scene property time in seconds)
 
-scene-set-position-uniform-by-vector-commit
+webglmath
+**scene-set-position-uniform-by-vector-commit
 
 trafo-vs.glsl-by matrix
-set-modelmatrix-uniform-by-mat4-commit
+**set-modelmatrix-uniform-by-mat4-commit
 
-loose manual triangle resources and drawing
+lose manual triangle resources and drawing
 
 program-to-uniformprovider
 material
 mesh
-game-object
+gameobject class
+gameobject update
 scene-to-uniformprovider (time to uniform delegate)
 
 orthocamera

@@ -1,0 +1,57 @@
+From e0a3a9a64eee0f9290adb1b9cbfa0c33fcd7610a Mon Sep 17 00:00:00 2001
+From: szecsi <szecsi.laszlo@gmail.com>
+Date: Tue, 23 Feb 2021 15:42:54 +0100
+Subject: [PATCH] OrthoCamera class
+
+---
+ client/src/main/kotlin/OrthoCamera.kt | 37 +++++++++++++++++++++++++++
+ 1 file changed, 37 insertions(+)
+ create mode 100644 client/src/main/kotlin/OrthoCamera.kt
+
+diff --git a/client/src/main/kotlin/OrthoCamera.kt b/client/src/main/kotlin/OrthoCamera.kt
+new file mode 100644
+index 0000000..a98e5a3
+--- /dev/null
++++ b/client/src/main/kotlin/OrthoCamera.kt
+@@ -0,0 +1,37 @@
++import vision.gears.webglmath.UniformProvider
++import vision.gears.webglmath.Vec2
++import vision.gears.webglmath.Mat4
++
++class OrthoCamera(vararg programs : Program) : UniformProvider("camera") {
++
++  val position = Vec2(0.0f, 0.0f) 
++  val roll = 0.0f 
++  val windowSize = Vec2(20.0f, 20.0f) 
++    
++  val viewProjMatrix by Mat4()
++  val viewProjMatrixInverse by Mat4()  
++  init{
++    updateViewProjMatrix()
++    addComponentsAndGatherUniforms(*programs)
++  }
++
++  fun updateViewProjMatrix() {
++    viewProjMatrixInverse.set(). 
++      scale(0.5f, 0.5f). 
++      scale(windowSize). 
++      rotate(roll). 
++      translate(position)
++
++    viewProjMatrix.set(). 
++      scale(0.5f, 0.5f). 
++      scale(windowSize). 
++      rotate(roll). 
++      translate(position). 
++      invert()
++  }
++
++  fun setAspectRatio(ar : Float) { 
++    windowSize.x = windowSize.y * ar
++    updateViewProjMatrix()
++  } 
++}
+\ No newline at end of file
+-- 
+2.28.0.windows.1
+
