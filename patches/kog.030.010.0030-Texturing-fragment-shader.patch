@@ -1,0 +1,36 @@
+From 5006e82d40c780016023781fddc229b3cbed674a Mon Sep 17 00:00:00 2001
+From: szecsi <szecsi.laszlo@gmail.com>
+Date: Tue, 2 Mar 2021 19:44:59 +0100
+Subject: [PATCH] Texturing fragment shader
+
+---
+ client/src/main/glsl/textured-fs.glsl | 17 +++++++++++++++++
+ 1 file changed, 17 insertions(+)
+ create mode 100644 client/src/main/glsl/textured-fs.glsl
+
+diff --git a/client/src/main/glsl/textured-fs.glsl b/client/src/main/glsl/textured-fs.glsl
+new file mode 100644
+index 0000000..ea3f9ae
+--- /dev/null
++++ b/client/src/main/glsl/textured-fs.glsl
+@@ -0,0 +1,17 @@
++#version 300 es
++
++precision highp float;
++
++in vec2 texCoord;
++
++uniform struct {
++  sampler2D colorTexture; //#sampler2D# GLSL type textures can be bound to.
++} material;
++
++out vec4 fragmentColor;
++
++void main(void) {
++  fragmentColor = texture(material.colorTexture, texCoord); //#texCoord# address to read from
++}
++
++
+-- 
+2.28.0.windows.1
+
