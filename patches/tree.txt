@@ -1,5 +1,6 @@
-Scene gets gl both as property and parameter to methods
-WebGL2RenderingContext full from websocket to patch 110
+FIXED: Scene gets gl both as property and parameter to methods
+DONE: WebGL2RenderingContext full from websocket to patch 110
+DONE: WebGL2RenderingContext add Texture3D
 
 ppt:
 vectors - kotlin
@@ -11,7 +12,10 @@ use trafo instead of idle
 set-position-uniform-by-location-handle
 t-dt (scene property time in seconds)
 
-webglmath
+webglmath #UP  - array uniforms, Sampler3D -> WebGLRenderingContext2
+webglmath array uniform naming[0] #UP
+webglmath plus/plusAssign ambiguity #UP
+
 **scene-set-position-uniform-by-vector-commit
 
 trafo-vs.glsl-by matrix
@@ -40,7 +44,8 @@ alpha-enable
 texture-anim-vs
 *3gr-earlier end
 
-gameobject-move
+gameobject-move #UP
+gameobject-parent #new
 gameobject-physics
 
 perspective-camera
@@ -75,3 +80,5 @@ postproc
 -------------
 
 ray
+
+Texture3D #

@@ -15,7 +15,7 @@ index 8993964..23e87b9 100644
    }  
  
    fun update() {
-+    scene.update(gl, keysPressed)    
++    scene.update(keysPressed)    
      window.requestAnimationFrame { update() }
    }
  }

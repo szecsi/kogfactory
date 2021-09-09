@@ -1,7 +1,7 @@
 From c4b533f106c46fe7a6c431e08f97f0ec6c04bdfc Mon Sep 17 00:00:00 2001
 From: szecsi <szecsi.laszlo@gmail.com>
 Date: Tue, 9 Feb 2021 19:04:05 +0100
-Subject: [PATCH] dgds
+Subject: [PATCH] create Scene instance, canvas resize
 
 ---
  client/src/main/kotlin/App.kt | 11 +++++++++++
@@ -23,7 +23,7 @@ index e7261e3..3f6ba39 100644
 +  fun resize() {
 +    canvas.width = canvas.clientWidth//#canvas.width# rendering resolution ˙HUN˙ rajzolási felbontás #canvas.clientWidth# canvas size ˙HUN˙ a vászon mérete 
 +    canvas.height = canvas.clientHeight
-+    scene.resize(gl, canvas)
++    scene.resize(canvas)
 +  }
 +
    @Suppress("UNUSED_PARAMETER")

@@ -20,7 +20,7 @@ index 39875c0..b62a2a5 100644
 +  val solidProgram = Program(gl, vsIdle, fsSolid)
 +  val triangleGeometry = TriangleGeometry(gl)
 +
-   fun resize(gl : WebGL2RenderingContext, canvas : HTMLCanvasElement) {
+   fun resize(canvas : HTMLCanvasElement) {
      gl.viewport(0, 0, canvas.width, canvas.height)//#viewport# tell the rasterizer which part of the canvas to draw to ˙HUN˙ a raszterizáló ide rajzoljon
    }
 @@ -13,5 +18,7 @@ class Scene (

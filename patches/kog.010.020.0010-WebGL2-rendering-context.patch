@@ -1,7 +1,7 @@
 From f8bb9f507d9def2868bbbda45533af11fcd281c1 Mon Sep 17 00:00:00 2001
 From: szecsi <szecsi.laszlo@gmail.com>
 Date: Thu, 11 Feb 2021 14:24:28 +0100
-Subject: [PATCH] dsfg
+Subject: [PATCH] WebGL rendering context
 
 ---
  client/src/main/kotlin/WebGL2RenderingContext.kt | 144 +++++++++++++++++++++++

@@ -1,7 +1,7 @@
 From 37c7e37edf2082765b3d1943c48165f28700a229 Mon Sep 17 00:00:00 2001
 From: szecsi <szecsi.laszlo@gmail.com>
 Date: Tue, 9 Feb 2021 19:06:44 +0100
-Subject: [PATCH] 1222
+Subject: [PATCH] Triangle geometry
 
 ---
  client/src/main/kotlin/TriangleGeometry.kt | 44 ++++++++++++++++++++++++++++++
