@@ -22,7 +22,7 @@ index 0000000..680a2ec
 +import kotlin.math.floor
 +
 +class GameObject(
-+  val mesh : UniformProvider,
++  vararg val meshes : Mesh,
 +  val position : Vec2 = Vec2.zeros.clone(),
 +  var roll : Float = 0.0f,
 +  val scale : Vec2 = Vec2.ones.clone()
@@ -31,7 +31,7 @@ index 0000000..680a2ec
 +  val modelMatrix by Mat4()
 +
 +  init { 
-+    addComponentsAndGatherUniforms(mesh)
++    addComponentsAndGatherUniforms(*meshes)
 +  }
 +}
 -- 

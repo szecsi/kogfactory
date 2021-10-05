@@ -22,7 +22,7 @@ index 18b756d..860d32e 100644
 -  val gl : WebGL2RenderingContext){
 +  val gl : WebGL2RenderingContext) : UniformProvider("scene") {
  
-   fun resize(gl : WebGL2RenderingContext, canvas : HTMLCanvasElement) {
+   fun resize(canvas : HTMLCanvasElement) {
      gl.viewport(0, 0, canvas.width, canvas.height)//#viewport# tell the rasterizer which part of the canvas to draw to ˙HUN˙ a raszterizáló ide rajzoljon
 @@ -11,12 +13,17 @@ class Scene (
  
@@ -35,7 +35,7 @@ index 18b756d..860d32e 100644
 +  }
  
    @Suppress("UNUSED_PARAMETER")
-   fun update(gl : WebGL2RenderingContext, keysPressed : Set<String>) {
+   fun update(keysPressed : Set<String>) {
      val timeAtThisFrame = Date().getTime() 
      val dt = (timeAtThisFrame - timeAtLastFrame).toFloat() / 1000.0f
 -    val t  = (timeAtThisFrame - timeAtFirstFrame).toFloat() / 1000.0f    
