@@ -111,7 +111,7 @@ document.defaultView.document == document
 - in the update method, set the HTML content of the overlay to be some text positioned according to the properties
 <pre><code data-trim> <script type="text/template">
 this.overlay.innerHTML = 
-"""&lt<div style=
+"""<div style=
 "position:absolute;left:${mouseX}px;bottom:-${mouseY}px"> Hello AIT! </div>"""
 </script></code></pre>
           </textarea>
@@ -128,15 +128,13 @@ this.overlay.innerHTML =
 - when an image needs to be rendered, we use the current virtual world data
           </textarea>
         </section>        
-        <!-- patch="kog.010.010.0090-key-names.patch" -->
         <section data-markdown>
           <textarea data-template>
 ### TASK: Keep track of pressed keys
 - add property to App
  - keysPressed, a HashSet<String>, initially empty
 - in the key down/up event handler
- - parameter event has property keyCode
- - look up human-friendly key for keyCode name in global array keyNames
+ - parameter event has property key
  - add()/remove() the above name to/from keysPressed
  - in the update method, display the contents of keysPressed
  <pre><code data-trim> <script type="text/template">
