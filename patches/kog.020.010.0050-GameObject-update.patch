@@ -13,7 +13,7 @@ index 680a2ec..35ef215 100644
 +++ b/client/src/main/kotlin/GameObject.kt
 @@ -17,4 +17,12 @@ class GameObject(
    init { 
-     addComponentsAndGatherUniforms(mesh)
+     addComponentsAndGatherUniforms(*meshes)
    }
 +
 +  fun update() {

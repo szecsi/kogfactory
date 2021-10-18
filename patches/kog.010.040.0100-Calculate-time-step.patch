@@ -26,7 +26,7 @@ index ee658e3..bfa18e6 100644
 +  var timeAtLastFrame =  timeAtFirstFrame
 +
    @Suppress("UNUSED_PARAMETER")
-   fun update(gl : WebGL2RenderingContext, keysPressed : Set<String>) {
+   fun update(keysPressed : Set<String>) {
 +    val timeAtThisFrame = Date().getTime() 
 +    val dt = (timeAtThisFrame - timeAtLastFrame).toFloat() / 1000.0f
 +    val t  = (timeAtThisFrame - timeAtFirstFrame).toFloat() / 1000.0f    
