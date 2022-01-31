@@ -1,0 +1,107 @@
+Implement some features related to 3D transformations and lighting. Complete items from the list below to earn points.
+
+Each item is worth 10 points, unless marked [x2], in which case it is worth 20 points. You cannot earn points for more items in the same category than the number of categories you implemented items in (e.g. 3 items in `Light sources` and 3 items in `Materials` may only earn you 2*10+2*10=40 points, but it you complete an additional item in `3D effects` than it is 3*10+3*10+1*10 = 70 points). You may get partial points for incompletely or incorrectly implemented features.
+
+3D effects
+==========
+
+Environment background
+----------------------
+The environmental surroundings as given by a cube texture should be displayed in the background.
+
+Ground
+------
+There should be an infinite ground plane, with some tileable texture repeated on it indefinitely.
+
+Directional plane-projected shadows
+-----------------------------------
+Shadows of objects should appear on the ground. Draw objects in black, flattened to the ground along a global, non-vertical light direction, but slightly above the ground plane.
+
+Central plane-projected shadows [2x]
+-------------------------------
+Shadows of objects should appear on the ground. Draw objects in black, centrally projected onto the ground plane using a single point as the center of projection. Move the shadow geometry slightly up, above the ground plane.
+
+Animation
+=========
+
+Rolling Ball [2x]
+------------
+There should be spherical, textured objects that roll without sliding. The avatar should be able to push them.
+
+Wheel Steering [2x]
+--------------
+The avatar should have wheels that roll as the avatar moves. Some of them should be steerable, i.e. rotatable around the vertical axis.
+
+Path Animation [2x]
+--------------
+Implement path animation. Have at least three objects move along a single 3D rollercoaster curve, but starting at different points. For example, the curve could be given by x=R*cos(t), y=A*sin(3*t), z=R*sin(t), where x, y, z is the object's position at time t, with R and A being arbitrary constants. The model used for the objects must have a distinct ahead direction, and the object must always face ahead when moving. For this, the velocity vector should be analytically computed using the time derivative of the curve formula. The upwards vector should also be analytically computed using the second time derivative of the curve formula.
+Use a rotation matrix for your avatar derived from its motion. In case of a fixed-winged aircraft: nose points the same direction as the velocity vector, wing points into direction velocity-cross-acceleration-normalized, and tail fin points into direction nose-cross-wing-normalized. The rotation matrix is assembled using these base vectors, not an axis-angle or yaw-pitch-roll scheme.
+
+Camera motion
+=============
+
+First Person Camera
+-------------------
+The perspective camera should be fixed to the avatar, moving and rotating with it.
+
+Third Person Camera
+-------------------
+The perspective camera should always look at the avatar, while keeping its position.
+
+Camera path [2x]
+-----------
+Move the camera along a path given by a formula, rotating it using the logic described for Path Animation.
+
+
+Light sources
+=============
+
+Directional
+-----------
+At least one non-vertical directional light source should illuminate your game world. [requires a diffuse or specular surface]
+
+Point
+-----
+There should be at least one point light source. It should be omnidirectional, i.e. emitting light in all directions, and isotropic, i.e. radiating the same intensity in all directions. [requires a diffuse or specular surface]
+
+Spot [2x]
+----
+There should be at least one positional light source, similar to the point light, but not isotropic. Instead, a main direction (per spotlight) should be given. The radiated intensity should be highest along this direction, and fall off with some power of the cosine between the light and main directions. [requires a diffuse or specular surface]
+
+Headlights
+----------
+At least one point or spot light should move along with the avatar as it moves and rotates. [requires a diffuse or specular surface]
+
+
+Materials
+=========
+
+Diffuse
+-------
+There should be at least one object with texturing and diffuse (Lambertian) shading. [requires a light source]
+
+Specular
+--------
+There should be at least one object with specular (diffuse + Phong-Blinn or max Blinn) shading, possibly combined with texturing. [requires a light source]
+
+Environment mapping
+-------------------
+At least one object should reflect its environment as an ideally smooth surface (i.e. a mirror).
+
+Procedural Solid Texturing
+--------------------------
+Have at least one object with procedural solid texturing (e.g. wood or marble)---i.e. the pixel shader should compute color from model space position using some formula.
+
+Procedural Normal Mapping
+-------------------------
+An object with environment mapping or with specular reflection should have its normal vectors perturbed by the gradient of a noise function.
+
+25 points for D
+40 points for C
+55 points for B
+70 points for A
+90 points for A+
+
+Note that on Moodle we will indicate points, and not percentage. Homework results will be aggregated adding points, not averaging grades.
+
+Please submit a LIST OF COMPLETED FEATURES as well as the source code with all required media files (as one zip file). We should be able to test the project by just opening the index.html file in a browser.

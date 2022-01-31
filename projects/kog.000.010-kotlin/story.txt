@@ -1,0 +1,158 @@
+Welcome to this video on Kotlin for the Computer Graphics course at AIT.
+
+I have to goals with with video. First, to teach you some basics of Kotlin so that we take a swifter start into graphics in the first week. Second, to give you some impression of the prerequisites. In Graphics, we use a little bit of linear algebra, calculus, and physics. If your background is shakier in one or two of those, you can likely catch up on it yourself, or ask me some extra questions about it, in class or in extra online sessions. But we write programs every class. If you do not have the ability to implement simple algorithms, or resolve straightforward error messages, then there's going to be more of a struggle for both of us. This video will touch on some programming concepts. If you feel those are really alien to you, then maybe Computer Graphics would not be your favorite course at AIT. 
+
+Kotlin
+######
+
+We use the WebGL graphics API, because that is the only one universally supported on all platforms, including Apple devices. WebGL is a JavaScript API. Finding errors in JavaScript code can be challenging. You always get "undefined" errors in runtime. You need to place breakpoints, explore the call stack to see what went wrong and where. Most of the time, you just mistyped a variable name. (vid: jsdebug1 + jsdebug2)
+All of this can be avoided by using Kotlin. Kotlin can be compiled to JS. You get (sometimes nitpicky) errors in compilation time. It tells you exactly where the problems are. (vid: gradle0 + gradle2)
+
+Kotlin was invented as a Java replacement. It does everything Java does, and incorporates a lot of winning ideas from other programming paradigms. You can do object-oriented and functional programming. 
+
+Basic types
+val and var
+string, string template
+math
+
+So why is Kotlin great, and why may you find it challenging?
+Kotlin allows code that expresses the programmer's intent. There are often more ways to do the same thing, with slightly different syntax. Your choice communicates something. To yourself when you read your own code, to people who work with your code. There is often a programming concept, a pattern associated with a keyword. That is an extra language to learn, and one that talks about concepts that are more abstract. That may be why experienced programmers love Kotlin, but beginners feel there is too much to tackle beyond what writing a C++ or Python program required.
+
+To give you an example, let us look at what functions look like in Kotlin.
+
+functions
+named vs lambda
+
+document.onkeydown =  { 
+      event : KeyboardEvent ->
+      keysPressed.add( keyNames[event.keyCode] )
+    }
+
+object{val alpha = false}
+class, constructor
+init
+
+apply
+
+companion object
+
+null safety
+let
+
+open class Go{
+    var parent : Go? = null
+    fun f(){
+//        if(parent != null){
+        parent?.let{ parent ->
+          print(parent)
+          if(parent is Enemy){
+            print(parent.t)
+          }
+       }
+    }
+}
+
+class Enemy : Go() { val t = 99}
+
+fun main() {
+    val f = {it}
+    
+    val go = Enemy().apply{parent = Enemy()}
+    go.f()
+    
+    val a = Array(3) { String() + "$it" }
+    a.forEach{
+      print(it)
+    }
+}
+
+collections, array, initializers, maps,
+  val keysPressed = HashSet<String>()
+
+val uniforms = HashMap<String, Uniform>() 
+backgroundMaterial["envTexture"]
+ forEach, forEachIndexed
+    val PC = arrayOf("vertexPosition", "vertexColor")
+    var all = emptyArray<Program>()
+
+      Float32Array( Array<Float>(128*16*3){
+        i ->
+        val u = (i/3/16).toFloat()/127f
+        val v = (i/3%16).toFloat()/15f
+
+        when(i%3) {
+          0 -> sin(v * PI.toFloat() * 2f)
+          1 -> cos(v * PI.toFloat() * 2f)
+          else -> 0f
+        }
+      })
+
+    val submeshes = Array<Mesh>(geometries.size) {
+      i -> Mesh(materials[i], geometries[i])
+    }
+vararg
+
+
+  try{
+    val app = App(canvas, overlay)
+    app.registerEventHandlers()
+  } catch(e : Error) {
+    console.error(e.message)
+  }
+
+
+
+WebGL
+#####
+
+GLSL
+####
+
+WebGLMath
+#########
+
+Inheritance
+###########
+abstract class Node(){
+    abstract fun guess() : Node 
+}
+
+class Question(val q:String, val y : Node, val n : Node){
+    override fun guess() : Node {
+        print(q)
+        
+    }
+}
+
+open class, open fun
+abstract class Drawable {
+  open fun gatherUniforms(target : UniformProvider){}
+  abstract fun draw(vararg uniformProviders : UniformProvider)
+  open fun drawWithOverrides(overrides : Map<String, UniformProvider>, vararg uniformProviders : UniformProvider){
+    draw(*uniformProviders)
+  }
+}
+
+
+UniformProvider
+###############
+Drawable
+Geometry
+Uniform
+
+by Delegate
+
+  operator fun provideDelegate(
+      provider: UniformProvider,
+      property: KProperty<*>) : Mat4{
+    provider.register(property.name, this)
+    return this
+  }
+
+  operator fun getValue(provider: UniformProvider, property: KProperty<*>): Mat4 {
+    return this
+  }
+
+  operator fun setValue(provider: UniformProvider, property: KProperty<*>, value: Mat4) {
+    set(value)
+  }
