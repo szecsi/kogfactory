@@ -24,13 +24,13 @@ index 221b3a8..dac8c11 100644
      document.onkeydown =  { //#{# locally defined function
        event : KeyboardEvent ->
 -      event //## implement own logic here
-+      keysPressed.add( event.key )
++      keysPressed.add( keyNames[event.keyCode] )
      }
  
      document.onkeyup = { 
        event : KeyboardEvent ->
 -      event
-+      keysPressed.remove( event.key )
++      keysPressed.remove( keyNames[event.keyCode] )
      }
  
      canvas.onmousedown = { 
