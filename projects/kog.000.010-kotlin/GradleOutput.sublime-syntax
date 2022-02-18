@@ -1,0 +1,31 @@
+%YAML 1.2
+---
+# See http://www.sublimetext.com/docs/3/syntax.html
+file_extensions:
+  - log
+scope: gradle.output
+
+contexts:
+  main:
+    # The main context is the initial starting point of our syntax.
+    # Include other contexts from here (or specify them directly).
+    - include: errors
+    - include: warnings
+    - include: failure
+    - include: success
+
+  errors:
+    - match: 'e: (.:[^:]*): \(\d+, \d+\): ([^\n]+)'
+      scope: invalid
+
+  warnings:
+    - match: 'w: (.:[^:]*): \(\d+, \d+\): ([^\n]+)'
+      scope: invalid.deprecated
+
+  failure:
+    - match: 'FAILURE|BUILD FAILED in \d+s'
+      scope: markup.deleted
+
+  success:
+    - match: 'BUILD SUCCESSFUL in \d+s'
+      scope: markup.inserted

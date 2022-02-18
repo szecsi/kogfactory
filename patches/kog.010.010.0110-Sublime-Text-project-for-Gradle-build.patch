@@ -1,0 +1,40 @@
+From 1541fc116e2f04cb62ec80eb05b2ccd9e123bb14 Mon Sep 17 00:00:00 2001
+From: szecsi <szecsi.laszlo@gmail.com>
+Date: Tue, 1 Feb 2022 20:42:07 +0100
+Subject: [PATCH] Sublime Text project for Gradle build
+
+---
+ kog.sublime-project | 21 +++++++++++++++++++++
+ 1 file changed, 21 insertions(+)
+ create mode 100644 kog.sublime-project
+
+diff --git a/kog.sublime-project b/kog.sublime-project
+new file mode 100644
+index 0000000..7d02abd
+--- /dev/null
++++ b/kog.sublime-project
+@@ -0,0 +1,21 @@
++{
++  "build_systems":
++  [
++    {
++      "name": "Gradle",
++      "shell_cmd": "gradle build --warning-mode all",
++      "working_dir": "${project_path}",
++      "file_regex": "^[ew]: (.:[^:]*): \\((\\d+), (\\d+)\\): ([^\n]+)"
++    }
++  ],
++  "folders":
++  [
++    {
++      "path": "client/src"
++    }
++  ],
++  "settings":
++  {
++    "tab_size": 2
++  }
++}
+-- 
+2.28.0.windows.1
+

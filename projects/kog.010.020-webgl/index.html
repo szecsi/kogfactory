@@ -160,6 +160,29 @@ gl.drawArrays(/* ... */)
         </section> 
         <section data-markdown>
           <textarea data-template>
+### TASK: Create QuadGeometry
+- duplicate and rename the copy of TriangleGeometry.kt
+- change class name
+- change vertex buffer contents to specify 4 vertices
+- change index buffer contents to specify 2 triangles
+- change draw call invocation to process 6 indices
+- create an instance of QuadGeometry in the Scene init
+- draw it in update
+          </textarea>
+        </section>
+        <section data-markdown>
+          <textarea data-template>
+### TASK: Create HeartGeometry
+- fill vertex buffer
+  `$$ x = 16 \sin^3 t $$`
+  `$$ y = 13 \cos t - 5 \cos 2t - 2 \cos 3 t - \cos 4t $$`
+- triangle fan in index buffer
+- change draw call invocation
+- create and draw HeartGeometry instance
+          </textarea>
+        </section>
+        <section data-markdown>
+          <textarea data-template>
 ### TASK: Add new vertex attribute: vertexColor
 - new vertex buffer for color data (TriangleGeometry.kt)
 - three floats per vertex (Red, Green, Blue)
@@ -185,18 +208,6 @@ gl.drawArrays(/* ... */)
           <h3>Garish triangle</h3>
           <img src="media/garish.png"/>
         </section>         
-        <section data-markdown>
-          <textarea data-template>
-### TASK: Create QuadGeometry
-- duplicate and rename the copy of TriangleGeometry.kt
-- change class name
-- change vertex buffer contents to specify 4 vertices
-- change index buffer contents to specify 2 triangles
-- change draw call invocation to process 6 indices
-- create an instance of QuadGeometry in the Scene init
-- draw it in update
-          </textarea>
-        </section>
       </div>
     </div>
 

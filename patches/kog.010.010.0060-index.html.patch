@@ -17,7 +17,7 @@ index 0000000..d7bdaba
 +<!DOCTYPE html>
 +<html>	
 +<head>
-+	<title>Computer Graphics 2021</title>
++	<title>Computer Graphics</title>
 +	<meta name="viewport" content="width=device-width, initial-scale=1" /><!--#width=device-width# page fills window-->
 +	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 +	<link rel="stylesheet" type="text/css" href="css/style.css" /><!--#style.css# element styles defined here-->
