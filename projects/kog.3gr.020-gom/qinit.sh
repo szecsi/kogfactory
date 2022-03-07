@@ -1,7 +1,7 @@
 #!/bin/bash -v
 
 wd=$(pwd)
-cd ../../..
+cd ../..
 var=`date +"%FORMAT_STRING"`
 now=`date +"%F_%R"`
 mv kogedge kogedge$now
@@ -38,7 +38,8 @@ echo $wd"/../../patches/kog.010.040.*.patch" | xargs -I % bash -c "git am %*"
 
 # apply gom patches
 echo $wd"/../../patches/kog.020.010.0010-Make-Program-a-UniformProvider.patch" | xargs -I % bash -c "git am %*"
+echo $wd"/../../patches/kog.020.010.0011-Imports-in-Program.patch" | xargs -I % bash -c "git am %*"
 echo $wd"/../../patches/kog.020.010.0020-Material-class.patch" | xargs -I % bash -c "git am %*"
 echo $wd"/../../patches/kog.020.010.0030-Mesh-class.patch" | xargs -I % bash -c "git am %*"
-echo $wd"/../../patches/kog.020.010.0040-GameObject-class.patch" | xargs -I % bash -c "git am %*"
-#skip GemaObject-update
+#echo $wd"/../../patches/kog.020.010.0040-GameObject-class.patch" | xargs -I % bash -c "git am %*"
+#skip GameObject-update

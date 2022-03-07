@@ -5,6 +5,7 @@ DONE: WebGL2RenderingContext add Texture3D
 ppt:
 vectors - kotlin
 
+kog.010.020.0030-Scene-instance-and-canvas-resize.patch #UP register resize callback
 
 ait patches
 trafo-vs.glsl-translate only
@@ -26,7 +27,7 @@ lose manual triangle resources and drawing
 program-to-uniformprovider
 material
 mesh
-gameobject class
+gameobject class #remove constructor parameters
 gameobject update
 scene-to-uniformprovider (time to uniform delegate)
 
@@ -44,7 +45,7 @@ alpha-enable
 texture-anim-vs
 *3gr-earlier end
 
-gameobject-move #UP
+gameobject-move #UP motion inner class
 gameobject-parent #new
 gameobject-physics
 
