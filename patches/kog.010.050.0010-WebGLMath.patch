@@ -509,7 +509,7 @@ index 0000000..58edc9f
 +  operator fun provideDelegate(
 +      provider: UniformProvider,
 +      property: KProperty<*>) : Mat4Array{
-+    provider.register(property.name, this)
++    provider.register("${property.name}[0]", this)
 +    return this
 +  }
 +
@@ -1279,7 +1279,7 @@ index 0000000..59f39a4
 +  operator fun provideDelegate(
 +      provider: UniformProvider,
 +      property: KProperty<*>) : Vec1Array {
-+    provider.register(property.name, this)
++    provider.register("${property.name}[0]", this)
 +    return this
 +  }
 +
@@ -1629,7 +1629,7 @@ index 0000000..90b9d81
 +  operator fun provideDelegate(
 +      provider: UniformProvider,
 +      property: KProperty<*>) : Vec2Array {
-+    provider.register(property.name, this)
++    provider.register("${property.name}[0]", this)
 +    return this
 +  }
 +
@@ -2006,7 +2006,7 @@ index 0000000..932fe3f
 +  operator fun provideDelegate(
 +      provider: UniformProvider,
 +      property: KProperty<*>) : Vec3Array {
-+    provider.register(property.name, this)
++    provider.register("${property.name}[0]", this)
 +    return this
 +  }
 +
@@ -2409,7 +2409,7 @@ index 0000000..7aba377
 +  operator fun provideDelegate(
 +      provider: UniformProvider,
 +      property: KProperty<*>) : Vec4Array {
-+    provider.register(property.name, this)
++    provider.register("${property.name}[0]", this)
 +    return this
 +  }
 +
