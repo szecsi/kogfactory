@@ -2,6 +2,14 @@ FIXED: Scene gets gl both as property and parameter to methods
 DONE: WebGL2RenderingContext full from websocket to patch 110
 DONE: WebGL2RenderingContext add Texture3D
 
+# add to WebGL2RenderingContext
+  import org.khronos.webgl.Uint8Array
+  import org.w3c.dom.ImageBitmap
+
+  fun texImage3D(target: Int, level: Int, internalformat: Int, width: Int, height: Int, depth: Int, border: Int, format: Int, type: Int, source: ImageBitmap)
+  fun texImage3D(target: Int, level: Int, internalformat: Int, width: Int, height: Int, depth: Int, border: Int, format: Int, type: Int, source: Uint8Array)  
+
+
 ppt:
 vectors - kotlin
 
