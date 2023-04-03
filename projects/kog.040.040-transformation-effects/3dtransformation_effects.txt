@@ -1,0 +1,42 @@
+Ground
+------
+There should be an infinite ground plane, with some tileable texture repeated on it indefinitely. The trick is to change TexturedQuadGeometry to use vec4 homogeneous coordinates, making it possible to place vertices at infinity. You need to change the vertex buffer contents and also its input layout (a.k.a.: VAO, vertex array object, vertexAttribPointer). You need at least one vertex not at infinity (moving all four vertices of a quad infinitely far away does not work). Instead, you can surround a single regular vertex with threeor four ideal ones (w=0). Use a traingle fan scheme in the index buffer. Proper texture coordinates are also a challange. They should also be vec4s, and in the fragment shader you need to do the division by w to get them in Cartesian.
+
+Directional plane-projected shadows
+-----------------------------------
+Shadows of objects should appear on the ground. Draw objects in black [.using(shadowMaterial)], flattened to the ground along a global, non-vertical light direction (an extra transformation in the VS, but before, after, or between existing transformations?), but slightly above the ground plane.
+Do the vertical first. It is just a scaling. What to do for a different light direction? You need to assemble a 4x4 matrix that fulfills the following:
+- maps parallel lines to parallel lines (i.e. it is affine, last column is 0,0,0,1)
+- for points already on the plane, does not change them (gives all elements but the second row)
+- the a point that is the origin translated towards the light, it gives the origin. Figure out the remaining matrix elements as a function of the light direction vector components. 
+
+Central plane-projected shadows
+-------------------------------
+Shadows of objects should appear on the ground. Draw objects in black, centrally projected onto the ground plane using a single point as the center of projection. Move the shadow geometry slightly up, above the ground plane.
+The matrix will be similar to the camera's projection matrix in its constuction.
+
+Rolling Ball
+------------
+There should be spherical, textured objects that roll without sliding. Instead of yaw-pitch-roll, which is wholly inadequate for this purpose, use a different orientation representation in GameObject: a Mat4. In every frame, append an extra rotation to it that matches its translational velocity. The cross product will help you get the axis of rotation.
+
+Wheel Steering
+--------------
+The avatar should have wheels that roll as the avatar moves. Some of them should be steerable, i.e. rotatable around the vertical axis. Yaw-pitch-roll is great for this. The wheels should be parented to the chassis.
+
+Path Animation
+--------------
+Implement path animation. Have at least three objects move along a single 3D rollercoaster curve, but starting at different points. For example, the curve could be given by x=R*cos(t), y=A*sin(3*t), z=R*sin(t), where x, y, z is the object's position at time t, with R and A being arbitrary constants. The model used for the objects must have a distinct ahead direction, and the object must always face ahead when moving. For this, the velocity vector should be analytically computed using the time derivative of the curve formula. The upwards vector should also be analytically computed using the second time derivative of the curve formula.
+Use a rotation matrix for your avatar derived from its motion. In case of a fixed-winged aircraft: nose points the same direction as the velocity vector, wing points into direction velocity-cross-acceleration-normalized, and tail fin points into direction nose-cross-wing-normalized. The rotation matrix is assembled using these base vectors, not an axis-angle or yaw-pitch-roll scheme.
+
+First Person Camera
+-------------------
+The perspective camera should be fixed to the avatar, moving and rotating with it.
+
+Third Person Camera
+-------------------
+The perspective camera should always look at the avatar, while keeping its position.
+
+Camera path
+-----------
+Move the camera along a path given by a formula, rotating it using the logic described for Path Animation.
+
